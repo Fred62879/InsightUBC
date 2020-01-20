@@ -22,7 +22,9 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise <any[]> {
+        //added by fred
         return Promise.reject("Not implemented.");
+
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
