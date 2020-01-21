@@ -71,6 +71,7 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let readFromJson: boolean = false;
+        let promiseSequence: Promise<any> = Promise.resolve();
         if (!this.isIDvalid(id)) {
             throw new InsightError("addDataset Invalid ID");
         }
@@ -78,7 +79,33 @@ export default class InsightFacade implements IInsightFacade {
             return jszipfolder.folder("courses");
         }).then((jszipFolder: JSZip) => {
             return jszipFolder.forEach((path: string, file: JSZipObject) => {
-
+                // promiseSequence = promiseSequence.then(() => {
+                //     return file.async("text").then((jsonString: string) => {
+                //         let json: { [key: string]: any } = JSON.parse(jsonString);
+                //         let resultArray: object[];
+                //         // resultArray = this.getResultArray(json);
+                //         try {
+                //             resultArray = this.getResultArray(json);
+                //         } catch (e) {
+                //             Log.error(e);
+                //             return;
+                //             // throw e;
+                //         }
+                //         if (!this.dataset.hasOwnProperty(id)) {
+                //             let courses: InsightCourse[];
+                //             try {
+                //                 courses = this.courseResultArrayToInsightCourse(resultArray);
+                //             } catch (e) {
+                //                 Log.error(e);
+                //                 return;
+                //             }
+                //             if (!this.dataset[id]) {
+                //                 this.dataset[id] = [];
+                //             }
+                //             return this.dataset[id] = this.dataset[id].concat(courses);
+                //         }
+                //     });
+                // });
                 return file.async("text").then((jsonString: string) => {
                     let json: { [key: string]: any } = JSON.parse(jsonString);
                     let resultArray: object[];
@@ -108,14 +135,16 @@ export default class InsightFacade implements IInsightFacade {
         }).catch((err: any) => {
             return Promise.reject(err);
         });
+        setTimeout(() => {
+            // TODO store data cache at the end
+            if (!readFromJson) {
+                let jsonToWrite = JSON.stringify(this.dataset);
+                fs.writeFile("./data/" + id + ".json", jsonToWrite).catch((e) => {
+                    Log.error(e);
+                });
+            }
+        }, 5000);
 
-        // TODO store data cache at the end
-        if (!readFromJson) {
-            let jsonToWrite = JSON.stringify(this.dataset);
-            fs.writeFile("./data/" + id + ".json", jsonToWrite).catch((e) => {
-                Log.error(e);
-            });
-        }
         // TODO debug the promised is resolved before any error thrown.
         return Promise.resolve(Object.keys(this.dataset));
     }
