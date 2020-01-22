@@ -74,6 +74,13 @@ export class InsightError extends Error {
     }
 }
 
+export class FoundCacheError extends Error {
+    constructor(...args: any[]) {
+        super(...args);
+        Error.captureStackTrace(this, InsightError);
+    }
+}
+
 export class NotFoundError extends Error {
     constructor(...args: any[]) {
         super(...args);

@@ -20,7 +20,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
-        courses: "./test/data/courses.zip",
+        courses: "./test/data/110.zip",
         courses1: "./test/data/courses1.zip",
         cpsc1100: "./test/data/cpsc1100.zip",
         cpsc1100ButBroken: "./test/data/cpsc1100ButBroken.zip",
