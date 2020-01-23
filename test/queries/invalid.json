@@ -1,6 +1,19 @@
 {
     "title": "Very invalid query",
-    "query": { "OPTIONS": {} },
+    "query": {
+	"WHERE": {
+	    "AND": [
+		{
+		    "GT": 100
+		},
+		{
+		    "LT": 10
+		}
+	    ] 
+	},
+	"OPTIONS": {
+	}
+    },
     "isQueryValid": false,
     "result": "InsightError"
 }
