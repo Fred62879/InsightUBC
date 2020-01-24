@@ -21,7 +21,7 @@ import Queryvalid from "./QueryValid";
  */
 export default class InsightFacade implements IInsightFacade {
     private dataset: { [key: string]: InsightCourse[] } = {};
-
+    private ids = new Set<string>();
     // private x = {a: 1, b: 2};
 
     constructor() {
@@ -153,6 +153,8 @@ export default class InsightFacade implements IInsightFacade {
             throw new InsightError("addDataset Invalid ID");
         }
 
+        this.ids.add(id); // ** added by Fred **
+
         return this.readCache(id, content, kind).then(() => {
             return this.readFromZip(id, content, kind);
         }).then(() => {
@@ -240,12 +242,11 @@ export default class InsightFacade implements IInsightFacade {
 
 
     public performQuery(query: any): Promise <any[]> {
-        const qv: Queryvalid = new Queryvalid();
+        const qv: Queryvalid = new Queryvalid(this.ids);
         const warning = qv.queryValid(query);
         if (warning !== "") {
             return Promise.reject(new InsightError(warning));
         }
-
         return Promise.reject();
     }
 
