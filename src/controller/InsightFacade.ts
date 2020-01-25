@@ -153,7 +153,7 @@ export default class InsightFacade implements IInsightFacade {
             throw new InsightError("addDataset Invalid ID");
         }
 
-        this.ids.add(id); // ** added by Fred **
+        this.ids.add(id); // ** added by Fred **I
 
         return this.readCache(id, content, kind).then(() => {
             return this.readFromZip(id, content, kind);
@@ -235,11 +235,9 @@ export default class InsightFacade implements IInsightFacade {
         // });
     }
 
-
     public removeDataset(id: string): Promise<string> {
         return Promise.reject("Not implemented.");
     }
-
 
     public performQuery(query: any): Promise <any[]> {
         const qv: Queryvalid = new Queryvalid(this.ids);

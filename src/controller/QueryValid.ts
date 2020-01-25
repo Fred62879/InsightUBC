@@ -57,13 +57,9 @@ export default class QueryValid {
             if (Array.isArray(cur) || typeof(cur) !== "object") { return k + " must be an object"; }
             // if (Object.keys(cur).length > 1) { return k + " has more than one keys"; } -$
         }
-        Log.trace(1);
         let body = query.WHERE, opts = query.OPTIONS;
-        Log.trace(1);
         const filterWarning = this.filterValid(body);
-        Log.trace(1);
         if (filterWarning !== "" && Object.keys(body).length > 0) { return filterWarning; }
-        Log.trace(1);
         const optsWarning = this.optsValid(opts);
         if (optsWarning !== "") { return optsWarning; }
         return "";
