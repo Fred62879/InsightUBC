@@ -1,17 +1,19 @@
 import Log from "../Util";
 import {
+    FoundCacheError,
     IInsightFacade,
+    InsightCourse,
+    InsightCourseDataFromZip,
     InsightDataset,
     InsightDatasetKind,
-    InsightCourse,
-    InsightCourseDataFromZip, InvalidYearError, InvalidStddevError
+    InsightError,
+    InvalidStddevError,
+    InvalidYearError,
+    NotFoundError
 } from "./IInsightFacade";
 import * as JSZip from "jszip";
-import * as fs from "fs-extra";
-import {InsightError, NotFoundError, FoundCacheError} from "./IInsightFacade";
 import {JSZipObject} from "jszip";
-import {rejects} from "assert";
-import {resolve} from "path";
+import * as fs from "fs-extra";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -184,6 +186,10 @@ export default class InsightFacade implements IInsightFacade {
         if (!this.isIDvalid(id)) {
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
+        if (kind !== "courses") {
+
+            return Promise.reject(new InsightError("addDataset Invalid kind"));
+        }
 
         return this.readCache(id, content, kind).then(() => {
             if (this.dataset[id]) {
@@ -215,7 +221,14 @@ export default class InsightFacade implements IInsightFacade {
 
 
     public removeDataset(id: string): Promise<string> {
-        return Promise.reject("Not implemented.");
+        if (!this.isIDvalid(id)) {
+            return Promise.reject(new InsightError("addDataset Invalid ID"));
+        }
+        if (this.dataset[id]) {
+            delete this.dataset[id];
+            return Promise.resolve(id);
+        }
+        return Promise.reject(new NotFoundError("dataset not found"));
     }
 
 
@@ -229,7 +242,15 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
-        return Promise.reject("Not implemented.");
+        let insightDatasets: InsightDataset[] = [];
+        Object.keys(this.dataset).map((id: string) => {
+            insightDatasets.push({
+                id: id,
+                kind: InsightDatasetKind.Courses,
+                numRows: this.dataset[id].length
+            });
+        });
+        return Promise.resolve(insightDatasets);
     }
 
     // helper methods
