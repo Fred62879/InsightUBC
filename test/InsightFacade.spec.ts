@@ -20,7 +20,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
-        courses: "./test/data/110.zip",
+        courses: "./test/data/courses.zip",
         courses1: "./test/data/courses1.zip",
         cpsc1100: "./test/data/cpsc1100.zip",
         cpsc1100ButBroken: "./test/data/cpsc1100ButBroken.zip",
@@ -136,7 +136,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, "something", InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset with invalid field");
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            Log.trace(typeof err);
+            expect(err.toString()).to.deep.equal("Error: Invalid base64 input, bad content length.");
         });
     });
     it("addDataset should reject dataset with emptyArrayInJson", () => {
@@ -163,22 +164,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
-    // it("addDataset should reject dataset with invalid field", () => {
-    //     const id: string = "cpsc1100ButBroken";
-    //     return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-    //         expect.fail(result, "err", "Should reject dataset with invalid field");
-    //     }).catch((err: any) => {
-    //         expect(err).to.exist.and.be.an.instanceOf(InsightError);
-    //     });
-    // });
-    // it("addDataset should reject dataset with invalid field", () => {
-    //     const id: string = "cpsc1100ButBroken";
-    //     return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-    //         expect.fail(result, "err", "Should reject dataset with invalid field");
-    //     }).catch((err: any) => {
-    //         expect(err).to.exist.and.be.an.instanceOf(InsightError);
-    //     });
-    // });
     it("addDataset should reject dataset with invalid field", () => {
         const id: string = "cpsc1100ButBroken";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
@@ -187,62 +172,24 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
-    it("addDataset should reject dataset with duplicate section field", () => {
-        const id: string = "duplicateSection";
+    it("addDataset should reject dataset with invalid field", () => {
+        const id: string = "cpsc1100ButBroken";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset with invalid field");
         }).catch((err: any) => {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
-    it("addDataset should reject dataset with invalid field tier eighty five", () => {
-        const id: string = "duplicateTierEightyFiveField";
+    it("addDataset should reject dataset with invalid field", () => {
+        const id: string = "cpsc1100ButBroken";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset with invalid field");
         }).catch((err: any) => {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
-    it("addDataset should reject dataset with excessiveKey", () => {
-        const id: string = "excessiveKey";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with invalidElementInResultArray", () => {
-        const id: string = "invalidElementInResultArray";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with invalidSectionValue", () => {
-        const id: string = "invalidSectionValue";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with invalidTierEightyfiveValue", () => {
-        const id: string = "invalidTierEightyfiveValue";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with sameCourseDifferentTitle", () => {
-        const id: string = "sameCourseDifferentTitle";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
+
+
     it("addDataset should reject dataset with random", () => {
         const id: string = "random";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
@@ -259,30 +206,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
-    it("addDataset should reject dataset with invalidYear", () => {
-        const id: string = "invalidYear";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with missingTierEightyFiveField", () => {
-        const id: string = "missingTierEightyFiveField";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
-    it("addDataset should reject dataset with negativeStddev", () => {
-        const id: string = "negativeStddev";
-        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset with invalid field");
-        }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
-        });
-    });
+
+
     it("addDataset should reject dataset with noKeyResult", () => {
         const id: string = "noKeyResult";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
@@ -297,7 +222,9 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject id that does not exist");
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            expect(err.toString()).to.deep.equal(
+                "Error: Can't read the data of 'the loaded zip file'." +
+                " Is it in a supported JavaScript type (String, Blob, ArrayBuffer, etc) ?");
         });
     });
     it("addDataset should reject encrypted dataset", () => {
@@ -305,7 +232,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject id that does not exist");
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            expect(err.toString()).to.deep.equal("Error: Encrypted zip are not supported");
         });
     });
     it("addDataset should reject emptyCoursesFolder", () => {
@@ -331,7 +258,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject id that contains underscore");
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            expect(err.toString()).to.deep.equal("Error: addDataset Invalid ID");
         });
     });
 

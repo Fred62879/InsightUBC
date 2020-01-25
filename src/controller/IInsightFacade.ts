@@ -74,10 +74,24 @@ export class InsightError extends Error {
     }
 }
 
+export class InvalidYearError extends Error {
+    constructor(...args: any[]) {
+        super(...args);
+        Error.captureStackTrace(this, InvalidYearError);
+    }
+}
+
+export class InvalidStddevError extends Error {
+    constructor(...args: any[]) {
+        super(...args);
+        Error.captureStackTrace(this, InvalidStddevError);
+    }
+}
+
 export class FoundCacheError extends Error {
     constructor(...args: any[]) {
         super(...args);
-        Error.captureStackTrace(this, InsightError);
+        Error.captureStackTrace(this, FoundCacheError);
     }
 }
 
