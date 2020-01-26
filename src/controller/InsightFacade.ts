@@ -79,26 +79,26 @@ export default class InsightFacade implements IInsightFacade {
         insightCourseDataFromZip.forEach((course: InsightCourseDataFromZip) => {
             if (this.isInsightCourseDataFromZipValid(course)) {
                 result.push({
-                    // courses_dept: course["Subject"],
-                    // courses_id: course["Course"],
-                    // courses_avg: course["Avg"],
-                    // courses_instructor: course["Professor"],
-                    // courses_title: course["Title"],
-                    // courses_pass: course["Pass"],
-                    // courses_fail: course["Fail"],
-                    // courses_audit: course["Audit"],
-                    // courses_uuid: "" + course["id"],
-                    // courses_year: parseInt(course["Year"], 10)
-                    dept: course["Subject"],
-                    id: course["Course"],
-                    avg: course["Avg"],
-                    instructor: course["Professor"],
-                    title: course["Title"],
-                    pass: course["Pass"],
-                    fail: course["Fail"],
-                    audit: course["Audit"],
-                    uuid: "" + course["id"],
-                    year: parseInt(course["Year"], 10)
+                    courses_dept: course["Subject"],
+                    courses_id: course["Course"],
+                    courses_avg: course["Avg"],
+                    courses_instructor: course["Professor"],
+                    courses_title: course["Title"],
+                    courses_pass: course["Pass"],
+                    courses_fail: course["Fail"],
+                    courses_audit: course["Audit"],
+                    courses_uuid: "" + course["id"],
+                    courses_year: parseInt(course["Year"], 10)
+                    // dept: course["Subject"],
+                    // id: course["Course"],
+                    // avg: course["Avg"],
+                    // instructor: course["Professor"],
+                    // title: course["Title"],
+                    // pass: course["Pass"],
+                    // fail: course["Fail"],
+                    // audit: course["Audit"],
+                    // uuid: "" + course["id"],
+                    // year: parseInt(course["Year"], 10)
                 });
             }
         });
