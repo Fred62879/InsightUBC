@@ -16,38 +16,37 @@ export interface ITestQuery {
     filename: string;  // This is injected when reading the file
 }
 
-/*
 describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
-        courses1: "./test/data/courses1.zip",
-        cpsc1100: "./test/data/cpsc1100.zip",
-        cpsc1100ButBroken: "./test/data/cpsc1100ButBroken.zip",
-        cpsc1100ButNoSection: "./test/data/cpsc1100ButNoSection.zip",
-        invalidFolder: "./test/data/invalidFolder.zip",
-        Not_Valid: "./test/data/Not_Valid.zip",
-        ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
-        validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
-        duplicateSection: "./test/data/duplicateSection.zip",
-        duplicateTierEightyFiveField: "./test/data/duplicateTierEightyFiveField.zip",
-        excessiveKey: "./test/data/excessiveKey.zip",
-        invalidElementInResultArray: "./test/data/invalidElementInResultArray.zip",
-        invalidSectionValue: "./test/data/invalidSectionValue.zip",
-        invalidTierEightyfiveValue: "./test/data/invalidTierEightyfiveValue.zip",
-        invalidYear: "./test/data/invalidYear.zip",
-        missingTierEightyFiveField: "./test/data/missingTierEightyFiveField.zip",
-        negativeStddev: "./test/data/negativeStddev.zip",
-        noKeyResult: "./test/data/noKeyResult.zip",
-        random: "./test/data/random.zip",
-        resultAsObject: "./test/data/resultAsObject.zip",
-        sameCourseDifferentTitle: "./test/data/sameCourseDifferentTitle.zip",
-        emptyCoursesFolder: "./test/data/emptyCoursesFolder.zip",
-        encrypted: "./test/data/encrypted.zip",
-        emptyArrayInJson: "./test/data/emptyArrayInJson.zip",
-        emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
-        emptyZip: "./test/data/emptyZip.zip",
+        // courses1: "./test/data/courses1.zip",
+        // cpsc1100: "./test/data/cpsc1100.zip",
+        // cpsc1100ButBroken: "./test/data/cpsc1100ButBroken.zip",
+        // cpsc1100ButNoSection: "./test/data/cpsc1100ButNoSection.zip",
+        // invalidFolder: "./test/data/invalidFolder.zip",
+        // Not_Valid: "./test/data/Not_Valid.zip",
+        // ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
+        // validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
+        // duplicateSection: "./test/data/duplicateSection.zip",
+        // duplicateTierEightyFiveField: "./test/data/duplicateTierEightyFiveField.zip",
+        // excessiveKey: "./test/data/excessiveKey.zip",
+        // invalidElementInResultArray: "./test/data/invalidElementInResultArray.zip",
+        // invalidSectionValue: "./test/data/invalidSectionValue.zip",
+        // invalidTierEightyfiveValue: "./test/data/invalidTierEightyfiveValue.zip",
+        // invalidYear: "./test/data/invalidYear.zip",
+        // missingTierEightyFiveField: "./test/data/missingTierEightyFiveField.zip",
+        // negativeStddev: "./test/data/negativeStddev.zip",
+        // noKeyResult: "./test/data/noKeyResult.zip",
+        // random: "./test/data/random.zip",
+        // resultAsObject: "./test/data/resultAsObject.zip",
+        // sameCourseDifferentTitle: "./test/data/sameCourseDifferentTitle.zip",
+        // emptyCoursesFolder: "./test/data/emptyCoursesFolder.zip",
+        // encrypted: "./test/data/encrypted.zip",
+        // emptyArrayInJson: "./test/data/emptyArrayInJson.zip",
+        // emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
+        // emptyZip: "./test/data/emptyZip.zip",
 
     };
     let datasets: { [id: string]: string } = {};
@@ -409,77 +408,75 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 });
 
-
- */
-/*
- * This test suite dynamically generates tests from the JSON files in test/queries.
- * You should not need to modify it; instead, add additional files to the queries directory.
- * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
- */
-describe("InsightFacade PerformQuery", () => {
-    const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
-        courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
-    };
-    let insightFacade: InsightFacade;
-    let testQueries: ITestQuery[] = [];
-
-    // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
-    before(function () {
-        Log.test(`Before: ${this.test.parent.title}`);
-
-        // Load the query JSON files under test/queries.
-        // Fail if there is a problem reading ANY query.
-        try {
-            testQueries = TestUtil.readTestQueries();
-        } catch (err) {
-            expect.fail("", "", `Failed to read one or more test queries. ${err}`);
-        }
-
-        // Load the datasets specified in datasetsToQuery and add them to InsightFacade.
-        // Will fail* if there is a problem reading ANY dataset.
-        const loadDatasetPromises: Array<Promise<string[]>> = [];
-        insightFacade = new InsightFacade();
-        for (const id of Object.keys(datasetsToQuery)) {
-            const ds = datasetsToQuery[id];
-            const data = fs.readFileSync(ds.path).toString("base64");
-            loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
-        }
-        return Promise.all(loadDatasetPromises).catch((err) => {
-            /* *IMPORTANT NOTE: This catch is to let this run even without the implemented addDataset,
-             * for the purposes of seeing all your tests run.
-             * TODO For C1, remove this catch block (but keep the Promise.all)
-             */
-            return Promise.resolve("HACK TO LET QUERIES RUN");
-        });
-    });
-
-    beforeEach(function () {
-        Log.test(`BeforeTest: ${this.currentTest.title}`);
-    });
-
-    after(function () {
-        Log.test(`After: ${this.test.parent.title}`);
-    });
-
-    afterEach(function () {
-        Log.test(`AfterTest: ${this.currentTest.title}`);
-    });
-
-    // Dynamically create and run a test for each query in testQueries
-    // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
-    it("Should run test queries", function () {
-        describe("Dynamic InsightFacade PerformQuery tests", function () {
-            for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, function (done) {
-                    insightFacade.performQuery(test.query).then((result) => {
-                        Log.test(test.filename);
-                        TestUtil.checkQueryResult(test, result, done);
-                    }).catch((err) => {
-                        Log.test(err);
-                        TestUtil.checkQueryResult(test, err, done);
-                    });
-                });
-            }
-        });
-    });
-});
+// /*
+//  * This test suite dynamically generates tests from the JSON files in test/queries.
+//  * You should not need to modify it; instead, add additional files to the queries directory.
+//  * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
+//  */
+// describe("InsightFacade PerformQuery", () => {
+//     const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
+//         courses: { path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses }
+//     };
+//     let insightFacade: InsightFacade;
+//     let testQueries: ITestQuery[] = [];
+//
+//     // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
+//     before(function () {
+//         Log.test(`Before: ${this.test.parent.title}`);
+//
+//         // Load the query JSON files under test/queries.
+//         // Fail if there is a problem reading ANY query.
+//         try {
+//             testQueries = TestUtil.readTestQueries();
+//         } catch (err) {
+//             expect.fail("", "", `Failed to read one or more test queries. ${err}`);
+//         }
+//
+//         // Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+//         // Will fail* if there is a problem reading ANY dataset.
+//         const loadDatasetPromises: Array<Promise<string[]>> = [];
+//         insightFacade = new InsightFacade();
+//         for (const id of Object.keys(datasetsToQuery)) {
+//             const ds = datasetsToQuery[id];
+//             const data = fs.readFileSync(ds.path).toString("base64");
+//             loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
+//         }
+//         return Promise.all(loadDatasetPromises).catch((err) => {
+//             /* *IMPORTANT NOTE: This catch is to let this run even without the implemented addDataset,
+//              * for the purposes of seeing all your tests run.
+//              * TODO For C1, remove this catch block (but keep the Promise.all)
+//              */
+//             return Promise.resolve("HACK TO LET QUERIES RUN");
+//         });
+//     });
+//
+//     beforeEach(function () {
+//         Log.test(`BeforeTest: ${this.currentTest.title}`);
+//     });
+//
+//     after(function () {
+//         Log.test(`After: ${this.test.parent.title}`);
+//     });
+//
+//     afterEach(function () {
+//         Log.test(`AfterTest: ${this.currentTest.title}`);
+//     });
+//
+//     // Dynamically create and run a test for each query in testQueries
+//     // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
+//     it("Should run test queries", function () {
+//         describe("Dynamic InsightFacade PerformQuery tests", function () {
+//             for (const test of testQueries) {
+//                 it(`[${test.filename}] ${test.title}`, function (done) {
+//                     insightFacade.performQuery(test.query).then((result) => {
+//                         Log.test(test.filename);
+//                         TestUtil.checkQueryResult(test, result, done);
+//                     }).catch((err) => {
+//                         Log.test(err);
+//                         TestUtil.checkQueryResult(test, err, done);
+//                     });
+//                 });
+//             }
+//         });
+//     });
+// });

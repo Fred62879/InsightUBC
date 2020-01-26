@@ -107,7 +107,7 @@ export default class QueryValid {
         if (Object.keys(mcontent).length > 1) { return mcomp + " has more than one key"; }
 
         let mkey = Object.keys(mcontent)[0];
-        let mkeyWarning = this.keyValid(mkey, mcomp, this.mfields, 0); // mKeyValid(mkey, mcomp);
+        let mkeyWarning = this.keyValid(mkey, mcomp, this.mfields, 0, 0); // mKeyValid(mkey, mcomp);
         if (mkeyWarning !== "") { return mkeyWarning; }
         if (typeof(mcontent[mkey]) !== "number") { return "Invalid value type in " + mcomp + ", should be number"; }
         return "";
@@ -120,7 +120,7 @@ export default class QueryValid {
         if (Object.keys(scontent).length > 1) { return scomp + " has more than one key"; }
 
         let skey = Object.keys(scontent)[0];
-        let skeyWarning = this.keyValid(skey, scomp, this.sfields, 0); // sKeyValid(skey, scomp);
+        let skeyWarning = this.keyValid(skey, scomp, this.sfields, 0, 0); // sKeyValid(skey, scomp);
         if (skeyWarning !== "") { return skeyWarning; }
         return this.sInputStringValid(scontent[skey]);
     }
@@ -149,17 +149,17 @@ export default class QueryValid {
         return this.filterValid(filter);
     }
 
-    private keyValid(key: any, subject: any, fields: Set<string>, record: number): string {
-        // parse mkey into mfield and id
+    private keyValid(key: any, subject: any, fields: Set<string>, record: number, incol: number): string {
+        // parse key into field and id
         let bd = this.trailID(key);
         if (bd === 0) { return "Referenced dataset cannot be empty string"; }
         if (bd === key.length) { return "Invalid key: " + key + " in " + subject; }
 
         let field = key.substring(bd + 1);
         let id = key.substring(0, bd);
-        if (record === 1) {
-            this.avaKeys.add(field);
-        }
+
+        if (record === 1) { this.avaKeys.add(field); }
+        if (incol === 1) { return this.avaKeys.has(field) ? "" : "ORDER key must be in COLUMNS"; }
 
         // validate mfield and id
         if (this.curid !== "" && this.curid !== id) { return "Cannot query more than one dataset"; }
@@ -169,16 +169,12 @@ export default class QueryValid {
         return "";
     }
 
-
     private optsValid(option: any): string {
         for (let k in option) {
             if (!this.opts.has(k)) { return "Invalid key in OPTIONS"; }
         }
-        Log.trace(option);
-        Log.trace(option["COLUMNS"]);
         for (let k of this.sopts) {
             let cur = option[k];
-            Log.trace(cur);
             if (cur === undefined) {
                 return "Does not find keyword: " + k;
             }
@@ -194,27 +190,24 @@ export default class QueryValid {
         if (!Array.isArray(col) || col.length === 0) { return "COLUMNS must be a non-MT array"; }
         for (let key of col) {
             if (typeof(key) !== "string") { return "Invalid type of COLUMN key"; }
-            let cur = this.keyValid(key, "COLUMNS", this.sfields, 1);
+            let cur = this.keyValid(key, "COLUMNS", this.sfields, 1, 0);
             if (cur !== "") {
-                cur = this.keyValid(key, "COLUMNS", this.mfields, 1);
+                cur = this.keyValid(key, "COLUMNS", this.mfields, 1, 0);
                 if (cur !== "") { return cur; }
             }
         }
         return "";
     }
 
-    private orderValid(ord: any): string {
-        if (ord === undefined) { return ""; }
-        if (typeof(ord) !== "string") { return "Invalid ORDER type"; }
+    private orderValid(okey: any): string {
+        if (okey === undefined) { return ""; }
+        if (typeof(okey) !== "string") { return "Invalid ORDER type"; }
 
-        let okey = Object.keys(ord)[0];
-        let cur = this.keyValid(okey, "OPTIONS", this.sfields, 0);
+        let cur = this.keyValid(okey, "OPTIONS", this.sfields, 0, 1);
         if (cur !== "") {
-            cur = this.keyValid(okey, "OPTIONS", this.mfields, 0);
+            cur = this.keyValid(okey, "OPTIONS", this.mfields, 0, 1);
             if (cur !== "") { return cur; }
         }
-
-        if (!this.avaKeys.has(okey)) { return "ORDER key must be in COLUMNS"; }
         return "";
     }
 }
