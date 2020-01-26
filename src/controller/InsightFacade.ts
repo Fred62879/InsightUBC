@@ -179,7 +179,6 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    // TODO: check addDataset against test
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let hasReadFromCache: boolean = false;
 
