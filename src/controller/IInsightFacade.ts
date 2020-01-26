@@ -57,16 +57,16 @@ export interface InsightCourseDataFromZip {
 // }
 
 export interface InsightCourse {
-    courses_dept: string;
-    courses_id: string;
-    courses_avg: number;
-    courses_instructor: string;
-    courses_title: string;
-    courses_pass: number;
-    courses_fail: number;
-    courses_audit: number;
-    courses_uuid: string;
-    courses_year: number;
+    dept: string;
+    id: string;
+    avg: number;
+    instructor: string;
+    title: string;
+    pass: number;
+    fail: number;
+    audit: number;
+    uuid: string;
+    year: number;
 }
 
 export enum InsightDatasetKind {
