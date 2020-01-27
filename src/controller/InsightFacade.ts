@@ -15,6 +15,7 @@ import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import * as fs from "fs-extra";
 import Queryvalid from "./QueryValid";
+import QueryPerform from "./QueryPerform";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -24,7 +25,6 @@ import Queryvalid from "./QueryValid";
 export default class InsightFacade implements IInsightFacade {
     private dataset: { [key: string]: InsightCourse[] } = {};
     private dataPath = "./src/data/";
-    // private x = {a: 1, b: 2};
     private ids = new Set<string>();
 
     constructor() {
@@ -128,42 +128,33 @@ export default class InsightFacade implements IInsightFacade {
         return new JSZip().loadAsync(content, {base64: true}).then((jszipfolder: JSZip) => {
             return jszipfolder.folder("courses");
         }).then((jszipFolder: JSZip) => {
-            // return new Promise(((resolve) => resolve()));
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
                 return new Promise(((resolve0, reject) => {
-
-                    if (file.dir) {
-                        return resolve0();
-                    }
+                    if (file.dir) { return resolve0(); }
                     return file.async("text").then((jsonString: string) => {
                         let json: { [key: string]: any };
                         try {
                             json = JSON.parse(jsonString);
                         } catch (e) {
-                            Log.trace(e);
-                            resolve0(e);
+                            Log.trace(e); resolve0(e);
                         }
+
                         let resultArray: object[];
-                        // resultArray = this.getResultArray(json);
                         try {
                             resultArray = this.getResultArray(json);
                         } catch (e) {
-                            // Log.error(e);
                             return resolve0(e);
-                            // throw e;
                         }
 
                         let courses: InsightCourse[];
                         try {
                             courses = this.courseResultArrayToInsightCourse(resultArray);
                         } catch (e) {
-                            Log.error(e);
-                            return resolve0();
+                            Log.error(e); return resolve0();
                         }
+
                         if (!this.dataset.hasOwnProperty(id)) {
-                            if (!this.dataset[id]) {
-                                this.dataset[id] = [];
-                            }
+                            if (!this.dataset[id]) { this.dataset[id] = []; }
                             hasAddedDataset = true;
                         }
                         if (!hasAddedDataset) {
@@ -180,36 +171,29 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let hasReadFromCache: boolean = false;
-
         if (!this.isIDvalid(id)) {
+            Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
         if (kind !== "courses") {
-
+            Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
 
-        this.ids.add(id); // ** added by Fred **I
-
         return this.readCache(id, content, kind).then(() => {
-            if (this.dataset[id]) {
-                hasReadFromCache = true;
-                return;
-            }
+            if (this.dataset[id]) { hasReadFromCache = true; return; }
             return this.readFromZip(id, content, kind);
         }).then(() => {
             if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
                 if (!hasReadFromCache) {
+                    this.ids.add(id);
                     let jsonToWrite = JSON.stringify(this.dataset);
-                    fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
-                        Log.error(e);
-                    });
+                    fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => { Log.error(e); });
                 }
                 return Promise.resolve(Object.keys(this.dataset));
             } else {
                 return Promise.reject(new InsightError("empty dataset"));
             }
-
         }).catch((err: any) => {
             if (err instanceof FoundCacheError) {
                 return Promise.resolve(Object.keys(this.dataset));
@@ -236,7 +220,8 @@ export default class InsightFacade implements IInsightFacade {
         if (warning !== "") {
             return Promise.reject(new InsightError(warning));
         }
-        return Promise.reject();
+        const qp: QueryPerform = new QueryPerform(this.dataset);
+        return qp.run(query);
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
