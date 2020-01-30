@@ -10,7 +10,7 @@ export default class QueryPerform {
 
     private id: string;
     private res: SelectedFields[] = [];
-    private validDataset: SelectedFields[]  = [];
+    private validDataset: SelectedFields[] = [];
     private dataset: { [key: string]: InsightCourse[] };
 
     // for filter
@@ -29,20 +29,26 @@ export default class QueryPerform {
     // return index position of underscore in key, or n if no underscore
     private trailID(key: string): number {
         let a = 0;
-        while (a < key.length && key[a] !== "_") { a++; }
+        while (a < key.length && key[a] !== "_") {
+            a++;
+        }
         return a;
     }
 
     private logicFilter(operator: string, body: any, section: any): boolean {
         if (operator === "AND") {
             for (let obj of body["AND"]) {
-                if (!this.perform(obj, section)) { return false; }
+                if (!this.perform(obj, section)) {
+                    return false;
+                }
             }
             return true;
         } else {
             assert(operator === "OR");
             for (let obj of body["OR"]) {
-                if (this.perform(obj, section)) { return true; }
+                if (this.perform(obj, section)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -72,8 +78,15 @@ export default class QueryPerform {
         let bd = this.trailID(key);
 
         let sfield = key.substring(bd + 1);
-        let str = obj[key];
-        return section[sfield] === str || str === "*" || str === "**";
+        let str: string = obj[key];
+        let regex = new RegExp(`^${str.replace("*", ".*")}$`);
+        // let testsubject = section[sfield];
+        // let test: boolean = regex.test(testsubject);
+        // if(test){
+        //     Log.warn("something");
+        // }
+
+        return section[sfield] === str || regex.test(section[sfield]);
     }
 
     private nFilter(operator: string, body: any, section: any): boolean {
@@ -107,7 +120,9 @@ export default class QueryPerform {
     private filter(query: any): void {
         let body = query["WHERE"];
         let alladd = 0;
-        if (Object.keys(body).length === 0) { alladd = 1; }
+        if (Object.keys(body).length === 0) {
+            alladd = 1;
+        }
         for (let section of this.dataset[this.id]) {
             if (alladd || this.perform(body, section)) {
                 this.validDataset.push(section);
@@ -121,7 +136,7 @@ export default class QueryPerform {
     private extract(query: any): void {
         let cols: string[] = query["OPTIONS"]["COLUMNS"];
         for (let section of this.validDataset) {
-            let obj: {[k: string]: any} = {};
+            let obj: { [k: string]: any } = {};
             for (let col of cols) {
                 let bd = this.trailID(col);
                 let field = col.substring(bd + 1);
@@ -133,7 +148,9 @@ export default class QueryPerform {
 
     private order(query: any): void {
         let ordKey = query["OPTIONS"]["ORDER"];
-        if (ordKey === undefined) { return; }
+        if (ordKey === undefined) {
+            return;
+        }
         this.res.sort((e1, e2) => e1[ordKey] - e2[ordKey]);
     }
 

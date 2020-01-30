@@ -470,7 +470,7 @@ describe("InsightFacade PerformQuery", () => {
                 it(`[${test.filename}] ${test.title}`, function (done) {
                     insightFacade.performQuery(test.query).then((result) => {
                         Log.test(test.filename);
-                        // reformatTest(test, result);
+                        reformatTest(test, result);
                         TestUtil.checkQueryResult(test, result, done);
                     }).catch((err) => {
                         Log.test(err);
@@ -484,13 +484,13 @@ describe("InsightFacade PerformQuery", () => {
 });
 
 
-// const reformatTest = (test: any, result: any) => {
-//     let filename = test.filename;
-//     delete test.filename;
-//     test.result = result;
-//     let jsonString = JSON.stringify(test);
-//     let path = "./test/" + filename;
-//     fs.writeFile("./test/" + filename, jsonString).catch((err) => {
-//         Log.trace(err);
-//     });
-// };
+const reformatTest = (test: any, result: any) => {
+    let filename = test.filename;
+    delete test.filename;
+    test.result = result;
+    let jsonString = JSON.stringify(test);
+    let path = "./test/" + filename;
+    fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+        Log.trace(err);
+    });
+};
