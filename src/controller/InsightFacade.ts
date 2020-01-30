@@ -99,7 +99,7 @@ export default class InsightFacade implements IInsightFacade {
     private isIDvalid(id: string): boolean {
         let reUnderscore = /^.*_.*$/;
         let reOnlySpaces = /^\s*$/;
-        if (reUnderscore.test(id) || reOnlySpaces.test(id)) {
+        if (reUnderscore.test(id) || reOnlySpaces.test(id) || this.dataset[id]) {
             return false;
         }
         return true;

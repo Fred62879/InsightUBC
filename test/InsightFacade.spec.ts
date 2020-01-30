@@ -304,11 +304,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             return insightFacade.addDataset(id2, datasets[id2], InsightDatasetKind.Courses);
         }).then((result: string[]) => {
-            // expect(result).to.deep.equal(expected2);
+            expect(result).to.deep.equal(expected2);
         }).then(() => {
             return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
         }).then((result: string[]) => {
-            // expect.fail(result, "err", "Should reject a duplicate id");
+            expect.fail(result, "err", "Should reject a duplicate id");
         }).catch((err: any) => {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
