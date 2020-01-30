@@ -99,10 +99,17 @@ export default class InsightFacade implements IInsightFacade {
     private isIDvalid(id: string): boolean {
         let reUnderscore = /^.*_.*$/;
         let reOnlySpaces = /^\s*$/;
-        if (reUnderscore.test(id) || reOnlySpaces.test(id) || this.dataset[id]) {
+        if (reUnderscore.test(id) || reOnlySpaces.test(id)) {
             return false;
         }
         return true;
+    }
+
+    private hasID(id: string): boolean {
+        if (this.dataset[id]) {
+            return true;
+        }
+        return false;
     }
 
     private readCache(id: string, content: string, kind: InsightDatasetKind):
@@ -131,15 +138,17 @@ export default class InsightFacade implements IInsightFacade {
         }).then((jszipFolder: JSZip) => {
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
                 return new Promise(((resolve0, reject) => {
-                    if (file.dir) { return resolve0(); }
+                    if (file.dir) {
+                        return resolve0();
+                    }
                     return file.async("text").then((jsonString: string) => {
                         let json: { [key: string]: any };
                         try {
                             json = JSON.parse(jsonString);
                         } catch (e) {
-                            Log.trace(e); resolve0(e);
+                            Log.trace(e);
+                            resolve0(e);
                         }
-
                         let resultArray: object[];
                         try {
                             resultArray = this.getResultArray(json);
@@ -151,11 +160,14 @@ export default class InsightFacade implements IInsightFacade {
                         try {
                             courses = this.courseResultArrayToInsightCourse(resultArray);
                         } catch (e) {
-                            Log.error(e); return resolve0();
+                            Log.error(e);
+                            return resolve0();
                         }
 
                         if (!this.dataset.hasOwnProperty(id)) {
-                            if (!this.dataset[id]) { this.dataset[id] = []; }
+                            if (!this.dataset[id]) {
+                                this.dataset[id] = [];
+                            }
                             hasAddedDataset = true;
                         }
                         if (!hasAddedDataset) {
@@ -172,7 +184,7 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let hasReadFromCache: boolean = false;
-        if (!this.isIDvalid(id)) {
+        if (!this.isIDvalid(id) || this.hasID(id)) {
             Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
@@ -182,14 +194,19 @@ export default class InsightFacade implements IInsightFacade {
         }
 
         return this.readCache(id, content, kind).then(() => {
-            if (this.dataset[id]) { hasReadFromCache = true; return; }
+            if (this.dataset[id]) {
+                hasReadFromCache = true;
+                return;
+            }
             return this.readFromZip(id, content, kind);
         }).then(() => {
             if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
                 if (!hasReadFromCache) {
                     this.ids.add(id);
                     let jsonToWrite = JSON.stringify(this.dataset);
-                    fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => { Log.error(e); });
+                    fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
+                        Log.error(e);
+                    });
                 }
                 return Promise.resolve(Object.keys(this.dataset));
             } else {
@@ -206,7 +223,7 @@ export default class InsightFacade implements IInsightFacade {
 
     public removeDataset(id: string): Promise<string> {
         if (!this.isIDvalid(id)) {
-            return Promise.reject(new InsightError("addDataset Invalid ID"));
+            return Promise.reject(new InsightError("removeDataset Invalid ID"));
         }
         if (this.dataset[id]) {
             delete this.dataset[id];
@@ -215,7 +232,7 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.reject(new NotFoundError("dataset not found"));
     }
 
-    public performQuery(query: any): Promise <any[]> {
+    public performQuery(query: any): Promise<any[]> {
         const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
         const warning = qv.queryValid(query);
         if (warning !== "") {
