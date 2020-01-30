@@ -24,7 +24,8 @@ import QueryPerform from "./QueryPerform";
  */
 export default class InsightFacade implements IInsightFacade {
     private dataset: { [key: string]: InsightCourse[] } = {};
-    private dataPath = "./src/data/";
+    private dataPath = "./data/";
+    // TODO query argument
     private ids = new Set<string>();
 
     constructor() {
@@ -215,7 +216,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise <any[]> {
-        const qv: Queryvalid = new Queryvalid(this.ids);
+        const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
         const warning = qv.queryValid(query);
         if (warning !== "") {
             return Promise.reject(new InsightError(warning));
