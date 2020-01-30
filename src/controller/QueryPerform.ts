@@ -33,24 +33,18 @@ export default class QueryPerform {
         return a;
     }
 
-    // get dataset id of current query
-    private getID(query: any): void {
-        let key = query["OPTIONS"]["COLUMNS"][0];
-        let bd = this.trailID(key);
-        this.id = key.substring(0, bd);
-        assert(this.dataset.hasOwnProperty(this.id));
-    }
-
     private logicFilter(operator: string, body: any, section: any): boolean {
         if (operator === "AND") {
             for (let obj of body["AND"]) {
                 if (!this.perform(obj, section)) { return false; }
             }
+            return true;
         } else {
             assert(operator === "OR");
             for (let obj of body["OR"]) {
                 if (this.perform(obj, section)) { return true; }
             }
+            return false;
         }
     }
 
@@ -66,7 +60,7 @@ export default class QueryPerform {
             return section[mfield] > num;
         } else if (operator === "LT") {
             return section[mfield] < num;
-        } else if (operator === "") {
+        } else if (operator === "EQ") {
             return section[mfield] === num;
         }
         return false;
@@ -79,7 +73,7 @@ export default class QueryPerform {
 
         let sfield = key.substring(bd + 1);
         let str = obj[key];
-        return section[sfield] === str;
+        return section[sfield] === str || str === "*" || str === "**";
     }
 
     private nFilter(operator: string, body: any, section: any): boolean {
@@ -101,19 +95,27 @@ export default class QueryPerform {
         }
     }
 
+    // get dataset id of current query
+    private getID(query: any): void {
+        let key = query["OPTIONS"]["COLUMNS"][0];
+        let bd = this.trailID(key);
+        this.id = key.substring(0, bd);
+        assert(this.dataset.hasOwnProperty(this.id));
+    }
+
     //
     private filter(query: any): void {
         let body = query["WHERE"];
-        Log.trace(body);
+        let alladd = 0;
+        if (Object.keys(body).length === 0) { alladd = 1; }
         for (let section of this.dataset[this.id]) {
-            if (this.perform(body, section)) {
+            if (alladd || this.perform(body, section)) {
                 this.validDataset.push(section);
             }
         }
-
-        for (let section of this.validDataset) {
-            Log.trace(section);
-        }
+        // for (let section of this.validDataset) {
+        //     Log.trace(section);
+        // }
     }
 
     private extract(query: any): void {
@@ -139,9 +141,11 @@ export default class QueryPerform {
     public run(query: any): Promise<any[]> {
         this.getID(query);   // get current dataset id
         this.filter(query);  // get valid sections and store in validDataset
-        this.extract(query); // leave on required fields for sections in validDataset
+        if (this.validDataset.length >= 5000) {
+            return Promise.reject(new ResultTooLargeError("More than 5000 results"));
+        }
 
-        if (this.res.length >= 5000) { return Promise.reject(new ResultTooLargeError("More than 5000 results")); }
+        this.extract(query); // leave on required fields for sections in validDataset
         this.order(query);   // order required fields
         return Promise.resolve(this.res);
     }

@@ -45,7 +45,6 @@ export default class QueryValid {
     }
 
     public queryValid(query: any): string {
-        Log.trace(query);
         // check whether keys other than "WHERE" and "OPTIONS" are present
         for (let k in query) {
             if (!this.keys.has(k)) { return "Irrelevant keys present!"; }
@@ -58,8 +57,10 @@ export default class QueryValid {
             // if (Object.keys(cur).length > 1) { return k + " has more than one keys"; } -$
         }
         let body = query.WHERE, opts = query.OPTIONS;
-        const filterWarning = this.filterValid(body);
-        if (filterWarning !== "" && Object.keys(body).length > 0) { return filterWarning; }
+        let filterWarning: string = "";
+        if (Object.keys(body).length !== 0) { filterWarning = this.filterValid(body); }
+        if (filterWarning !== "") { return filterWarning; }
+
         const optsWarning = this.optsValid(opts);
         if (optsWarning !== "") { return optsWarning; }
         return "";
@@ -115,7 +116,6 @@ export default class QueryValid {
 
     private scompValid(scontent: any, scomp: string): string {
         if (Array.isArray(scontent) || typeof(scontent) !== "object") { return scomp + " must be an object"; }
-        // TODO: when two keys are the same, CAMPUS EXPLORER does not report error
         if (Object.keys(scontent).length === 0) { return scomp + " should have 1 key, has 0"; }
         if (Object.keys(scontent).length > 1) { return scomp + " has more than one key"; }
 
