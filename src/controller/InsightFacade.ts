@@ -200,7 +200,7 @@ export default class InsightFacade implements IInsightFacade {
                 return Promise.resolve(Object.keys(this.dataset));
             }
             Log.trace(err);
-            return Promise.reject(err);
+            return Promise.reject(new InsightError(err));
         });
     }
 

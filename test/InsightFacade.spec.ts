@@ -95,6 +95,25 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     });
 
+    it("Should add 2 valid dataset", function () {
+        const id: string = "courses";
+        const id2: string = "cpsc1100";
+        const expected: string[] = [id];
+        const expected2: string[] = [id, id2];
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect(result).to.deep.equal(expected);
+        }).catch((err: any) => {
+            expect.fail(err, expected, "Should not have rejected");
+        }).then(() => {
+            return insightFacade.addDataset(id2, datasets[id], InsightDatasetKind.Courses);
+        }).then((result: string[]) => {
+            expect(result).to.deep.equal(expected2);
+        }).catch((err: any) => {
+            expect.fail(err, expected, "Should not have rejected");
+        });
+
+    });
+
     it("addDataset should reject empty dataset", () => {
         const id: string = "cpsc1100ButNoSection";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
@@ -127,7 +146,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect(result).to.deep.equal([id]);
         }).catch((err: any) => {
-            expect.fail(err, "err", "should resolve dataset with 1 valid folder");
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
 
@@ -137,7 +156,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect.fail(result, "err", "Should reject dataset with invalid field");
         }).catch((err: any) => {
             Log.trace(typeof err);
-            expect(err.toString()).to.deep.equal("Error: Invalid base64 input, bad content length.");
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
     it("addDataset should reject dataset with emptyArrayInJson", () => {
@@ -222,9 +241,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject id that does not exist");
         }).catch((err: any) => {
-            expect(err.toString()).to.deep.equal(
-                "Error: Can't read the data of 'the loaded zip file'." +
-                " Is it in a supported JavaScript type (String, Blob, ArrayBuffer, etc) ?");
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
     it("addDataset should reject encrypted dataset", () => {
@@ -232,7 +249,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject id that does not exist");
         }).catch((err: any) => {
-            expect(err.toString()).to.deep.equal("Error: Encrypted zip are not supported");
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
     it("addDataset should reject emptyCoursesFolder", () => {
