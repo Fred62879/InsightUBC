@@ -16,6 +16,6 @@
             }
         }
     },
-    "isQueryValid": true,
+    "isQueryValid": false,
     "result": "InsightError"
 }

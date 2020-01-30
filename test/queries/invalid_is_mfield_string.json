@@ -22,7 +22,7 @@
             "ORDER": "courses_avg"
         }
     },
-    "isQueryValid": true,
+    "isQueryValid": false,
     "result": [
         {
             "courses_dept": "epse",

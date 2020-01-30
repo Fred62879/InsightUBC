@@ -18,6 +18,6 @@
             "ORDER1": "courses_dept"
         }
     },
-    "isQueryValid": true,
+    "isQueryValid": false,
     "result": "InsightError"
 }
