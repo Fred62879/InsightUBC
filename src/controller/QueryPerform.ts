@@ -78,14 +78,16 @@ export default class QueryPerform {
         let bd = this.trailID(key);
 
         let sfield = key.substring(bd + 1);
-        let str: string = obj[key];
-        let regex = new RegExp(`^${str.replace("*", ".*")}$`);
+        // let str: string = obj[key];
+        let str = "**";
+        let regex = new RegExp(`${str.replace("*", "\\*")}$`);
+        // Log.test(str.replace("*", "\*"));
         // let testsubject = section[sfield];
         // let test: boolean = regex.test(testsubject);
         // if(test){
         //     Log.warn("something");
         // }
-
+        // return section[sfield] === str || str === "*" || str === "**";
         return section[sfield] === str || regex.test(section[sfield]);
     }
 

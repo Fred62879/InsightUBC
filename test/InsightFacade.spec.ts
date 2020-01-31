@@ -16,6 +16,7 @@ export interface ITestQuery {
     filename: string;  // This is injected when reading the file
 }
 
+
 describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the 'before' hook.
@@ -427,6 +428,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
     */
 
+    /*
     it("Should add one dataset - courses", function () {
         const id: string = "courses";
         expected.push(id);
@@ -633,6 +635,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(err).to.be.instanceOf(InsightError);
         });
     });
+     */
 });
 
 /*
