@@ -213,13 +213,17 @@ export default class InsightFacade implements IInsightFacade {
                 return Promise.reject(new InsightError("empty dataset"));
             }
         }).catch((err: any) => {
-            if (err instanceof FoundCacheError) {
-                return Promise.resolve(Object.keys(this.dataset));
-            }
+            // if (err instanceof FoundCacheError) {
+            //     return Promise.resolve(Object.keys(this.dataset));
+            // }
             Log.trace(err);
             return Promise.reject(new InsightError(err));
         });
     }
+
+    // private deleteCacheFile(id: string): Promise<boolean> {
+    //     return new Promise<boolean>(true);
+    // }
 
     public removeDataset(id: string): Promise<string> {
         if (!this.isIDvalid(id)) {

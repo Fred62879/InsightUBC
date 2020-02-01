@@ -79,14 +79,19 @@ export default class QueryPerform {
 
         let sfield = key.substring(bd + 1);
         let str: string = obj[key];
-        let regex = new RegExp(`^${str.replace("*", ".*")}$`);
+        let regex = new RegExp(`^${str.replace(/\*/g, ".*")}$`);
         // let testsubject = section[sfield];
         // let test: boolean = regex.test(testsubject);
         // if(test){
         //     Log.warn("something");
         // }
-
-        return section[sfield] === str || regex.test(section[sfield]);
+        // if(str.indexOf("*")>-1){
+        //     Log.test(str);
+        //     let test:boolean = regex.test(str);
+        //     Log.test(test);
+        // }
+        // return section[sfield] === str || str === "*" || str === "**";
+        return regex.test(section[sfield]);
     }
 
     private nFilter(operator: string, body: any, section: any): boolean {
