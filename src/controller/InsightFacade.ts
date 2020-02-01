@@ -41,7 +41,7 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace(e);
             throw new InvalidYearError();
         }
-        if (year < 1900 || year > new Date().getFullYear()) {
+        if (year < 1900 || year > new Date().getFullYear() || isNaN(year)) {
             throw new InvalidYearError(`Year ${year} is not a valid year`);
         }
         let stddev: number;

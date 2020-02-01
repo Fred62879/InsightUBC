@@ -21,6 +21,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        onlyOneValidSection: "./test/data/onlyOneValidSection.zip",
         courses1: "./test/data/courses1.zip",
         cpsc1100: "./test/data/cpsc1100.zip",
         cpsc1100ButBroken: "./test/data/cpsc1100ButBroken.zip",
@@ -47,7 +48,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         emptyArrayInJson: "./test/data/emptyArrayInJson.zip",
         emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
         emptyZip: "./test/data/emptyZip.zip",
-
+        noValidSection: "./test/data/noValidSection.zip"
     };
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
@@ -95,6 +96,17 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     });
 
+    it("Should add a dataset with only one valid section", function () {
+        const id: string = "onlyOneValidSection";
+        const expected: string[] = [id];
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect(result).to.deep.equal(expected);
+        }).catch((err: any) => {
+            expect.fail(err, expected, "Should not have rejected");
+        });
+
+    });
+
     it("Should add 2 valid dataset", function () {
         const id: string = "courses";
         const id2: string = "cpsc1100";
@@ -128,6 +140,16 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset with invalid folder");
         }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+
+    it("addDataset should reject dataset with no valid section", () => {
+        const id: string = "noValidSection";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "addDataset should reject dataset with no valid section");
+        }).catch((err: any) => {
+            Log.trace(err);
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
