@@ -7,8 +7,6 @@ import {
     InsightDataset,
     InsightDatasetKind,
     InsightError,
-    InvalidStddevError,
-    InvalidYearError,
     NotFoundError
 } from "./IInsightFacade";
 import * as JSZip from "jszip";
@@ -34,21 +32,25 @@ export default class InsightFacade implements IInsightFacade {
 
     // Validate whether course json file fits InsightCourse interface
     private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
-        let year: number;
-        try {
-            year = Number(course.Year);
-        } catch (e) {
-            Log.trace(e);
-            throw new InvalidYearError();
+        let year: number = Number(course.Year);
+        if (year > 1900 && year < new Date().getFullYear() && !isNaN(year) &&
+            this.isPositiveNumber([course.Stddev, course.Avg, course.Pass, course.Fail, course.Audit, course.id]) &&
+            this.isString([course.Subject, course.Professor, course.Title, course.Course])) {
+            return true;
         }
-        if (year < 1900 || year > new Date().getFullYear() || isNaN(year)) {
-            throw new InvalidYearError(`Year ${year} is not a valid year`);
-        }
-        let stddev: number;
-        if (!(typeof course.Stddev === "number") || course.Stddev < 0) {
-            throw new InvalidStddevError();
-        }
-        return true;
+        return false;
+    }
+
+    private isPositiveNumber(nums: any[]): boolean {
+        return nums.reduce((accumulator, num: any) => {
+            return (typeof num === "number") && num >= 0 && accumulator;
+        }, true);
+    }
+
+    private isString(strs: any[]): boolean {
+        return strs.reduce((accumulator, str: any) => {
+            return (typeof str === "string") && accumulator;
+        }, true);
     }
 
     private getResultArray(json: { [key: string]: any }): object[] {
@@ -157,10 +159,10 @@ export default class InsightFacade implements IInsightFacade {
                             return resolve0();
                         }
                         if (!this.dataset.hasOwnProperty(id)) {
-                            if (!this.dataset[id]) {
+                            if (!this.dataset[id] && courses.length > 0) {
                                 this.dataset[id] = [];
+                                hasAddedDataset = true;
                             }
-                            hasAddedDataset = true;
                         }
                         if (!hasAddedDataset) {
                             return resolve0();
@@ -210,7 +212,6 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
-
         return this.readAllCacheToMemory().then(() => {
             if (this.dataset[id]) {
                 return Promise.resolve(Object.keys(this.dataset));
@@ -252,7 +253,6 @@ export default class InsightFacade implements IInsightFacade {
             delete this.dataset[id];
             hasDeletedFromMemory = true;
         }
-
         return this.deleteCacheFile(id).then((hasDeleted: boolean) => {
             return Promise.resolve(id);
         }).catch((err) => {
@@ -261,7 +261,6 @@ export default class InsightFacade implements IInsightFacade {
             }
             return Promise.reject(new NotFoundError(err));
         });
-
     }
 
     // For testing only public clearMemory() {this.dataset = {};}
