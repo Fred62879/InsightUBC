@@ -704,7 +704,6 @@ describe("InsightFacade PerformQuery", () => {
                         TestUtil.checkQueryResult(test, result, done);
                     }).catch((err) => {
                         Log.test(err);
-                        // Log.trace(err);
                         TestUtil.checkQueryResult(test, err, done);
                     });
                 });
@@ -719,8 +718,7 @@ const reformatTest = (test: any, result: any) => {
     delete test.filename;
     test.result = result;
     let jsonString = JSON.stringify(test);
-    let path = "./test/" + filename;
-    fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+    fs.writeFile(filename, jsonString).catch((err) => {
         Log.trace(err);
     });
 };

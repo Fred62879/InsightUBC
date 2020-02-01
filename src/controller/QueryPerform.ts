@@ -79,9 +79,8 @@ export default class QueryPerform {
 
         let sfield = key.substring(bd + 1);
         let str: string = obj[key];
-        if (str === "**") { str = "*"; }
+        let regex = new RegExp(`^${str.replace(/\*/g, ".*")}$`);
 
-        let regex = new RegExp(`^${str.replace("*", ".*")}$`);
         // Log.test(str.replace("*", ".*"));
         // let testsubject = section[sfield];
         // let test: boolean = regex.test(testsubject);
