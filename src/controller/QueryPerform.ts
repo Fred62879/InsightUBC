@@ -86,12 +86,15 @@ export default class QueryPerform {
         //     Log.warn("something");
         // }
         // if(str.indexOf("*")>-1){
+        //     let test1 = section[sfield];
         //     Log.test(str);
+        //     Log.test(test1);
         //     let test:boolean = regex.test(str);
         //     Log.test(test);
         // }
         // return section[sfield] === str || str === "*" || str === "**";
         return regex.test(section[sfield]);
+        // return section[sfield] === str || regex.test(section[sfield]);
     }
 
     private nFilter(operator: string, body: any, section: any): boolean {

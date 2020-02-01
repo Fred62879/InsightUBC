@@ -236,10 +236,26 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
+    it("addDataset should reject id that contains underscore", () => {
+        const id: string = "Not_Valid";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject id that contains underscore");
+        }).catch((err: any) => {
+            expect(err.toString()).to.deep.equal("Error: addDataset Invalid ID");
+        });
+    });
     it("removeDataset should reject id that contains underscore", () => {
         const id: string = "Not_Valid";
         return insightFacade.removeDataset(id).then((result: string) => {
             expect.fail(result, "err", "Should reject id that contains underscore");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+    it("addDataset should reject id that only contains spaces", () => {
+        const id: string = "  ";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject id that only contains spaces");
         }).catch((err: any) => {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
@@ -270,6 +286,35 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
 
+    });
+    it("Should reject a duplicate id v2", function () {
+        const id: string = "courses";
+        const id2: string = "courses1";
+        // const expected: string[] = [id];
+        const expected2: string[] = [id, id2];
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            return insightFacade.addDataset(id2, datasets[id2], InsightDatasetKind.Courses);
+        }).then((result: string[]) => {
+            // expect(result).to.deep.equal(expected2);
+            return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        }).then((result: string[]) => {
+            // expect.fail(result, "err", "Should reject a duplicate id");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+
+    });
+
+    it("Should remove an added dataset", () => {
+        const id: string = "courses1";
+        const expected: string[] = [id];
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            // expect(result).to.deep.equal(expected);
+        }).then(() => {
+            insightFacade.removeDataset(id).then((result: string) => {
+                expect(result).to.deep.equal(id);
+            });
+        }).catch((err: any) => expect.fail(err, id, "Should have removed"));
     });
 
     it("Should remove an added dataset v2", () => {
@@ -412,9 +457,9 @@ describe("InsightFacade PerformQuery", () => {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
                     insightFacade.performQuery(test.query).then((result) => {
-                        Log.test(test.filename);
+                        // Log.test(test.filename);
                         // reformatTest(test, result);
-                        Log.test(result.length);
+                        // Log.test(result.length);
                         TestUtil.checkQueryResult(test, result, done);
                     }).catch((err) => {
                         // Log.test(err);
