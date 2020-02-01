@@ -210,12 +210,13 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
-        return this.readCache(id, kind).then(() => {
+
+        return this.readAllCacheToMemory().then(() => {
             if (this.dataset[id]) {
-                hasReadFromCache = true;
-                return;
+                return Promise.resolve(Object.keys(this.dataset));
+            } else {
+                return this.readFromZip(id, content, kind);
             }
-            return this.readFromZip(id, content, kind);
         }).then(() => {
             if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
                 if (!hasReadFromCache) {
