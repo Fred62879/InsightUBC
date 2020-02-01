@@ -134,7 +134,7 @@ export default class InsightFacade implements IInsightFacade {
         }).then((jszipFolder: JSZip) => {
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
                 return new Promise(((resolve0, reject) => {
-                    if (file.dir) {
+                    if (file.dir || !(file.name.indexOf("courses") > -1)) {
                         return resolve0();
                     }
                     return file.async("text").then((jsonString: string) => {

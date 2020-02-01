@@ -114,6 +114,14 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     });
 
+    it("Should add a dataset with wrong dir name", function () {
+        const id: string = "invalidFolder";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "should not have accepted");
+        }).catch((err: any) => {
+            expect(err).to.be.instanceOf(InsightError);
+        });
+    });
 
     it("addDataset should reject dataset with invalid folder", () => {
         const id: string = "cpsc1100ButNoSection";
