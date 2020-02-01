@@ -503,7 +503,7 @@ describe("InsightFacade PerformQuery", () => {
     });
 });
 
-
+// This function generate query json test files. Result is populated using our perform query result.
 // const reformatTest = (test: any, result: any) => {
 //     let filename = test.filename;
 //     delete test.filename;
