@@ -266,13 +266,13 @@ export default class InsightFacade implements IInsightFacade {
     // For testing only public clearMemory() {this.dataset = {};}
 
     public performQuery(query: any): Promise<any[]> {
-        const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
-        const warning = qv.queryValid(query);
-        if (warning !== "") {
-            return Promise.reject(new InsightError(warning));
-        }
-        const qp: QueryPerform = new QueryPerform(this.dataset);
         return this.readAllCacheToMemory().then(() => {
+            const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
+            const warning = qv.queryValid(query);
+            if (warning !== "") {
+                return Promise.reject(new InsightError(warning));
+            }
+            const qp: QueryPerform = new QueryPerform(this.dataset);
             return qp.run(query);
         });
     }
