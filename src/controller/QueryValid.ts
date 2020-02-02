@@ -43,8 +43,7 @@ export default class QueryValid {
             if (!this.keys.has(k)) {
                 return "Irrelevant keys present!";
             }
-        }
-        // check whether WHERE and OPTIONS are present
+        }// check whether WHERE and OPTIONS are present
         for (let k of this.skeys) {
             let cur = query[k];
             if (cur === undefined) {
@@ -52,8 +51,7 @@ export default class QueryValid {
             }
             if (Array.isArray(cur) || typeof (cur) !== "object") {
                 return k + " must be an object";
-            }
-            // if (Object.keys(cur).length > 1) { return k + " has more than one keys"; } -$
+            }// if (Object.keys(cur).length > 1) { return k + " has more than one keys"; } -$
         }
         let body = query.WHERE, opts = query.OPTIONS;
         let filterWarning: string = "";
@@ -119,7 +117,10 @@ export default class QueryValid {
             if (!Object.keys(subf).length) {
                 return logic + " has zero key!";
             }
-            return this.filterValid(subf);
+            let isValid: string = this.filterValid(subf);
+            if (isValid !== "") {
+                return isValid;
+            }
         }
         return "";
     }
