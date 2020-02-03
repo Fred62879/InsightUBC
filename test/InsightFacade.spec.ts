@@ -382,7 +382,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
             return insightFacade.removeDataset(id);
         }).then((result: string) => {
             expect(result).to.deep.equal(id);
-        }).catch((err: any) => expect.fail(err, id, "Should have removed"));
+            return insightFacade.removeDataset(id);
+        }).then((result: string) => {
+            expect.fail(id, "err", "should reject an id that does not exist");
+        }).catch((err: any) => expect(err).to.exist.and.be.an.instanceOf(NotFoundError));
     });
 
     it("Should reject removing a dataset that does not exist", () => {
