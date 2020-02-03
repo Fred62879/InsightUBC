@@ -50,6 +50,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
         emptyZip: "./test/data/emptyZip.zip",
         noValidSection: "./test/data/noValidSection.zip",
+        courses1InvalidDir: "./test/data/courses1InvalidDir.zip",
         // Fred's tests
         // valid datasets and id
         coursesSmall: "./test/data/coursesSmall.zip",
@@ -164,6 +165,16 @@ describe("InsightFacade Add/Remove Dataset", function () {
         const id: string = "noValidSection";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "addDataset should reject dataset with no valid section");
+        }).catch((err: any) => {
+            Log.trace(err);
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+
+    it("addDataset should reject dataset without courses dir", () => {
+        const id: string = "courses1InvalidDir";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "addDataset should reject dataset with no courses dir");
         }).catch((err: any) => {
             Log.trace(err);
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
