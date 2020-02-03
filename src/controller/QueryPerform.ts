@@ -79,14 +79,8 @@ export default class QueryPerform {
 
         let sfield = key.substring(bd + 1);
         let str: string = obj[key];
-        let regex = new RegExp(`^${str.replace("*", ".*")}$`);
-        // let testsubject = section[sfield];
-        // let test: boolean = regex.test(testsubject);
-        // if(test){
-        //     Log.warn("something");
-        // }
-
-        return section[sfield] === str || regex.test(section[sfield]);
+        let regex = new RegExp(`^${str.replace(/\*/g, ".*")}$`);
+        return regex.test(section[sfield]);
     }
 
     private nFilter(operator: string, body: any, section: any): boolean {

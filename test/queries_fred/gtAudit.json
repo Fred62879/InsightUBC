@@ -1,0 +1,20 @@
+{
+    "title": "gt audit",
+    "query": {
+	"WHERE": {
+	    "GT": {
+		"courses_audit": 20
+	    }
+	},
+	"OPTIONS": {
+	    "COLUMNS": [
+		"courses_instructor",
+		"courses_year",
+		"courses_title"
+	    ],
+	    "ORDER": "courses_year"
+	}
+    },
+    "isQueryValid": true,
+    "result":[{"courses_instructor":"","courses_year":1900,"courses_title":"eval src evidenc"},{"courses_instructor":"","courses_year":1900,"courses_title":"eval src evidenc"},{"courses_instructor":"","courses_year":1900,"courses_title":"machine learn i"}]
+}
