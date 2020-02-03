@@ -39,6 +39,9 @@ export default class QueryValid {
 
     public queryValid(query: any): string {
         // check whether keys other than "WHERE" and "OPTIONS" are present
+        if (!query) {
+            return "Null query";
+        }
         for (let k in query) {
             if (!this.keys.has(k)) {
                 return "Irrelevant keys present!";
@@ -187,7 +190,6 @@ export default class QueryValid {
         }
         return "";
     }
-
     private negValid(filter: any): string {
         if (Array.isArray(filter) || typeof (filter) !== "object") {
             return "Not must be object";
@@ -200,7 +202,6 @@ export default class QueryValid {
         }
         return this.filterValid(filter);
     }
-
     private keyValid(key: any, subject: any, fields: Set<string>, record: number, incol: number): string {
         // parse key into field and id
         let bd = this.trailID(key);
@@ -231,7 +232,6 @@ export default class QueryValid {
         }
         return "";
     }
-
     private optsValid(option: any): string {
         for (let k in option) {
             if (!this.opts.has(k)) {
@@ -273,7 +273,6 @@ export default class QueryValid {
         }
         return "";
     }
-
     private orderValid(okey: any): string {
         if (okey === undefined) {
             return "";

@@ -50,6 +50,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
         emptyZip: "./test/data/emptyZip.zip",
         noValidSection: "./test/data/noValidSection.zip",
+        courses1InvalidDir: "./test/data/courses1InvalidDir.zip",
         // Fred's tests
         // valid datasets and id
         coursesSmall: "./test/data/coursesSmall.zip",
@@ -137,6 +138,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }).then((result: string[]) => {
             expect(result).to.deep.equal(expected2);
         }).catch((err: any) => {
+            Log.trace(err);
             expect.fail(err, expected, "Should not have rejected");
         });
 
@@ -170,11 +172,22 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
+    it("addDataset should reject dataset without courses dir", () => {
+        const id: string = "courses1InvalidDir";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "addDataset should reject dataset with no courses dir");
+        }).catch((err: any) => {
+            Log.trace(err);
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+
     it("addDataset should resolve dataset with 1 valid file", () => {
         const id: string = "ValidAndInvalidFile";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect(result).to.deep.equal([id]);
         }).catch((err: any) => {
+            Log.trace(err);
             expect.fail(err, "err", "should resolve dataset with 1 valid file");
         });
     });
@@ -184,6 +197,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect(result).to.deep.equal([id]);
         }).catch((err: any) => {
+            Log.trace(err);
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
@@ -355,12 +369,14 @@ describe("InsightFacade Add/Remove Dataset", function () {
         const id: string = "courses1";
         const expected: string[] = [id];
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
-            // expect(result).to.deep.equal(expected);
-        }).then(() => {
-            insightFacade.removeDataset(id).then((result: string) => {
-                expect(result).to.deep.equal(id);
-            });
-        }).catch((err: any) => expect.fail(err, id, "Should have removed"));
+            expect(result).to.deep.equal(expected);
+            return insightFacade.removeDataset(id);
+        }).then((result: string) => {
+            expect(result).to.deep.equal(id);
+        }).catch((err: any) => {
+            Log.trace(err);
+            expect.fail(err, id, "Should have removed");
+        });
     });
 
     it("Should remove an added dataset v2", () => {
@@ -371,14 +387,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
             return insightFacade.removeDataset(id);
         }).then((result: string) => {
             expect(result).to.deep.equal(id);
-        }).catch((err: any) => expect.fail(err, id, "Should have removed"));
+            return insightFacade.removeDataset(id);
+        }).then((result: string) => {
+            expect.fail(id, "err", "should reject an id that does not exist");
+        }).catch((err: any) => expect(err).to.exist.and.be.an.instanceOf(NotFoundError));
     });
 
     it("Should reject removing a dataset that does not exist", () => {
-        const id: string = "courses";
+        const id: string = "doNotExist";
         return insightFacade.removeDataset(id).then((result: string) => {
             expect.fail(id, "err", "should reject an id that does not exist");
         }).catch((err: any) => {
+            Log.trace(err);
             expect(err).to.exist.and.be.an.instanceOf(NotFoundError);
         });
     });
@@ -626,7 +646,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
 
-    //// Local tests
+    // Local tests
     // it("Should list all cached dataset", () => {
     //     return insightFacade.listDatasets().then((insightDatasets: InsightDataset[]) => {
     //         expect(insightDatasets[0].id).to.deep.equal("110");
@@ -637,7 +657,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     //         expect.fail(err, "", "Should always resolve");
     //     });
     // });
-
+    //
     // it("Should reject removing a dataset that does not exist", () => {
     //     const id: string = "courses";
     //     return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then(() => {
@@ -685,7 +705,8 @@ describe("InsightFacade PerformQuery", () => {
         for (const id of Object.keys(datasetsToQuery)) {
             const ds = datasetsToQuery[id];
             const data = fs.readFileSync(ds.path).toString("base64");
-            loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
+            loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
+            // loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
         }
         return Promise.all(loadDatasetPromises);
     });
@@ -735,3 +756,10 @@ describe("InsightFacade PerformQuery", () => {
 //         Log.trace(err);
 //     });
 // };
+function deleteCacheFile(id: string): Promise<boolean> {
+    return fs.unlink("./data/" + id + ".json").then(() => {
+        return Promise.resolve(true);
+    }).catch((err) => {
+        return Promise.resolve(err);
+    });
+}
