@@ -132,11 +132,11 @@ export default class InsightFacade implements IInsightFacade {
     private readFromZip(id: string, content: string, kind: InsightDatasetKind) {
         let hasAddedDataset: boolean = false;
         return new JSZip().loadAsync(content, {base64: true}).then((jszipfolder: JSZip) => {
-            return jszipfolder.folder("courses");
+            return jszipfolder.folder(InsightDatasetKind.Courses);
         }).then((jszipFolder: JSZip) => {
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
                 return new Promise(((resolve0, reject) => {
-                    if (file.dir || !new RegExp(`${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
+                    if (file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
                         return resolve0();
                     }
                     return file.async("text").then((jsonString: string) => {
