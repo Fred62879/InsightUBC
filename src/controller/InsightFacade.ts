@@ -25,6 +25,7 @@ export default class InsightFacade implements IInsightFacade {
     // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
+
     // private static counter: number = 0;
 
 
@@ -37,26 +38,23 @@ export default class InsightFacade implements IInsightFacade {
     // Validate whether course json file fits InsightCourse interface
     private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
         let year: number = Number(course.Year);
-        if (year > 1900 && year < new Date().getFullYear() && !isNaN(year) &&
+        if (year >= 1900 && year < new Date().getFullYear() && !isNaN(year) &&
             this.isPositiveNumber([course.Stddev, course.Avg, course.Pass, course.Fail, course.Audit, course.id]) &&
             this.isString([course.Subject, course.Professor, course.Title, course.Course])) {
             return true;
         }
         return false;
     }
-
     private isPositiveNumber(nums: any[]): boolean {
         return nums.reduce((accumulator, num: any) => {
             return (typeof num === "number") && num >= 0 && accumulator;
         }, true);
     }
-
     private isString(strs: any[]): boolean {
         return strs.reduce((accumulator, str: any) => {
             return (typeof str === "string") && accumulator;
         }, true);
     }
-
     private getResultArray(json: { [key: string]: any }): object[] {
         if (json.result instanceof Array && json.result.length > 0) {
             return json.result;
@@ -81,6 +79,9 @@ export default class InsightFacade implements IInsightFacade {
         }
         let result: InsightCourse[] = [];
         insightCourseDataFromZip.forEach((course: InsightCourseDataFromZip) => {
+            if (course.Section === "overall") {
+                course.Year = "1900";
+            }
             if (this.isInsightCourseDataFromZipValid(course)) {
                 result.push({
                     dept: course["Subject"],
@@ -98,7 +99,6 @@ export default class InsightFacade implements IInsightFacade {
         });
         return result;
     }
-
     private isIDvalid(id: string): boolean {
         let reUnderscore = /^.*_.*$/;
         let reOnlySpaces = /^\s*$/;
@@ -107,14 +107,12 @@ export default class InsightFacade implements IInsightFacade {
         }
         return true;
     }
-
     private hasID(id: string): boolean {
         if (this.ids.has(id) || this.dataset[id]) {
             return true;
         }
         return false;
     }
-
     private readCache(id: string, kind: InsightDatasetKind):
         Promise<void | { [key: string]: InsightCourse[] }> {
         return fs.readFile(this.dataPath + id + ".json").then((file: Buffer) => {
@@ -132,7 +130,6 @@ export default class InsightFacade implements IInsightFacade {
             }
         });
     }
-
     private readFromZip(id: string, content: string, kind: InsightDatasetKind) {
         let hasAddedDataset: boolean = false;
         return new JSZip().loadAsync(content, {base64: true}).then((jszipfolder: JSZip) => {
@@ -181,6 +178,7 @@ export default class InsightFacade implements IInsightFacade {
             return this.ids.add(id);
         });
     }
+
     private getListofCache(): Promise<string[]> {
         return fs.readdir(this.dataPath).then((files: string[]) => {
             let ids: string[] = files.map((file) => {
