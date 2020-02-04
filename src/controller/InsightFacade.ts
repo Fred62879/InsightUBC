@@ -38,12 +38,10 @@ export default class InsightFacade implements IInsightFacade {
     // Validate whether course json file fits InsightCourse interface
     private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
         let year: number = Number(course.Year);
-        if (year >= 1900 && year < new Date().getFullYear() && !isNaN(year) &&
+        return year >= 1900 && year < new Date().getFullYear() && !isNaN(year) &&
             this.isPositiveNumber([course.Stddev, course.Avg, course.Pass, course.Fail, course.Audit, course.id]) &&
-            this.isString([course.Subject, course.Professor, course.Title, course.Course])) {
-            return true;
-        }
-        return false;
+            this.isString([course.Subject, course.Professor, course.Title, course.Course, course.Year,
+                course.Section]);
     }
     private isPositiveNumber(nums: any[]): boolean {
         return nums.reduce((accumulator, num: any) => {
@@ -102,7 +100,7 @@ export default class InsightFacade implements IInsightFacade {
     private isIDvalid(id: string): boolean {
         let reUnderscore = /^.*_.*$/;
         let reOnlySpaces = /^\s*$/;
-        if (reUnderscore.test(id) || reOnlySpaces.test(id)) {
+        if (reUnderscore.test(id) || reOnlySpaces.test(id) || typeof id !== "string") {
             return false;
         }
         return true;
@@ -179,7 +177,7 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private getListofCache(): Promise<string[]> {
+    private storeCacheIdsToIdset(): Promise<string[]> {
         return fs.readdir(this.dataPath).then((files: string[]) => {
             let ids: string[] = files.map((file) => {
                 return file.replace(".json", "");
@@ -193,7 +191,7 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
     private readAllCacheToMemory(): Promise<void[] | boolean> {
-        return this.getListofCache().then((ids: string[]) => {
+        return this.storeCacheIdsToIdset().then((ids: string[]) => {
             return Promise.all(ids.map((id: string) => {
                 return new Promise((resolve, reject) => {
                     if (this.hasID(id)) {
@@ -217,7 +215,7 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
-        return this.getListofCache().then(() => {
+        return this.storeCacheIdsToIdset().then(() => {
             if (this.hasID(id)) {
                 return Promise.reject(new InsightError("addDataset found in memory or cache"));
             } else {
