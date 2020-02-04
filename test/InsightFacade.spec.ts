@@ -31,19 +31,23 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Not_Valid: "./test/data/Not_Valid.zip",
         ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
         validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
-        duplicateSection: "./test/data/duplicateSection.zip",
-        duplicateTierEightyFiveField: "./test/data/duplicateTierEightyFiveField.zip",
-        excessiveKey: "./test/data/excessiveKey.zip",
-        invalidElementInResultArray: "./test/data/invalidElementInResultArray.zip",
-        invalidSectionValue: "./test/data/invalidSectionValue.zip",
-        invalidTierEightyfiveValue: "./test/data/invalidTierEightyfiveValue.zip",
-        invalidYear: "./test/data/invalidYear.zip",
-        missingTierEightyFiveField: "./test/data/missingTierEightyFiveField.zip",
-        negativeStddev: "./test/data/negativeStddev.zip",
+        room: "./test/data/room.zip",
+        coursesdirIncourseDir: "./test/data/coursesdirIncourseDir.zip",
+        nestedcourse: "./test/data/nestedcourse.zip",
+        empryField: "./test/data/empryField.zip",
+        // duplicateSection: "./test/data/duplicateSection.zip",
+        // duplicateTierEightyFiveField: "./test/data/duplicateTierEightyFiveField.zip",
+        // excessiveKey: "./test/data/excessiveKey.zip",
+        // invalidElementInResultArray: "./test/data/invalidElementInResultArray.zip",
+        // invalidSectionValue: "./test/data/invalidSectionValue.zip",
+        // invalidTierEightyfiveValue: "./test/data/invalidTierEightyfiveValue.zip",
+        // invalidYear: "./test/data/invalidYear.zip",
+        // missingTierEightyFiveField: "./test/data/missingTierEightyFiveField.zip",
+        // negativeStddev: "./test/data/negativeStddev.zip",
         noKeyResult: "./test/data/noKeyResult.zip",
         random: "./test/data/random.zip",
         resultAsObject: "./test/data/resultAsObject.zip",
-        sameCourseDifferentTitle: "./test/data/sameCourseDifferentTitle.zip",
+        // sameCourseDifferentTitle: "./test/data/sameCourseDifferentTitle.zip",
         emptyCoursesFolder: "./test/data/emptyCoursesFolder.zip",
         encrypted: "./test/data/encrypted.zip",
         emptyArrayInJson: "./test/data/emptyArrayInJson.zip",
@@ -157,6 +161,50 @@ describe("InsightFacade Add/Remove Dataset", function () {
         const id: string = "cpsc1100ButNoSection";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset with invalid folder");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+    // https://piazza.com/class/k4svpbqwszi20c?cid=465
+    it("addDataset should resolve dataset with courses in courses dir", () => {
+        const id: string = "coursesdirIncourseDir";
+        const expected: string[] = [id];
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect(result).to.deep.equal(expected);
+        }).catch((err: any) => {
+            Log.trace(err);
+            expect.fail(err, expected, "Should not have rejected");
+        });
+    });
+    it("addDataset should reject dataset with courses dir nested in random dir", () => {
+        const id: string = "nestedcourse";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject courses dir nested in random dir");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+    it("addDataset should reject dataset with empryField", () => {
+        const id: string = "empryField";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject courses empryField");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+    it("addDataset should reject null ID", () => {
+        const id: string = "courses";
+        return insightFacade.addDataset(null, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject null id");
+        }).catch((err: any) => {
+            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+        });
+    });
+
+    it("addDataset should reject dataset room type", () => {
+        const id: string = "room";
+        return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms).then((result: string[]) => {
+            expect.fail(result, "err", "Should reject dataset type room");
         }).catch((err: any) => {
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
