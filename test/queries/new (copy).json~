@@ -1,0 +1,5 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "isQueryValid": false,
+    "result": []
+}

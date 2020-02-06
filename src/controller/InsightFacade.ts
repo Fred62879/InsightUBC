@@ -25,8 +25,12 @@ export default class InsightFacade implements IInsightFacade {
     private dataPath = "./data/";
     private ids = new Set<string>();
 
-    constructor() {
+    // private static counter: number = 0;
 
+
+    constructor() {
+        // InsightFacade.counter++;
+        // this.dataPath = `${this.dataPath}${InsightFacade.counter}/`;
         Log.trace("InsightFacadeImpl::init()");
     }
 
@@ -34,26 +38,21 @@ export default class InsightFacade implements IInsightFacade {
     // Validate whether course json file fits InsightCourse interface
     private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
         let year: number = Number(course.Year);
-        if (year > 1900 && year < new Date().getFullYear() && !isNaN(year) &&
+        return year >= 1900 && year < new Date().getFullYear() && !isNaN(year) &&
             this.isPositiveNumber([course.Stddev, course.Avg, course.Pass, course.Fail, course.Audit, course.id]) &&
-            this.isString([course.Subject, course.Professor, course.Title, course.Course])) {
-            return true;
-        }
-        return false;
+            this.isString([course.Subject, course.Professor, course.Title, course.Course, course.Year,
+                course.Section]);
     }
-
     private isPositiveNumber(nums: any[]): boolean {
         return nums.reduce((accumulator, num: any) => {
             return (typeof num === "number") && num >= 0 && accumulator;
         }, true);
     }
-
     private isString(strs: any[]): boolean {
         return strs.reduce((accumulator, str: any) => {
             return (typeof str === "string") && accumulator;
         }, true);
     }
-
     private getResultArray(json: { [key: string]: any }): object[] {
         if (json.result instanceof Array && json.result.length > 0) {
             return json.result;
@@ -78,6 +77,9 @@ export default class InsightFacade implements IInsightFacade {
         }
         let result: InsightCourse[] = [];
         insightCourseDataFromZip.forEach((course: InsightCourseDataFromZip) => {
+            if (course.Section === "overall") {
+                course.Year = "1900";
+            }
             if (this.isInsightCourseDataFromZipValid(course)) {
                 result.push({
                     dept: course["Subject"],
@@ -95,23 +97,20 @@ export default class InsightFacade implements IInsightFacade {
         });
         return result;
     }
-
     private isIDvalid(id: string): boolean {
         let reUnderscore = /^.*_.*$/;
         let reOnlySpaces = /^\s*$/;
-        if (reUnderscore.test(id) || reOnlySpaces.test(id)) {
+        if (reUnderscore.test(id) || reOnlySpaces.test(id) || typeof id !== "string") {
             return false;
         }
         return true;
     }
-
     private hasID(id: string): boolean {
-        if (this.dataset[id]) {
+        if (this.ids.has(id) || this.dataset[id]) {
             return true;
         }
         return false;
     }
-
     private readCache(id: string, kind: InsightDatasetKind):
         Promise<void | { [key: string]: InsightCourse[] }> {
         return fs.readFile(this.dataPath + id + ".json").then((file: Buffer) => {
@@ -129,15 +128,14 @@ export default class InsightFacade implements IInsightFacade {
             }
         });
     }
-
     private readFromZip(id: string, content: string, kind: InsightDatasetKind) {
         let hasAddedDataset: boolean = false;
         return new JSZip().loadAsync(content, {base64: true}).then((jszipfolder: JSZip) => {
-            return jszipfolder.folder("courses");
+            return jszipfolder.folder(InsightDatasetKind.Courses);
         }).then((jszipFolder: JSZip) => {
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
                 return new Promise(((resolve0, reject) => {
-                    if (file.dir || !(file.name.indexOf("courses") > -1)) {
+                    if (file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
                         return resolve0();
                     }
                     return file.async("text").then((jsonString: string) => {
@@ -174,22 +172,28 @@ export default class InsightFacade implements IInsightFacade {
                     });
                 }));
             }));
+        }).then(() => {
+            return this.ids.add(id);
         });
     }
 
-    private getListofCache(): Promise<string[]> {
+    private storeCacheIdsToIdset(): Promise<string[]> {
         return fs.readdir(this.dataPath).then((files: string[]) => {
-            return Promise.resolve(files);
+            let ids: string[] = files.map((file) => {
+                return file.replace(".json", "");
+            });
+            for (let id of ids) {
+                this.ids.add(id);
+            }
+            return Promise.resolve(ids);
         }).catch((err) => {
             return Promise.reject(err);
         });
     }
-
     private readAllCacheToMemory(): Promise<void[] | boolean> {
-        return this.getListofCache().then((filePath: string[]) => {
-            return Promise.all(filePath.map((file: string) => {
+        return this.storeCacheIdsToIdset().then((ids: string[]) => {
+            return Promise.all(ids.map((id: string) => {
                 return new Promise((resolve, reject) => {
-                    let id = file.replace(".json", "");
                     if (this.hasID(id)) {
                         return resolve(true);
                     }
@@ -203,17 +207,8 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private deleteCacheFile(id: string): Promise<boolean> {
-        return fs.unlink(this.dataPath + id + ".json").then(() => {
-            return Promise.resolve(true);
-        }).catch((err) => {
-            return Promise.reject(err);
-        });
-    }
-
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-        let hasReadFromCache: boolean = false;
-        if (!this.isIDvalid(id) || this.hasID(id)) {
+        if (!this.isIDvalid(id)) {
             Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
@@ -221,27 +216,35 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
-        return this.readAllCacheToMemory().then(() => {
-            if (this.dataset[id]) {
-                return Promise.resolve(Object.keys(this.dataset));
+        return this.storeCacheIdsToIdset().then(() => {
+            if (this.hasID(id)) {
+                return Promise.reject(new InsightError("addDataset found in memory or cache"));
             } else {
                 return this.readFromZip(id, content, kind);
             }
         }).then(() => {
             if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
-                if (!hasReadFromCache) {
-                    this.ids.add(id);
-                    let jsonToWrite = JSON.stringify(this.dataset);
-                    fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
-                        Log.error(e);
-                    });
-                }
-                return Promise.resolve(Object.keys(this.dataset));
+                let jsonToWrite = JSON.stringify({[id]: this.dataset[id]});
+                fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
+                    Log.error(e);
+                    // return Promise.reject(e);
+                });
+                return Promise.resolve(Array.from(this.ids));
             } else {
                 return Promise.reject(new InsightError("empty dataset"));
             }
         }).catch((err: any) => {
             return Promise.reject(new InsightError(err));
+        });
+    }
+
+    private deleteCacheFile(id: string): Promise<boolean> {
+        return fs.unlink(this.dataPath + id + ".json").then(() => {
+            this.ids.delete(id);
+            delete this.dataset[id];
+            return Promise.resolve(true);
+        }).catch((err) => {
+            return Promise.reject(err);
         });
     }
 
@@ -252,20 +255,20 @@ export default class InsightFacade implements IInsightFacade {
         let hasDeletedFromMemory = false;
         if (this.dataset[id]) {
             delete this.dataset[id];
+            this.ids.delete(id);
             hasDeletedFromMemory = true;
         }
         return this.deleteCacheFile(id).then((hasDeleted: boolean) => {
-            return Promise.resolve(id);
+            if (hasDeleted) {
+                return Promise.resolve(id);
+            }
         }).catch((err) => {
             if (hasDeletedFromMemory) {
                 return Promise.resolve(id);
             }
             return Promise.reject(new NotFoundError(err));
         });
-    }
-
-    // For testing only
-    public clearMemory() { this.dataset = {}; }
+    }// For testing only public clearMemory() {this.dataset = {};}
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {
@@ -293,6 +296,5 @@ export default class InsightFacade implements IInsightFacade {
         }).catch((err) => {
             return Promise.reject(new InsightError(err));
         });
-
     }
 }

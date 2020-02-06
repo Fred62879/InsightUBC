@@ -1,0 +1,23 @@
+{
+    "title": "and followed by an object rather than non-empty array",
+    "query": {
+	"WHERE": {
+	    "AND": [
+		{
+		    "GT": {},
+		    "LT": {}
+		}
+	    ]
+	},
+	"OPTIONS": {
+	    "COLUMNS": [
+		"courses_dept",
+		"courses_avg"
+	    ],
+	    "ORDER": "courses_avg"
+	}
+    },
+
+    "isQueryValid": false,
+    "result": "InsightError"
+}
