@@ -22,14 +22,15 @@ import QueryPerform from "./QueryPerform";
  */
 export default class InsightFacade implements IInsightFacade {
     private dataset: { [key: string]: InsightCourse[] } = {};
-    // private dataPath = "./src/data/";
     private dataPath = "./data/";
     private ids = new Set<string>();
 
     constructor() {
+
         Log.trace("InsightFacadeImpl::init()");
     }
 
+    // helper methods
     // Validate whether course json file fits InsightCourse interface
     private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
         let year: number = Number(course.Year);
@@ -202,6 +203,14 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
+    private deleteCacheFile(id: string): Promise<boolean> {
+        return fs.unlink(this.dataPath + id + ".json").then(() => {
+            return Promise.resolve(true);
+        }).catch((err) => {
+            return Promise.reject(err);
+        });
+    }
+
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let hasReadFromCache: boolean = false;
         if (!this.isIDvalid(id) || this.hasID(id)) {
@@ -236,14 +245,6 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private deleteCacheFile(id: string): Promise<boolean> {
-        return fs.unlink(this.dataPath + id + ".json").then(() => {
-            return Promise.resolve(true);
-        }).catch((err) => {
-            return Promise.reject(err);
-        });
-    }
-
     public removeDataset(id: string): Promise<string> {
         if (!this.isIDvalid(id)) {
             return Promise.reject(new InsightError("removeDataset Invalid ID"));
@@ -263,7 +264,8 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    // For testing only public clearMemory() {this.dataset = {};}
+    // For testing only
+    public clearMemory() { this.dataset = {}; }
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {

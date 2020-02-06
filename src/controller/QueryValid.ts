@@ -40,10 +40,9 @@ export default class QueryValid {
     public queryValid(query: any): string {
         // check whether keys other than "WHERE" and "OPTIONS" are present
         for (let k in query) {
-            if (!this.keys.has(k)) {
-                return "Irrelevant keys present!";
-            }
-        }// check whether WHERE and OPTIONS are present
+            if (!this.keys.has(k)) { return "Irrelevant keys present!"; }
+        }
+        // check whether WHERE and OPTIONS are present
         for (let k of this.skeys) {
             let cur = query[k];
             if (cur === undefined) {
@@ -58,10 +57,11 @@ export default class QueryValid {
         if (Object.keys(body).length !== 0) {
             filterWarning = this.filterValid(body);
         }
+        // body invalid
         if (filterWarning !== "") {
             return filterWarning;
         }
-
+        // options invalid
         const optsWarning = this.optsValid(opts);
         if (optsWarning !== "") {
             return optsWarning;
@@ -70,16 +70,10 @@ export default class QueryValid {
     }
 
     private filterValid(body: any): string {
-        let operator: string = "";
-        for (let k in body) {
-            if (!this.operator.has(k)) {
-                return "Invalid filter key: " + k;
-            }
-            if (operator !== "") {
-                return "Filter has more than one keys";
-            } // -$
-            operator = k;
-        }
+        if (Object.keys(body).length !== 1) { return "Filter should have only one key"; }
+        let operator = Object.keys(body)[0];
+
+        // check filter validity
         if (this.logic.has(operator)) {
             const logicWarning = this.logicValid(body[operator], operator);
             if (logicWarning !== "") {
@@ -101,22 +95,22 @@ export default class QueryValid {
                 return negWarning;
             }
         } else {
-            return "Invalid!";
+            return "Filter key Invalid!";
         }
         return "";
     }
 
     private logicValid(filter: any, logic: string): string {
         if (!Array.isArray(filter) || filter.length === 0) {
-            return logic + " must be an non-MT Array";
+            return logic + " must be a non-MT Array";
         }
         for (let subf of filter) {
             if (Array.isArray(subf) || typeof (subf) !== "object") {
                 return logic + " array must contain objects";
             }
-            if (!Object.keys(subf).length) {
-                return logic + " has zero key!";
-            }
+            // if (Object.keys(subf).length === 0) {
+            //     return logic + " has zero key!";
+            // }
             let isValid: string = this.filterValid(subf);
             if (isValid !== "") {
                 return isValid;
@@ -266,9 +260,7 @@ export default class QueryValid {
             let cur = this.keyValid(key, "COLUMNS", this.sfields, 1, 0);
             if (cur !== "") {
                 cur = this.keyValid(key, "COLUMNS", this.mfields, 1, 0);
-                if (cur !== "") {
-                    return cur;
-                }
+                if (cur !== "") { return cur; }
             }
         }
         return "";
@@ -296,4 +288,3 @@ export default class QueryValid {
         return "";
     }
 }
-
