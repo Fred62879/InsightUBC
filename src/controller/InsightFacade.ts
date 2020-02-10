@@ -181,9 +181,7 @@ export default class InsightFacade implements IInsightFacade {
             let ids: string[] = files.map((file) => {
                 return file.replace(".json", "");
             });
-            for (let id of ids) {
-                this.ids.add(id);
-            }
+            for (let id of ids) { this.ids.add(id); }
             return Promise.resolve(ids);
         }).catch((err) => {
             return Promise.reject(err);
@@ -194,9 +192,7 @@ export default class InsightFacade implements IInsightFacade {
         return this.storeCacheIdsToIdset().then((ids: string[]) => {
             return Promise.all(ids.map((id: string) => {
                 return new Promise((resolve, reject) => {
-                    if (this.hasID(id)) {
-                        return resolve(true);
-                    }
+                    if (this.hasID(id)) { return resolve(true); }
                     return resolve(this.readCache(id, InsightDatasetKind.Courses));
                 });
             }));
@@ -209,12 +205,9 @@ export default class InsightFacade implements IInsightFacade {
 
     //
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-        if (!this.isIDvalid(id)) {
-            return Promise.reject(new InsightError("addDataset Invalid ID"));
-        }
-        if (kind !== "courses") {
-            return Promise.reject(new InsightError("addDataset Invalid kind"));
-        }
+        if (!this.isIDvalid(id)) { return Promise.reject(new InsightError("addDataset Invalid ID")); }
+        if (kind !== "courses") { return Promise.reject(new InsightError("addDataset Invalid kind")); }
+
         return this.storeCacheIdsToIdset().then(() => {
             if (this.hasID(id)) {
                 return Promise.reject(new InsightError("addDataset found in memory or cache"));
@@ -276,9 +269,7 @@ export default class InsightFacade implements IInsightFacade {
         return this.readAllCacheToMemory().then(() => {
             const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
             const warning = qv.queryValid(query);
-            if (warning !== "") {
-                return Promise.reject(new InsightError(warning));
-            }
+            if (warning !== "") { return Promise.reject(new InsightError(warning)); }
             const qp: QueryPerform = new QueryPerform(this.dataset);
             return qp.run(query);
         });
