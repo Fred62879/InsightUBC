@@ -26,8 +26,6 @@ export default class InsightFacade implements IInsightFacade {
     private ids = new Set<string>();
 
     // private static counter: number = 0;
-
-
     constructor() {
         // InsightFacade.counter++;
         // this.dataPath = `${this.dataPath}${InsightFacade.counter}/`;
@@ -128,6 +126,7 @@ export default class InsightFacade implements IInsightFacade {
             }
         });
     }
+
     private readFromZip(id: string, content: string, kind: InsightDatasetKind) {
         let hasAddedDataset: boolean = false;
         return new JSZip().loadAsync(content, {base64: true}).then((jszipfolder: JSZip) => {
@@ -190,6 +189,7 @@ export default class InsightFacade implements IInsightFacade {
             return Promise.reject(err);
         });
     }
+
     private readAllCacheToMemory(): Promise<void[] | boolean> {
         return this.storeCacheIdsToIdset().then((ids: string[]) => {
             return Promise.all(ids.map((id: string) => {
@@ -207,13 +207,12 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
+    //
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         if (!this.isIDvalid(id)) {
-            Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
         if (kind !== "courses") {
-            Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
         return this.storeCacheIdsToIdset().then(() => {
@@ -268,7 +267,10 @@ export default class InsightFacade implements IInsightFacade {
             }
             return Promise.reject(new NotFoundError(err));
         });
-    }// For testing only public clearMemory() {this.dataset = {};}
+    }
+
+    // For testing only
+    // public clearMemory() {this.dataset = {};}
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {

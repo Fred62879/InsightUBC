@@ -1086,9 +1086,6 @@ describe("InsightFacade PerformQuery", () => {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
                     insightFacade.performQuery(test.query).then((result) => {
-                        // Log.test(test.filename);
-                        // reformatTest(test, result);
-                        // Log.test(result.length);
                         TestUtil.checkQueryResult(test, result, done);
                     }).catch((err) => {
                         TestUtil.checkQueryResult(test, err, done);
