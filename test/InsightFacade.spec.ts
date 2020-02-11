@@ -727,71 +727,65 @@ describe("InsightFacade Add/Remove Dataset", function () {
  * You should not need to modify it; instead, add additional files to the queries directory.
  * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
  */
-// describe("InsightFacade PerformQuery", () => {
-//     const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
-//         courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
-//     };
-//     let insightFacade: InsightFacade;
-//     let testQueries: ITestQuery[] = [];
-//
-//     // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
-//     before(function () {
-//         Log.test(`Before: ${this.test.parent.title}`);
-//
-//         // Load the query JSON files under test/queries.
-//         // Fail if there is a problem reading ANY query.
-//         try {
-//             testQueries = TestUtil.readTestQueries();
-//         } catch (err) {
-//             expect.fail("", "", `Failed to read one or more test queries. ${err}`);
-//         }
-//
-//         // Load the datasets specified in datasetsToQuery and add them to InsightFacade.
-//         // Will fail* if there is a problem reading ANY dataset.
-//         const loadDatasetPromises: Array<Promise<string[]>> = [];
-//         insightFacade = new InsightFacade();
-//         for (const id of Object.keys(datasetsToQuery)) {
-//             const ds = datasetsToQuery[id];
-//             const data = fs.readFileSync(ds.path).toString("base64");
-//             loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
-//             // loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
-//         }
-//         return Promise.all(loadDatasetPromises);
-//     });
-//
-//     beforeEach(function () {
-//         Log.test(`BeforeTest: ${this.currentTest.title}`);
-//     });
-//
-//     after(function () {
-//         Log.test(`After: ${this.test.parent.title}`);
-//     });
-//
-//     afterEach(function () {
-//         Log.test(`AfterTest: ${this.currentTest.title}`);
-//     });
-//
-//     // Dynamically create and run a test for each query in testQueries
-//     // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
-//     it("Should run test queries", function () {
-//         describe("Dynamic InsightFacade PerformQuery tests", function () {
-//             for (const test of testQueries) {
-//                 it(`[${test.filename}] ${test.title}`, function (done) {
-//                     insightFacade.performQuery(test.query).then((result) => {
-//                         // Log.test(test.filename);
-//                         // reformatTest(test, result);
-//                         // Log.test(result.length);
-//                         TestUtil.checkQueryResult(test, result, done);
-//                     }).catch((err) => {
-//                         // Log.test(err);
-//                         // Log.trace(err);
-//                         TestUtil.checkQueryResult(test, err, done);
-//                     });
-//                 });
-//             }
-//         });
-//     });
-// });
+describe("InsightFacade PerformQuery", () => {
+    const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
+        courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
+    };
+    let insightFacade: InsightFacade;
+    let testQueries: ITestQuery[] = [];
+
+    // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
+    before(function () {
+        Log.test(`Before: ${this.test.parent.title}`);
+
+        // Load the query JSON files under test/queries.
+        // Fail if there is a problem reading ANY query.
+        try {
+            testQueries = TestUtil.readTestQueries();
+        } catch (err) {
+            expect.fail("", "", `Failed to read one or more test queries. ${err}`);
+        }
+
+        // Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+        // Will fail* if there is a problem reading ANY dataset.
+        const loadDatasetPromises: Array<Promise<string[]>> = [];
+        insightFacade = new InsightFacade();
+        for (const id of Object.keys(datasetsToQuery)) {
+            const ds = datasetsToQuery[id];
+            const data = fs.readFileSync(ds.path).toString("base64");
+            // loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
+            loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
+        }
+        return Promise.all(loadDatasetPromises);
+    });
+
+    beforeEach(function () {
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
+    });
+
+    after(function () {
+        Log.test(`After: ${this.test.parent.title}`);
+    });
+
+    afterEach(function () {
+        Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    // Dynamically create and run a test for each query in testQueries.
+    // Creates an extra "test" called "Should run test queries" as a byproduct.
+    it("Should run test queries", function () {
+        describe("Dynamic InsightFacade PerformQuery tests", function () {
+            for (const test of testQueries) {
+                it(`[${test.filename}] ${test.title}`, function (done) {
+                    const resultChecker = TestUtil.getQueryChecker(test, done);
+                    insightFacade.performQuery(test.query)
+                        .then(resultChecker)
+                        .catch(resultChecker);
+                });
+            }
+        });
+    });
+});
 
 // This function generate query json test files. Result is populated using our perform query result.
 // const reformatTest = (test: any, result: any) => {
