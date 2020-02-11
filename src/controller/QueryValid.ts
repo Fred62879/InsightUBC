@@ -139,7 +139,6 @@ export default class QueryValid {
         if (Object.keys(mcontent).length > 1) {
             return mcomp + " has more than one key";
         }
-
         let mkey = Object.keys(mcontent)[0];
         let mkeyWarning = this.keyValid(mkey, mcomp, this.mfields, 0, 0); // mKeyValid(mkey, mcomp);
         if (mkeyWarning !== "") {
@@ -161,7 +160,6 @@ export default class QueryValid {
         if (Object.keys(scontent).length > 1) {
             return scomp + " has more than one key";
         }
-
         let skey = Object.keys(scontent)[0];
         let skeyWarning = this.keyValid(skey, scomp, this.sfields, 0, 0); // sKeyValid(skey, scomp);
         if (skeyWarning !== "") {
@@ -190,6 +188,7 @@ export default class QueryValid {
         }
         return "";
     }
+
     private negValid(filter: any): string {
         if (Array.isArray(filter) || typeof (filter) !== "object") {
             return "Not must be object";
@@ -202,6 +201,7 @@ export default class QueryValid {
         }
         return this.filterValid(filter);
     }
+
     private keyValid(key: any, subject: any, fields: Set<string>, record: number, incol: number): string {
         // parse key into field and id
         let bd = this.trailID(key);
@@ -232,6 +232,7 @@ export default class QueryValid {
         }
         return "";
     }
+
     private optsValid(option: any): string {
         for (let k in option) {
             if (!this.opts.has(k)) {
@@ -273,6 +274,7 @@ export default class QueryValid {
         }
         return "";
     }
+
     private orderValid(okey: any): string {
         if (okey === undefined) {
             return "";
@@ -284,7 +286,6 @@ export default class QueryValid {
         if (!this.mfields.has(keyWithoutTypeName) && !this.sfields.has(keyWithoutTypeName)) {
             return "OrderValid: field does not exist";
         }
-
         let cur = this.keyValid(okey, "OPTIONS", this.sfields, 0, 1);
         if (cur !== "") {
             cur = this.keyValid(okey, "OPTIONS", this.mfields, 0, 1);
