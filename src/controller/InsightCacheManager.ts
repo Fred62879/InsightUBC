@@ -3,7 +3,9 @@ import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import Log from "../Util";
 import InsightValidator from "./InsightValidator";
+import * as parse5 from "parse5";
 import {rejects} from "assert";
+import {Document} from "parse5";
 
 export default class InsightCacheManager {
 
@@ -57,7 +59,7 @@ export default class InsightCacheManager {
         let hasAddedDataset: boolean = false;
         let jszipFolder = jszipRootDir.folder(InsightDatasetKind.Courses);
         return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
-            if (file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
+            if (InsightValidator.isNotAvalidCourseFilePath(file)) {
                 return Promise.resolve("Not a valid valid path");
             } else {
                 return file.async("text");
@@ -100,9 +102,20 @@ export default class InsightCacheManager {
         });
     }
 
-    private static readRoomJSZip() {
+    private static readRoomJSZip(jszipRootDir: JSZip, id: string) {
         let dataset: { [key: string]: InsightCourse[] } = {};
-        return dataset;
+        let indexHTML: JSZipObject = jszipRootDir.file("rooms/index.htm");
+        if (indexHTML) {
+
+            return indexHTML.async("text").then((htmlString: string) => {
+                const document: Document = parse5.parse(htmlString, {scriptingEnabled: true});
+                // const table = document.childNodes[1];
+            }).then(() => {
+                return dataset;
+            });
+        } else {
+            return Promise.reject(new InsightError("Index not found"));
+        }
     }
 
     // REQUIRE: kind === courses or kind === room
@@ -112,7 +125,7 @@ export default class InsightCacheManager {
             if (kind === InsightDatasetKind.Courses) {
                 return this.readCourseJSZip(jszipRootDir, id);
             } else if (kind === InsightDatasetKind.Rooms) {
-                return this.readRoomJSZip();
+                return this.readRoomJSZip(jszipRootDir, id);
             } else {
                 // unrreachble
                 Promise.reject("Unreachable");

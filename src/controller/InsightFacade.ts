@@ -98,7 +98,7 @@ export default class InsightFacade implements IInsightFacade {
             // Log.trace(1);
             return Promise.reject(new InsightError("duplicate id"));
         }
-        if (kind !== "courses") {
+        if (!InsightValidator.isValidDatasetKind(kind)) {
             Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }

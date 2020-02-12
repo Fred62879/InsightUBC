@@ -31,7 +31,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Not_Valid: "./test/data/Not_Valid.zip",
         ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
         validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
-        room: "./test/data/room.zip",
+        room: "./test/data/rooms.zip",
         coursesdirIncourseDir: "./test/data/coursesdirIncourseDir.zip",
         nestedcourse: "./test/data/nestedcourse.zip",
         empryField: "./test/data/empryField.zip",
@@ -206,6 +206,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms).then((result: string[]) => {
             expect.fail(result, "err", "Should reject dataset type room");
         }).catch((err: any) => {
+            Log.trace(err);
             expect(err).to.exist.and.be.an.instanceOf(InsightError);
         });
     });
