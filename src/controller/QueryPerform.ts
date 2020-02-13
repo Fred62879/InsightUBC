@@ -1,6 +1,7 @@
 import {InsightCourse, ResultTooLargeError} from "./IInsightFacade";
 import Log from "../Util";
 import * as assert from "assert";
+import {QueryUtils} from "./QueryUtils";
 
 export interface SelectedFields {
     [key: string]: any;
@@ -12,6 +13,7 @@ export default class QueryPerform {
     private res: SelectedFields[] = [];
     private validDataset: SelectedFields[] = [];
     private dataset: { [key: string]: InsightCourse[] };
+    private qu = new QueryUtils();
 
     // for filter
     private logic = new Set();
@@ -27,13 +29,7 @@ export default class QueryPerform {
     }
 
     // return index position of underscore in key, or n if no underscore
-    private trailID(key: string): number {
-        let a = 0;
-        while (a < key.length && key[a] !== "_") {
-            a++;
-        }
-        return a;
-    }
+
 
     private logicFilter(operator: string, body: any, section: any): boolean {
         if (operator === "AND") {
@@ -57,7 +53,7 @@ export default class QueryPerform {
     private mCompFilter(operator: string, body: any, section: any): boolean {
         let obj = body[operator];
         let key = Object.keys(obj)[0];
-        let bd = this.trailID(key);
+        let bd = this.qu.trailID(key);
 
         let mfield = key.substring(bd + 1);
         let num = obj[key];
@@ -75,7 +71,7 @@ export default class QueryPerform {
     private sCompFilter(operator: string, body: any, section: any): boolean {
         let obj = body[operator];
         let key = Object.keys(obj)[0];
-        let bd = this.trailID(key);
+        let bd = this.qu.trailID(key);
 
         let sfield = key.substring(bd + 1);
         let str: string = obj[key];
@@ -105,7 +101,7 @@ export default class QueryPerform {
     // get dataset id of current query
     private getID(query: any): void {
         let key = query["OPTIONS"]["COLUMNS"][0];
-        let bd = this.trailID(key);
+        let bd = this.qu.trailID(key);
         this.id = key.substring(0, bd);
         assert(this.dataset.hasOwnProperty(this.id));
     }
@@ -132,7 +128,7 @@ export default class QueryPerform {
         for (let section of this.validDataset) {
             let obj: { [k: string]: any } = {};
             for (let col of cols) {
-                let bd = this.trailID(col);
+                let bd = this.qu.trailID(col);
                 let field = col.substring(bd + 1);
                 obj[col] = section[field];
             }

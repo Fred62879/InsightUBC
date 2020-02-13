@@ -262,9 +262,6 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    // For testing only
-    // public clearMemory() {this.dataset = {};}
-
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {
             const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
@@ -274,6 +271,15 @@ export default class InsightFacade implements IInsightFacade {
             return qp.run(query);
         });
     }
+
+    /*
+    // test whether queryUtils is passed by ref
+    public test(query: any): void {
+        const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
+        // qv.test();
+        const warning = qv.queryValid(query);
+    }
+     */
 
     public listDatasets(): Promise<InsightDataset[]> {
         let insightDatasets: InsightDataset[] = [];

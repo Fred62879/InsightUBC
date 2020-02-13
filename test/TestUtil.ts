@@ -11,9 +11,6 @@ export default class TestUtil {
     public static checkQueryResult(test: ITestQuery, response: any, done: any): void {
         try {
             if (test.isQueryValid) {
-                // Log.test(response);
-                // Log.test(test.result);
-                // Log.test(test.result === response);
                 expect(response).to.deep.equal(test.result);
             } else {
                 if (test.result === "ResultTooLargeError") {
