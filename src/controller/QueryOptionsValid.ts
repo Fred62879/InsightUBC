@@ -1,5 +1,4 @@
 import {QueryUtils} from "./QueryUtils";
-import has = Reflect.has;
 import Log from "../Util";
 
 export class QueryOptionsValid {
@@ -7,7 +6,6 @@ export class QueryOptionsValid {
     private qu: QueryUtils;
     private opts = new Set<string>();
     private sopts: string[] = ["COLUMNS"];
-    private ids = new Set();
 
     // order validity
     private orderObjKey = new Set();
@@ -15,7 +13,8 @@ export class QueryOptionsValid {
 
     constructor(qu: QueryUtils) {
         this.qu = qu;
-        this.opts.add("COLUMNS"), this.opts.add("ORDER");
+        this.opts.add("COLUMNS");
+        this.opts.add("ORDER");
         this.orderObjKey.add("dir");
         this.orderObjKey.add("keys");
     }
@@ -38,7 +37,6 @@ export class QueryOptionsValid {
 
     private orderObjValid(okey: any): string {
         for (let k in okey) {
-            Log.trace(k);
             if (!this.orderObjKey.has(k)) { return "Invalid key in OPTIONS"; }
         }
         for (let k of this.orderObjKeyArray) {

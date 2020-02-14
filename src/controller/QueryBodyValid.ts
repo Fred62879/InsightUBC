@@ -1,4 +1,5 @@
 import {QueryUtils} from "./QueryUtils";
+import Log from "../Util";
 
 export class QueryBodyValid {
 
@@ -11,12 +12,17 @@ export class QueryBodyValid {
 
     constructor(qu: QueryUtils) {
         this.qu = qu;
-        this.operator.add("GT"), this.operator.add("LT"), this.operator.add("EQ");
-        this.operator.add("AND"), this.operator.add("OR");
-        this.operator.add("IS"), this.operator.add("NOT");
-        this.logic.add("AND"), this.logic.add("OR");
-        this.mcomp.add("GT"), this.mcomp.add("LT"), this.mcomp.add("EQ");
-        this.scomp.add("IS"), this.neg.add("NOT");
+        let operatorArray = [ "GT", "LT", "EQ", "AND", "OR", "IS", "NOT" ];
+        for (let op of operatorArray) {
+            this.operator.add(op);
+        }
+        this.logic.add("AND");
+        this.logic.add("OR");
+        this.mcomp.add("GT");
+        this.mcomp.add("LT");
+        this.mcomp.add("EQ");
+        this.scomp.add("IS");
+        this.neg.add("NOT");
     }
 
     public negValid(filter: any): string {
