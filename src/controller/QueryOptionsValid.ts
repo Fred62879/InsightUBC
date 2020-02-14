@@ -23,7 +23,7 @@ export class QueryOptionsValid {
     private keysValid(keys: any): string {
         if (!Array.isArray(keys) || !keys.length) { return "ORDER keys must be a non-empty array"; }
         for (let key of keys) {
-            let err = this.qu.keyValid(key, "ORDER");
+            let err = this.qu.orderKeyValid(key);
             if (err !== "") { return err; }
         }
         return "";

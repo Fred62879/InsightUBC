@@ -26,6 +26,7 @@ export class  QueryUtils {
     private roomSFields = new Set<string>();
 
     private applyTokens = new Set<string>();
+    private fieldsOfType: Set<string>;
 
 
     constructor() {
@@ -53,12 +54,15 @@ export class  QueryUtils {
     // Determine whether rooms or courses being queried and
     // setup current id analyzing GROUP or COLUMNS
     public setup(query: any): string {
+        Log.trace(0);
         let sample: any; // e.g. "rooms_seats" OR "courses_avg"
         try {
             sample = this.hasTrans ? query["TRANSFORMATIONS"]["GROUP"][0] : query["OPTIONS"]["COLUMNS"][0];
         } catch (err) {
             return "query invalid";
         }
+        if (sample === undefined) { return "Query Invalid"; } // may not be array
+
         let bd = this.trailID(sample);
         if (bd === 0) { return "Dataset id cannot be empty"; }
         this.curid = sample.substr(0, bd);
@@ -73,8 +77,7 @@ export class  QueryUtils {
         } else {
             return "Invalid fields";
         }
-        // Log.trace("type: " + this.type);
-        // Log.trace("curid: " + this.curid);
+        this.fieldsOfType = this.type ? this.roomFields : this.courseFields;
         return "";
     }
 
@@ -86,6 +89,7 @@ export class  QueryUtils {
         this.ids = ids;
     }
 
+    // ** Key and field validating methods **
     public trailID(key: string): number {
         let a = 0;
         while (a < key.length && key[a] !== "_") {
@@ -94,8 +98,6 @@ export class  QueryUtils {
         return a;
     }
 
-
-    // ** Key and field validating methods **
     public sInputStringValid(input: any): string {
         if (typeof (input) !== "string") {
             return "Invalid value type in IS, should be string";
@@ -108,8 +110,8 @@ export class  QueryUtils {
         return "";
     }
 
-    public keyValid(key: any, subject: any): string {
-        let fields = this.type ? this.roomFields : this.courseFields;
+    public keyValid(key: any, subject: any, fields: Set<string>): string {
+        // let fields = this.type ? this.roomFields : this.courseFields;
         let bd = this.trailID(key);
         if (bd === 0) { return "Referenced dataset cannot be empty string"; }
         if (bd === key.length) { return "Invalid key: " + key + " in " + subject; }
@@ -117,17 +119,27 @@ export class  QueryUtils {
         let field = key.substring(bd + 1);
         let id = key.substring(0, bd);
         if (this.curid !== id) { return "Cannot query more than one dataset"; }
+        Log.trace(field);
+        Log.trace(fields);
         if (!fields.has(field)) { return "Invalid key: " + key + " in " + subject; }
         return "";
     }
 
-    // ** Validators for OPTIONS **
+    // ** Validators for COLUMNS and OPTIONS **
+    public bodySValid(skey: string, object: string): string {
+        return this.keyValid(skey, object, !this.type ? this.courseSFields : this.roomSFields);
+    }
+
+    public bodyMValid(mkey: string, object: string): string {
+        return this.keyValid(mkey, object, !this.type ? this.courseMFields : this.roomMFields);
+    }
+
     // validate column keys and record
     public columnKeyValid(key: string) {
         if (this.hasTrans && !this.groupKeys.has(key) && !this.applyKeys.has(key)) {
             return "Keys in COLUMNS must be in GROUP or APPLY when TRANSFORMATIONS is present";
         }
-        let keyErr = this.keyValid(key, "COLUMNS");
+        let keyErr = this.keyValid(key, "COLUMNS", this.fieldsOfType);
         if (keyErr !== "") { return keyErr; }
         this.columnKeys.add(key);
         return "";
@@ -135,14 +147,14 @@ export class  QueryUtils {
 
     public orderKeyValid(key: string) {
         if (!this.columnKeys.has(key)) { return "ORDER key must be in COLUMNS"; }
-        if (!this.applyKeys.has(key)) { return this.keyValid(key, "OPTIONS"); }
+        if (!this.applyKeys.has(key)) { return this.keyValid(key, "OPTIONS", this.fieldsOfType); }
         return "";
     }
 
     // ** Validators for TRANSFORMATIONS **
     public groupKeyValid(key: string) {
         this.groupKeys.add(key);
-        return this.keyValid(key, "GROUP");
+        return this.keyValid(key, "GROUP", this.fieldsOfType);
     }
 
     public applyKeyValid(akey: string): string {
@@ -161,7 +173,7 @@ export class  QueryUtils {
     // atk: "AVG"; atkk: "courses_avg"
     public applyTokenKeyValid(atk: string, atkk: string): string {
         let fields = this.type ? this.roomFields : this.courseFields;
-        let atkkErr = this.keyValid(atkk, "APPLY");
+        let atkkErr = this.keyValid(atkk, "APPLY", this.fieldsOfType);
         if (atkkErr !== "") { return atkkErr; }
 
         if (atk === "MAX" || atk === "MIN" || atk === "AVG" || atk === "SUM") {
