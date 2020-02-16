@@ -14,35 +14,15 @@ import {JSZipObject} from "jszip";
 import * as fs from "fs-extra";
 import Queryvalid from "./QueryValidateKit/QueryValid";
 import QueryPerform from "./QueryPerformKit/QueryPerform";
+import InsightValidator from "./InsightValidator";
 
 export default class InsightFacade implements IInsightFacade {
     private dataset: { [key: string]: InsightCourse[] } = {};
     private dataPath = "./data/";
     private ids = new Set<string>();
 
-    // private static counter: number = 0;
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-    }
-
-    private isInsightCourseDataFromZipValid(course: InsightCourseDataFromZip): boolean {
-        let year: number = Number(course.Year);
-        return year >= 1900 && year < new Date().getFullYear() && !isNaN(year) &&
-            this.isPositiveNumber([course.Stddev, course.Avg, course.Pass, course.Fail, course.Audit, course.id]) &&
-            this.isString([course.Subject, course.Professor, course.Title, course.Course, course.Year,
-                course.Section]);
-    }
-
-    private isPositiveNumber(nums: any[]): boolean {
-        return nums.reduce((accumulator, num: any) => {
-            return (typeof num === "number") && num >= 0 && accumulator;
-        }, true);
-    }
-
-    private isString(strs: any[]): boolean {
-        return strs.reduce((accumulator, str: any) => {
-            return (typeof str === "string") && accumulator;
-        }, true);
     }
 
     private getResultArray(json: { [key: string]: any }): object[] {
@@ -72,7 +52,7 @@ export default class InsightFacade implements IInsightFacade {
             if (course.Section === "overall") {
                 course.Year = "1900";
             }
-            if (this.isInsightCourseDataFromZipValid(course)) {
+            if (InsightValidator.isInsightCourseDataFromZipValid(course)) {
                 result.push({
                     dept: course["Subject"],
                     id: course["Course"],
@@ -88,15 +68,6 @@ export default class InsightFacade implements IInsightFacade {
             }
         });
         return result;
-    }
-
-    private isIDvalid(id: string): boolean {
-        let reUnderscore = /^.*_.*$/;
-        let reOnlySpaces = /^\s*$/;
-        if (reUnderscore.test(id) || reOnlySpaces.test(id) || typeof id !== "string") {
-            return false;
-        }
-        return true;
     }
 
     private hasID(id: string): boolean {
@@ -130,43 +101,44 @@ export default class InsightFacade implements IInsightFacade {
             return jszipfolder.folder(InsightDatasetKind.Courses);
         }).then((jszipFolder: JSZip) => {
             return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
-                return new Promise(((resolve0, reject) => {
-                    if (file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
-                        return resolve0();
+                if (file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name)) {
+                    return Promise.resolve("Not a valid valid path");
+                } else {
+                    return file.async("text");
+                }
+            }));
+        }).then((courseDataStringArray: string[]) => {
+            return Promise.all(courseDataStringArray.map((courseDataString: string) => {
+                let json: { [key: string]: any };
+                try {
+                    json = JSON.parse(courseDataString);
+                } catch (e) {// Log.trace(e);// resolve0(e);
+                }
+                let resultArray: object[];
+                try {
+                    resultArray = this.getResultArray(json);
+                } catch (e) {
+                    return Promise.resolve(e);
+                }
+                let courses: InsightCourse[];
+                try {
+                    courses = this.courseResultArrayToInsightCourse(resultArray);
+                } catch (e) {
+                    Log.error(e);
+                    return Promise.resolve();
+                }
+                if (!this.dataset.hasOwnProperty(id)) {
+                    if (!this.dataset[id] && courses.length > 0) {
+                        this.dataset[id] = [];
+                        hasAddedDataset = true;
                     }
-                    return file.async("text").then((jsonString: string) => {
-                        let json: { [key: string]: any };
-                        try {
-                            json = JSON.parse(jsonString);
-                        } catch (e) {// Log.trace(e);// resolve0(e);
-                        }
-                        let resultArray: object[];
-                        try {
-                            resultArray = this.getResultArray(json);
-                        } catch (e) {
-                            return resolve0(e);
-                        }
-                        let courses: InsightCourse[];
-                        try {
-                            courses = this.courseResultArrayToInsightCourse(resultArray);
-                        } catch (e) {
-                            Log.error(e);
-                            return resolve0();
-                        }
-                        if (!this.dataset.hasOwnProperty(id)) {
-                            if (!this.dataset[id] && courses.length > 0) {
-                                this.dataset[id] = [];
-                                hasAddedDataset = true;
-                            }
-                        }
-                        if (!hasAddedDataset) {
-                            return resolve0();
-                        } else {
-                            this.dataset[id] = this.dataset[id].concat(courses);
-                            return resolve0();
-                        }
-                    });
-                }));
+                }
+                if (!hasAddedDataset) {
+                    return Promise.resolve();
+                } else {
+                    this.dataset[id] = this.dataset[id].concat(courses);
+                    return Promise.resolve();
+                }
             }));
         }).then(() => {
             return this.ids.add(id);
@@ -204,10 +176,14 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    //
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-        if (!this.isIDvalid(id)) {
+        if (!InsightValidator.isIDvalid(id)) {
+            Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
+        }
+        if (this.hasID(id)) {
+            // Log.trace(1);
+            return Promise.reject(new InsightError("duplicate id"));
         }
         if (kind !== "courses") {
             return Promise.reject(new InsightError("addDataset Invalid kind"));
@@ -246,7 +222,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        if (!this.isIDvalid(id)) {
+        if (!InsightValidator.isIDvalid(id)) {
             return Promise.reject(new InsightError("removeDataset Invalid ID"));
         }
         let hasDeletedFromMemory = false;
@@ -265,7 +241,7 @@ export default class InsightFacade implements IInsightFacade {
             }
             return Promise.reject(new NotFoundError(err));
         });
-    }
+    }// For testing only public clearMemory() {this.dataset = {};}
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {

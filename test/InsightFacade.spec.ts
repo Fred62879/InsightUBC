@@ -1062,8 +1062,8 @@ describe("InsightFacade PerformQuery", () => {
         for (const id of Object.keys(datasetsToQuery)) {
             const ds = datasetsToQuery[id];
             const data = fs.readFileSync(ds.path).toString("base64");
-            loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
-            // loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
+            // loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
+            loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
         }
         return Promise.all(loadDatasetPromises);
     });
@@ -1080,17 +1080,16 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // Dynamically create and run a test for each query in testQueries
-    // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
+    // Dynamically create and run a test for each query in testQueries.
+    // Creates an extra "test" called "Should run test queries" as a byproduct.
     it("Should run test queries", function () {
         describe("Dynamic InsightFacade PerformQuery tests", function () {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
-                    insightFacade.performQuery(test.query).then((result) => {
-                        TestUtil.checkQueryResult(test, result, done);
-                    }).catch((err) => {
-                        TestUtil.checkQueryResult(test, err, done);
-                    });
+                    const resultChecker = TestUtil.getQueryChecker(test, done);
+                    insightFacade.performQuery(test.query)
+                        .then(resultChecker)
+                        .catch(resultChecker);
                 });
             }
         });
@@ -1105,10 +1104,21 @@ describe("InsightFacade PerformQuery", () => {
     // });
 });
 
-function deleteCacheFile(id: string): Promise<boolean> {
-    return fs.unlink("./data/" + id + ".json").then(() => {
-        return Promise.resolve(true);
-    }).catch((err) => {
-        return Promise.resolve(err);
-    });
-}
+// This function generate query json test files. Result is populated using our perform query result.
+// const reformatTest = (test: any, result: any) => {
+//     let filename = test.filename;
+//     delete test.filename;
+//     test.result = result;
+//     let jsonString = JSON.stringify(test);
+//     let path = "./test/" + filename;
+//     fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+//         Log.trace(err);
+//     });
+// };
+// function deleteCacheFile(id: string): Promise<boolean> {
+//     return fs.unlink("./data/" + id + ".json").then(() => {
+//         return Promise.resolve(true);
+//     }).catch((err) => {
+//         return Promise.resolve(err);
+//     });
+// }
