@@ -5,7 +5,7 @@ import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
 import {consoleTestResultHandler} from "tslint/lib/test";
-import QueryValid from "../src/controller/QueryValid";
+import QueryValid from "../src/controller/QueryValidateKit/QueryValid";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.

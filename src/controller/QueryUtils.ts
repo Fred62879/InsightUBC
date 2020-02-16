@@ -1,11 +1,6 @@
 import Log from "../Util";
 
-export class  QueryUtils {
-
-    public body = 0;
-    public options = 0;
-    public trans = 0;
-
+export class QueryUtils {
     private curid = "";       // id of current query
     private type: number;     // 0, courses; 1, rooms
     private ids = new Set();  // ids of all currently added datasets
@@ -30,43 +25,73 @@ export class  QueryUtils {
 
 
     constructor() {
-        let roomFieldArray = [ "fullname", "shortname", "number", "name", "address", "type", "furniture", "href",
+        let roomFieldArray = ["fullname", "shortname", "number", "name", "address", "type", "furniture", "href",
             "lat", "lon", "seats"];
-        for (let f of roomFieldArray) { this.roomFields.add(f); }
-        let courseFieldArray = [ "avg", "pass", "fail", "audit", "year", "dept", "id", "instructor", "title", "uuid" ];
-        for (let f of courseFieldArray) { this.courseFields.add(f); }
+        for (let f of roomFieldArray) {
+            this.roomFields.add(f);
+        }
+        let courseFieldArray = ["avg", "pass", "fail", "audit", "year", "dept", "id", "instructor", "title", "uuid"];
+        for (let f of courseFieldArray) {
+            this.courseFields.add(f);
+        }
 
-        let roomMFieldArray = [ "lat", "lon", "seats" ];
-        for (let f of roomFieldArray) { this.roomMFields.add(f); }
-        let roomSFieldArray = [ "fullname", "shortname", "number", "name", "address", "type", "furniture", "href"];
-        for (let f of roomSFieldArray) { this.roomSFields.add(f); }
+        let roomMFieldArray = ["lat", "lon", "seats"];
+        for (let f of roomFieldArray) {
+            this.roomMFields.add(f);
+        }
+        let roomSFieldArray = ["fullname", "shortname", "number", "name", "address", "type", "furniture", "href"];
+        for (let f of roomSFieldArray) {
+            this.roomSFields.add(f);
+        }
 
-        let courseMFieldsArray = [ "avg", "pass", "fail", "audit", "year" ];
-        for (let mf of courseMFieldsArray) { this.courseMFields.add(mf); }
-        let courseSFieldsArray = [ "dept", "id", "instructor", "title", "uuid" ];
-        for (let sf of courseSFieldsArray) { this.courseSFields.add(sf); }
+        let courseMFieldsArray = ["avg", "pass", "fail", "audit", "year"];
+        for (let mf of courseMFieldsArray) {
+            this.courseMFields.add(mf);
+        }
+        let courseSFieldsArray = ["dept", "id", "instructor", "title", "uuid"];
+        for (let sf of courseSFieldsArray) {
+            this.courseSFields.add(sf);
+        }
 
-        let applyTokenArray = [ "MAX", "MIN", "AVG", "COUNT", "SUM" ];
-        for (let at of applyTokenArray) { this.applyTokens.add(at); }
+        let applyTokenArray = ["MAX", "MIN", "AVG", "COUNT", "SUM"];
+        for (let at of applyTokenArray) {
+            this.applyTokens.add(at);
+        }
+    }
+
+    public getHasTrans() {
+        return this.hasTrans;
+    }
+
+    public getCurID() {
+        return this.curid;
     }
 
     // ** Setup methods **
     // Determine whether rooms or courses being queried and
     // setup current id analyzing GROUP or COLUMNS
     public setup(query: any): string {
-        Log.trace(0);
+        if (query.hasOwnProperty("TRANSFORMATIONS")) {
+            this.hasTrans = true;
+        }
         let sample: any; // e.g. "rooms_seats" OR "courses_avg"
         try {
             sample = this.hasTrans ? query["TRANSFORMATIONS"]["GROUP"][0] : query["OPTIONS"]["COLUMNS"][0];
         } catch (err) {
             return "query invalid";
         }
-        if (sample === undefined) { return "Query Invalid"; } // may not be array
+        if (sample === undefined) {
+            return "Query Invalid";
+        } // may not be array
 
         let bd = this.trailID(sample);
-        if (bd === 0) { return "Dataset id cannot be empty"; }
+        if (bd === 0) {
+            return "Dataset id cannot be empty";
+        }
         this.curid = sample.substr(0, bd);
-        if (!this.ids.has(this.curid)) { return "Referenced dataset " + this.curid + " not added"; }
+        if (!this.ids.has(this.curid)) {
+            return "Referenced dataset " + this.curid + " not added";
+        }
 
         // determine type
         let field = sample.substr(bd + 1);
@@ -79,10 +104,6 @@ export class  QueryUtils {
         }
         this.fieldsOfType = this.type ? this.roomFields : this.courseFields;
         return "";
-    }
-
-    public setHasTrans(): void {
-        this.hasTrans = true;
     }
 
     public setIDs(ids: Set<string>) {
@@ -113,15 +134,21 @@ export class  QueryUtils {
     public keyValid(key: any, subject: any, fields: Set<string>): string {
         // let fields = this.type ? this.roomFields : this.courseFields;
         let bd = this.trailID(key);
-        if (bd === 0) { return "Referenced dataset cannot be empty string"; }
-        if (bd === key.length) { return "Invalid key: " + key + " in " + subject; }
+        if (bd === 0) {
+            return "Referenced dataset cannot be empty string";
+        }
+        if (bd === key.length) {
+            return "Invalid key: " + key + " in " + subject;
+        }
 
         let field = key.substring(bd + 1);
         let id = key.substring(0, bd);
-        if (this.curid !== id) { return "Cannot query more than one dataset"; }
-        Log.trace(field);
-        Log.trace(fields);
-        if (!fields.has(field)) { return "Invalid key: " + key + " in " + subject; }
+        if (this.curid !== id) {
+            return "Cannot query more than one dataset";
+        }
+        if (!fields.has(field)) {
+            return "Invalid key: " + key + " in " + subject;
+        }
         return "";
     }
 
@@ -136,18 +163,25 @@ export class  QueryUtils {
 
     // validate column keys and record
     public columnKeyValid(key: string) {
-        if (this.hasTrans && !this.groupKeys.has(key) && !this.applyKeys.has(key)) {
+        if (!this.hasTrans) {
+            let keyErr = this.keyValid(key, "COLUMNS", this.fieldsOfType);
+            if (keyErr !== "") {
+                return keyErr;
+            }
+        } else if (!this.groupKeys.has(key) && !this.applyKeys.has(key)) {
             return "Keys in COLUMNS must be in GROUP or APPLY when TRANSFORMATIONS is present";
         }
-        let keyErr = this.keyValid(key, "COLUMNS", this.fieldsOfType);
-        if (keyErr !== "") { return keyErr; }
         this.columnKeys.add(key);
         return "";
     }
 
     public orderKeyValid(key: string) {
-        if (!this.columnKeys.has(key)) { return "ORDER key must be in COLUMNS"; }
-        if (!this.applyKeys.has(key)) { return this.keyValid(key, "OPTIONS", this.fieldsOfType); }
+        if (!this.columnKeys.has(key)) {
+            return "ORDER key must be in COLUMNS";
+        }
+        if (!this.applyKeys.has(key)) {
+            return this.keyValid(key, "OPTIONS", this.fieldsOfType);
+        }
         return "";
     }
 
@@ -158,15 +192,23 @@ export class  QueryUtils {
     }
 
     public applyKeyValid(akey: string): string {
-        if (akey.length === 0) { return "Apply key cannot be empty string"; }
-        if (this.applyKeys.has(akey)) { return "Duplicate APPLY key " + akey; }
-        if (akey.toString().indexOf("_") !== -1) { return "Cannot have underscore in applyKey"; }
+        if (akey.length === 0) {
+            return "Apply key cannot be empty string";
+        }
+        if (this.applyKeys.has(akey)) {
+            return "Duplicate APPLY key " + akey;
+        }
+        if (akey.toString().indexOf("_") !== -1) {
+            return "Cannot have underscore in applyKey";
+        }
         this.applyKeys.add(akey);
         return "";
     }
 
     public applyTokenValid(atoken: string): string {
-        if (!this.applyTokens.has(atoken)) { return "Invalid apply rule target key"; }
+        if (!this.applyTokens.has(atoken)) {
+            return "Invalid apply rule target key";
+        }
         return "";
     }
 
@@ -174,7 +216,9 @@ export class  QueryUtils {
     public applyTokenKeyValid(atk: string, atkk: string): string {
         let fields = this.type ? this.roomFields : this.courseFields;
         let atkkErr = this.keyValid(atkk, "APPLY", this.fieldsOfType);
-        if (atkkErr !== "") { return atkkErr; }
+        if (atkkErr !== "") {
+            return atkkErr;
+        }
 
         if (atk === "MAX" || atk === "MIN" || atk === "AVG" || atk === "SUM") {
             let keyWithoutTypeName = atkk.split("_")[1];
