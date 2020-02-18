@@ -1,11 +1,17 @@
-import {InsightCourse, InsightCourseDataFromZip, InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {
+    InsightCourse,
+    InsightCourseDataFromZip,
+    InsightDatasetKind,
+    InsightError,
+    SelectorOptions
+} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import Log from "../Util";
 import InsightValidator from "./InsightValidator";
 import * as parse5 from "parse5";
 import {rejects} from "assert";
-import {Document} from "parse5";
+import {Document, Element} from "parse5";
 
 export default class InsightCacheManager {
 
@@ -102,13 +108,36 @@ export default class InsightCacheManager {
         });
     }
 
+    private static hasClassName(node: Element, className: string) {
+        return !className || true;
+    }
+
+    private static isTag(node: Element, tagName: string) {
+        return "tagName" in node && node.tagName === tagName;
+    }
+
+    private static findNodeInChildNodes(nodes: Element[], options: SelectorOptions) {
+        for (let node of nodes) {
+            // if()
+        }
+    }
+
+    private static parse5selector(node: Element, options: SelectorOptions = {
+        tagName: "body",
+        className: null,
+        findAll: false
+    }) {
+        return (this.hasClassName(node, options.className) && this.isTag(node, options.className) ?
+            node : this.findNodeInChildNodes("childNodes" in node ? node.childNodes : [], options));
+    }
+
     private static readRoomJSZip(jszipRootDir: JSZip, id: string) {
         let dataset: { [key: string]: InsightCourse[] } = {};
         let indexHTML: JSZipObject = jszipRootDir.file("rooms/index.htm");
         if (indexHTML) {
 
             return indexHTML.async("text").then((htmlString: string) => {
-                const document: Document = parse5.parse(htmlString, {scriptingEnabled: true});
+                const document: Element = parse5.parse(htmlString, {scriptingEnabled: true});
                 // const table = document.childNodes[1];
             }).then(() => {
                 return dataset;
