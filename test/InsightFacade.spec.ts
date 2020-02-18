@@ -512,7 +512,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     //         expect(err).to.instanceOf(InsightError);
     //     });
     // });
-
+    //
     // it("Should add a dataset with wrong dir name", function () {
     //     const id: string = "invalidFolder";
     //     return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses).then((result: string[]) => {
@@ -832,32 +832,31 @@ describe("InsightFacade Add/Remove Dataset", function () {
     //         expect.fail(err, [id], "Should not have rejected");
     //     });
     // });
-
-    /*
-    it("Should add two diff valid dss", function () {
-        let expected2 = ["courses", "coursesSmall"];
-        let addedInsightDS1: any[] = [];
-        addedInsightDS1.push({id: "courses", numRows: 64612, kind: InsightDatasetKind.Courses});
-        addedInsightDS1.push({id: "coursesSmall", numRows: 4, kind: InsightDatasetKind.Courses});
-        return insightFacade.addDataset("courses", datasets["courses"],
-            InsightDatasetKind.Courses).then((result: string[]) => {
-            Log.test(0);
-            return insightFacade.addDataset("coursesSmall", datasets["coursesSmall"], InsightDatasetKind.Courses);
-        }).then((result2: string[]) => {
-            Log.test(1);
-            expect(result2).to.deep.equal(["courses", "coursesSmall"]);
-            return insightFacade.listDatasets();
-        }).then((result3: InsightDataset[]) => {
-            Log.test(2);
-            expect(result3).to.deep.equal(addedInsightDS1);
-        }).catch((err: any) => {
-            Log.test(3);
-            Log.trace(err);
-            expect.fail(err, expected2, "Should not have rejected");
-        });
-    });
-     */
-
+    //
+    //
+    // it("Should add two diff valid dss", function () {
+    //     let expected2 = ["courses", "coursesSmall"];
+    //     let addedInsightDS1: any[] = [];
+    //     addedInsightDS1.push({id: "courses", numRows: 64612, kind: InsightDatasetKind.Courses});
+    //     addedInsightDS1.push({id: "coursesSmall", numRows: 4, kind: InsightDatasetKind.Courses});
+    //     return insightFacade.addDataset("courses", datasets["courses"],
+    //         InsightDatasetKind.Courses).then((result: string[]) => {
+    //         Log.test(0);
+    //         return insightFacade.addDataset("coursesSmall", datasets["coursesSmall"], InsightDatasetKind.Courses);
+    //     }).then((result2: string[]) => {
+    //         Log.test(1);
+    //         expect(result2).to.deep.equal(["courses", "coursesSmall"]);
+    //         return insightFacade.listDatasets();
+    //     }).then((result3: InsightDataset[]) => {
+    //         Log.test(2);
+    //         expect(result3).to.deep.equal(addedInsightDS1);
+    //     }).catch((err: any) => {
+    //         Log.test(3);
+    //         Log.trace(err);
+    //         expect.fail(err, expected2, "Should not have rejected");
+    //     });
+    // });
+    //
     // it("Should add then remove courses", function () {
     //     const id: string = "courses";
     //     // expected.push(id);
@@ -1062,6 +1061,7 @@ describe("InsightFacade PerformQuery", () => {
         for (const id of Object.keys(datasetsToQuery)) {
             const ds = datasetsToQuery[id];
             const data = fs.readFileSync(ds.path).toString("base64");
+            loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
             loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
         }
         return Promise.all(loadDatasetPromises);
@@ -1094,3 +1094,21 @@ describe("InsightFacade PerformQuery", () => {
         });
     });
 });
+// This function generate query json test files. Result is populated using our perform query result.
+// const reformatTest = (test: any, result: any) => {
+//     let filename = test.filename;
+//     delete test.filename;
+//     test.result = result;
+//     let jsonString = JSON.stringify(test);
+//     let path = "./test/" + filename;
+//     fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+//         Log.trace(err);
+//     });
+// };
+function deleteCacheFile(id: string): Promise<boolean> {
+    return fs.unlink("./data/" + id + ".json").then(() => {
+        return Promise.resolve(true);
+    }).catch((err) => {
+        return Promise.resolve(err);
+    });
+}
