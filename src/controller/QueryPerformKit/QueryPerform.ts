@@ -112,9 +112,13 @@ export default class QueryPerform {
         // Log.trace(this.groupedDataset.length);
     }
 
-    private transform(query: any): void {
+    private transform(query: any): string {
         this.group(query); // group datasets according to GROUP rules
-        this.apply(query);
+        if (this.groupedDataset.length > 5000) {
+            return "More than 5000 results";
+        }
+        this.apply(query); // apply applyRules on each of the grouped sets
+        return "";
     }
 
     // private extract(query: any): void {
@@ -165,7 +169,10 @@ export default class QueryPerform {
 
         // this.extract(query);    // leave only required fields for sections in validDataset
         if (this.qu.getHasTrans()) {
-            this.transform(query);
+            let error = this.transform(query);
+            if (error !== "") {
+                return Promise.reject(new ResultTooLargeError("More than 5000 results"));
+            }
         }
         this.order(query);   // order required fields
         return Promise.resolve(this.res);
