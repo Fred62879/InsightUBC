@@ -59,8 +59,53 @@ export default class QueryPerform {
 
 
     // ** TRANSFORMATIONS helper methods
+    private tokenOperation(set: SelectedFields, aptk: string, key: string, acc: number): number {
+        key = key.split("_")[1];
+        const val = set[key];
+        if (aptk === "MAX") {
+            return Math.max(acc, val);
+        } else if (aptk === "MIN") {
+            return Math.min(acc, val);
+        } else if (aptk === "AVG" || aptk === "SUM") {
+            return acc + val;
+        } else {
+            assert(aptk === "COUNT");
+            return acc + 1;
+        }
+    }
+
+    private conversion(sets: SelectedFields[], aptk: string, key: string): void {
+        let val = 0;
+        for (let set of sets) {
+            val = this.tokenOperation(set, aptk, key, val);
+        }
+        if (aptk === "AVG") {
+            val /= sets.length;
+        }
+        Log.trace(aptk + " " + val);
+    }
+
+    private calculation(applyBody: any): void {
+        let applyToken = Object.keys(applyBody)[0];
+        let key = applyBody[applyToken];
+        Log.trace(this.groupedDataset.length);
+        for (let sets of this.groupedDataset) {
+            this.conversion(sets, applyToken, key);
+        }
+    }
+
+    private apply(query: any): void {
+        const applyArray = query["TRANSFORMATIONS"]["APPLY"];
+        for (let applyRule of applyArray) {
+            let applyKey = Object.keys(applyRule)[0];
+            if (this.colKeys.has(applyKey)) {
+                this.calculation(applyRule[applyKey]);
+            }
+        }
+    }
+
     private group(query: any): void {
-        Log.trace(this.validDataset.length);
+        // Log.trace(this.validDataset.length);
         for (let unit of this.validDataset) {
             let curkey = "";
             for (let key of this.groupKeys) {
@@ -73,11 +118,12 @@ export default class QueryPerform {
                 this.groupedDataset[this.groupCorr.get(curkey)].push(unit);
             }
         }
-        Log.trace(this.groupedDataset.length);
+        // Log.trace(this.groupedDataset.length);
     }
 
     private transform(query: any): void {
-        this.group(query);
+        this.group(query); // group datasets according to GROUP rules
+        this.apply(query);
     }
 
     // private extract(query: any): void {
@@ -183,7 +229,7 @@ export default class QueryPerform {
         this.id = this.qu.getCurID();
 
         this.filter(query);  // get valid sections and store in validDataset
-        if (this.validDataset.length >= 5000) {
+        if (this.validDataset.length >= 5000 && !this.qu.getHasTrans()) {  // if no GROUP
             return Promise.reject(new ResultTooLargeError("More than 5000 results"));
         }
 
