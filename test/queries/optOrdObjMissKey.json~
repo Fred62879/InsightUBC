@@ -1,0 +1,35 @@
+{
+    "title": "order being object, invalid",
+    "query": {
+	"WHERE": {
+	    "GT": {
+		"courses_avg": 97
+	    }
+	},
+	"OPTIONS": {
+	    "COLUMNS": [
+		"courses_audit"
+	    ],
+	    "ORDER": {
+		"dir": "UP",
+		"keys": [
+		    "courses_audit"
+		]
+	    }
+	},
+	"TRANSFORMATIONS": {
+	    "GROUP": [
+		"courses_audit"
+	    ],
+	    "APPLY": [
+		{
+		    "aa": {
+			"AVG": "courses_audit"
+		    }
+		}
+	    ]
+	}
+    },
+    "isQueryValid": true,
+    "result": "InsightError"
+}

@@ -1,0 +1,43 @@
+{
+    "title": "order being object, invalid",
+    "query": {
+	"WHERE": {
+	    "GT": {
+		"courses_avg": 97
+	    }
+	},
+	"OPTIONS": {
+	    "COLUMNS": [
+		"courses_dept",
+		"courses_audit",
+		"maxSeats"
+	    ],
+	    "ORDER": {
+		"dir": "DOWN",
+		"keys": [
+		    "courses_dept"
+		]
+	    }
+	},
+	"TRANSFORMATIONS": {
+	    "GROUP": [
+		"courses_dept",
+		"courses_audit"
+	    ],
+	    "APPLY": [
+		{
+		    "maxSeats": {
+			"COUNT": "courses_avg"
+		    }
+		},
+		{
+		    "avg": {
+			"AVG": "courses_audit"
+		    }
+		}
+	    ]
+	}
+    },
+    "isQueryValid": true,
+    "result": "InsightError"
+}
