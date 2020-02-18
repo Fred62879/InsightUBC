@@ -91,7 +91,7 @@ export class QueryBodyValid {
 
     public filterValid(body: any): string {
         if (Object.keys(body).length !== 1) {
-            return "Filter should have only one key";
+            return "FilterUtils should have only one key";
         }
         let operator = Object.keys(body)[0];
 
@@ -117,7 +117,7 @@ export class QueryBodyValid {
                 return negWarning;
             }
         } else {
-            return "Filter key Invalid!";
+            return "FilterUtils key Invalid!";
         }
         return "";
     }

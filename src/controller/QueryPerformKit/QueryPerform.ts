@@ -2,37 +2,32 @@ import {InsightCourse, ResultTooLargeError} from "../IInsightFacade";
 import Log from "../../Util";
 import * as assert from "assert";
 import {QueryUtils} from "../QueryUtils";
+import {ApplyOperations} from "./ApplyOperations";
+import {FilterUtils} from "./FilterUtils";
 
 export interface SelectedFields {
     [key: string]: any;
 }
 
 export default class QueryPerform {
-    private id: string;
+    // utilities
     private qu = new QueryUtils();
+    private ao = new ApplyOperations();
+    private fu = new FilterUtils(this.qu);
 
+    private id: string;
     private colKeys = new Set<string>();
     private groupKeys: string[] = [];
 
     // datasets
     private res: SelectedFields[] = [];
     private validDataset: SelectedFields[] = [];
-    // private validDataset: InsightCourse[] = [];
     private groupCorr = new Map();
     private groupedDataset: SelectedFields[][] = [];
     private dataset: { [key: string]: InsightCourse[] };
 
-    // for filter
-    private logic = new Set();
-    private mcomp = new Set();
-    private scomp = new Set();
-    private neg = new Set();
-
     constructor(dataset: { [key: string]: InsightCourse[] }) {
         this.dataset = dataset;
-        this.logic.add("AND"), this.logic.add("OR");
-        this.mcomp.add("GT"), this.mcomp.add("LT"), this.mcomp.add("EQ");
-        this.scomp.add("IS"), this.neg.add("NOT");
     }
 
     private getColKeys(query: any): void {
@@ -57,38 +52,34 @@ export default class QueryPerform {
         this.res.sort((e1, e2) => e1[ordKey] - e2[ordKey]);
     }
 
-
-    // ** TRANSFORMATIONS helper methods
-    private tokenOperation(set: SelectedFields, aptk: string, key: string, acc: number): number {
+    // compress sets in a group into a single set
+    private conversion(sets: SelectedFields[], aptk: string, key: string): void {
+        let val: number;
         key = key.split("_")[1];
-        const val = set[key];
-        if (aptk === "MAX") {
-            return Math.max(acc, val);
+        if (aptk === "AVG") {
+            val = this.ao.avgOperation(sets, key);
+        } else if (aptk === "MAX") {
+            val = this.ao.minMaxOperation(sets, key, 1);
         } else if (aptk === "MIN") {
-            return Math.min(acc, val);
-        } else if (aptk === "AVG" || aptk === "SUM") {
-            return acc + val;
+            val = this.ao.minMaxOperation(sets, key, 0);
+        } else if (aptk === "SUM") {
+            val = this.ao.sumOperation(sets, key);
         } else {
             assert(aptk === "COUNT");
-            return acc + 1;
-        }
-    }
-
-    private conversion(sets: SelectedFields[], aptk: string, key: string): void {
-        let val = 0;
-        for (let set of sets) {
-            val = this.tokenOperation(set, aptk, key, val);
-        }
-        if (aptk === "AVG") {
-            val /= sets.length;
+            val = this.ao.countOperation(sets, key);
         }
         Log.trace(aptk + " " + val);
+
+        let obj: { [k: string]: any } = {};
+        obj[key] = val;
+        Log.trace(obj);
+        this.res.push(obj);
     }
 
     private calculation(applyBody: any): void {
-        let applyToken = Object.keys(applyBody)[0];
+        let applyToken = Object.keys(applyBody)[0]; // MAX, MIN, AVG ...
         let key = applyBody[applyToken];
-        Log.trace(this.groupedDataset.length);
+        // Log.trace(this.groupedDataset.length);
         for (let sets of this.groupedDataset) {
             this.conversion(sets, applyToken, key);
         }
@@ -141,73 +132,7 @@ export default class QueryPerform {
     // }
 
 
-    // ** Filter helper methods
-    private nFilter(operator: string, body: any, section: any): boolean {
-        return !this.perform(body[operator], section);
-    }
-
-    private sCompFilter(operator: string, body: any, section: any): boolean {
-        let obj = body[operator];
-        let key = Object.keys(obj)[0];
-        let bd = this.qu.trailID(key);
-
-        let sfield = key.substring(bd + 1);
-        let str: string = obj[key];
-        let regex = new RegExp(`^${str.replace(/\*/g, ".*")}$`);
-        return regex.test(section[sfield]);
-    }
-
-    private mCompFilter(operator: string, body: any, section: any): boolean {
-        let obj = body[operator];
-        let key = Object.keys(obj)[0];
-        let bd = this.qu.trailID(key);
-
-        let mfield = key.substring(bd + 1);
-        let num = obj[key];
-
-        if (operator === "GT") {
-            return section[mfield] > num;
-        } else if (operator === "LT") {
-            return section[mfield] < num;
-        } else if (operator === "EQ") {
-            return section[mfield] === num;
-        }
-        return false;
-    }
-
-    private logicFilter(operator: string, body: any, section: any): boolean {
-        if (operator === "AND") {
-            for (let obj of body["AND"]) {
-                if (!this.perform(obj, section)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            assert(operator === "OR");
-            for (let obj of body["OR"]) {
-                if (this.perform(obj, section)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    // helper methods for filter, perform query on each section
-    private perform(body: any, section: any): boolean {
-        let operator = Object.keys(body)[0];
-        if (this.logic.has(operator)) {
-            return this.logicFilter(operator, body, section);
-        } else if (this.mcomp.has(operator)) {
-            return this.mCompFilter(operator, body, section);
-        } else if (this.scomp.has(operator)) {
-            return this.sCompFilter(operator, body, section);
-        } else {
-            assert(operator === "NOT");
-            return this.nFilter(operator, body, section);
-        }
-    }
+    // ** FilterUtils helper methods
 
     private filter(query: any): void {
         let body = query["WHERE"];
@@ -216,7 +141,7 @@ export default class QueryPerform {
             this.validDataset = this.dataset[this.id];
         }
         for (let section of this.dataset[this.id]) {
-            if (this.perform(body, section)) {
+            if (this.fu.perform(body, section)) {
                 this.validDataset.push(section);
             }
         }
