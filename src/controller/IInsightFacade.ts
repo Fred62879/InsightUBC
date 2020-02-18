@@ -43,18 +43,11 @@ export interface InsightCourseDataFromZip {
     "Subject": string;
 }
 
-// export interface InsightCourse {
-//     dept: string;
-//     id: string;
-//     avg: number;
-//     instructor: string;
-//     title: string;
-//     pass: number;
-//     fail: number;
-//     audit: number;
-//     uuid: string;
-//     year: number;
-// }
+export interface SelectorOptions {
+    className?: string;
+    tagName?: string;
+    findAll?: boolean;
+}
 
 export interface InsightCourse {
     dept: string;
@@ -73,6 +66,7 @@ export enum InsightDatasetKind {
     Courses = "courses",
     Rooms = "rooms",
 }
+
 
 export interface InsightDataset {
     id: string;

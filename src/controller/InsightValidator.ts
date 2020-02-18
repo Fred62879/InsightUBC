@@ -1,4 +1,5 @@
-import {InsightCourseDataFromZip, InsightError} from "./IInsightFacade";
+import {InsightCourseDataFromZip, InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {JSZipObject} from "jszip";
 
 export default class InsightValidator {
     public static arePositiveNumbers(...nums: any): boolean {
@@ -29,5 +30,13 @@ export default class InsightValidator {
             return false;
         }
         return true;
+    }
+
+    public static isNotAvalidCourseFilePath(file: JSZipObject): boolean {
+        return file.dir || !new RegExp(`^${InsightDatasetKind.Courses}\/.+`).test(file.name);
+    }
+
+    public static isValidDatasetKind(kind: InsightDatasetKind) {
+        return Object.values(InsightDatasetKind).includes(kind);
     }
 }
