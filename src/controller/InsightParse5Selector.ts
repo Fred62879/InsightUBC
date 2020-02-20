@@ -50,22 +50,24 @@ export default class InsightParse5Selector {
         if ("childNodes" in node) {
             for (let tableNode of node.childNodes) {
                 if (InsightParse5Selector.isTag(tableNode, "thead")) {
-                    if ("childNodes" in tableNode) {
-                        // @ts-ignore
-                        for (let headNode of tableNode.childNodes) {
+                    let tableNodeElement: Element = tableNode as Element;
+                    if ("childNodes" in tableNodeElement) {
+                        for (let headNode of tableNodeElement.childNodes) {
                             if (InsightParse5Selector.isTag(headNode, "tr")) {
-                                if ("childNodes" in headNode) {
-                                    for (let trNode of headNode.childNodes) {
+                                let headNodeElement: Element = headNode as Element;
+                                if ("childNodes" in headNodeElement) {
+                                    for (let trNode of headNodeElement.childNodes) {
                                         if (InsightParse5Selector.isTag(trNode, "th")) {
-                                            if ("childNodes" in trNode) {
-                                                for (let thNode of trNode.childNodes) {
+                                            let trNodeElement: Element = trNode as Element;
+                                            if ("childNodes" in trNodeElement) {
+                                                for (let thNode of trNodeElement.childNodes) {
                                                     if (InsightParse5Selector.isNode(thNode, "#text")) {
-                                                        if ("value" in thNode) {
-                                                            if (thNode.value.includes(header)) {
+                                                        let thNodeElement: Element = thNode as Element;
+                                                        if ("value" in thNodeElement) {
+                                                            if (String(thNodeElement["value"]).includes(header)) {
                                                                 return true;
                                                             }
                                                         }
-
                                                     }
                                                 }
                                             }
@@ -99,8 +101,7 @@ export default class InsightParse5Selector {
             for (let textNode of node.childNodes) {
                 if (InsightParse5Selector.isNode(textNode, "#text")) {
                     if ("value" in textNode) {
-                        // @ts-ignore
-                        return textNode.value.trim();
+                        return String(textNode["value"]).trim();
                     }
                 }
             }
