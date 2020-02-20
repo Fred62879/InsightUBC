@@ -6,7 +6,7 @@ import {
     InsightCourseDataFromZip,
     InsightDataset,
     InsightDatasetKind,
-    InsightError,
+    InsightError, InsightRoom,
     NotFoundError
 } from "./IInsightFacade";
 import * as JSZip from "jszip";
@@ -23,7 +23,7 @@ import InsightCacheManager from "./InsightCacheManager";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-    private dataset: { [key: string]: InsightCourse[] } = {};
+    private dataset: { [key: string]: InsightCourse[]| InsightRoom[] } = {};
     // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
@@ -108,7 +108,7 @@ export default class InsightFacade implements IInsightFacade {
             } else {
                 return InsightCacheManager.readFromZip(id, content, kind);
             }
-        }).then((dataset: { [key: string]: InsightCourse[] }) => {
+        }).then((dataset: { [key: string]: InsightCourse[] } | {[key: string]: InsightRoom[]}) => {
             let keys = Object.keys(dataset);
             if (keys.length === 1) {
                 this.ids.add(keys[0]);

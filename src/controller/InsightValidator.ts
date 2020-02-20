@@ -1,10 +1,16 @@
-import {InsightCourseDataFromZip, InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {InsightCourseDataFromZip, InsightDatasetKind, InsightError, InsightRoom} from "./IInsightFacade";
 import {JSZipObject} from "jszip";
 
 export default class InsightValidator {
     public static arePositiveNumbers(...nums: any): boolean {
         return nums.reduce((accumulator: boolean, num: any) => {
             return (typeof num === "number") && num >= 0 && accumulator;
+        }, true);
+    }
+
+    public static areNumbers(...nums: any): boolean {
+        return nums.reduce((accumulator: boolean, num: any) => {
+            return (typeof num === "number") && accumulator;
         }, true);
     }
 
@@ -38,5 +44,12 @@ export default class InsightValidator {
 
     public static isValidDatasetKind(kind: InsightDatasetKind) {
         return Object.values(InsightDatasetKind).includes(kind);
+    }
+
+    public static isValidInsightRoom(insightRoom: InsightRoom) {
+        return insightRoom != null && "address" in insightRoom && InsightValidator.areStrings(insightRoom.address,
+            insightRoom.fullname, insightRoom.shortname, insightRoom.number, insightRoom.name, insightRoom.type,
+            insightRoom.furniture, insightRoom.href) && InsightValidator.areNumbers(insightRoom.lat, insightRoom.lon,
+            insightRoom.seats);
     }
 }

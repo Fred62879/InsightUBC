@@ -1,4 +1,4 @@
-import {InsightCourse, ResultTooLargeError} from "./IInsightFacade";
+import {InsightCourse, InsightRoom, ResultTooLargeError} from "./IInsightFacade";
 import Log from "../Util";
 import * as assert from "assert";
 
@@ -11,7 +11,7 @@ export default class QueryPerform {
     private id: string;
     private res: SelectedFields[] = [];
     private validDataset: SelectedFields[] = [];
-    private dataset: { [key: string]: InsightCourse[] };
+    private dataset: { [key: string]: InsightCourse[] | InsightRoom[] };
 
     // for filter
     private logic = new Set();
@@ -19,7 +19,7 @@ export default class QueryPerform {
     private scomp = new Set();
     private neg = new Set();
 
-    constructor(dataset: { [key: string]: InsightCourse[] }) {
+    constructor(dataset: { [key: string]: InsightCourse[] | InsightRoom[] }) {
         this.dataset = dataset;
         this.logic.add("AND"), this.logic.add("OR");
         this.mcomp.add("GT"), this.mcomp.add("LT"), this.mcomp.add("EQ");

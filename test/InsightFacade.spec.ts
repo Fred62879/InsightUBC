@@ -201,13 +201,13 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
-    it("addDataset should reject dataset room type", () => {
+    it("addDataset should accept dataset room type", () => {
         const id: string = "room";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset type room");
+            expect(result).to.deep.equal([id]);
         }).catch((err: any) => {
             Log.trace(err);
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            expect.fail(err, [id], "Should resolve");
         });
     });
 
