@@ -12,8 +12,8 @@ import {
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import * as fs from "fs-extra";
-import Queryvalid from "./QueryValid";
-import QueryPerform from "./QueryPerform";
+import Queryvalid from "./QueryValidateKit/QueryValid";
+import QueryPerform from "./QueryPerformKit/QueryPerform";
 import InsightValidator from "./InsightValidator";
 import InsightCacheManager from "./InsightCacheManager";
 
