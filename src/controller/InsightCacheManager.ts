@@ -154,7 +154,7 @@ export default class InsightCacheManager {
                     insightRoom.href = link.replace(/^rooms/, "http://students.ubc.ca");
                     let url: string =
                         `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team87/${insightRoom.address}`;
-                    return InsightCacheManager.getGeoLocationAndRoomInfo(url, insightRoom).then(
+                    return InsightCacheManager.getGeoLocationAndRoomInfo(url, Object.assign({}, insightRoom)).then(
                         (insightRoomWithGeo: InsightRoom) => {
                             return jszipRootDir.file(link).async("text").then((htmlString: string) => {
                                 return InsightCacheManager.getInsightRoomNumberDetailPage(htmlString,
