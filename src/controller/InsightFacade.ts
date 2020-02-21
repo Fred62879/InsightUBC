@@ -1,5 +1,6 @@
 import Log from "../Util";
 import {
+    Data,
     FoundCacheError,
     IInsightFacade,
     InsightCourse,
@@ -21,7 +22,8 @@ import InsightCacheManager from "./InsightCacheManager";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-    private dataset: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
+    // private dataset: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
+    private dataset: { [key: string]: Data } = {};
     // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
@@ -106,13 +108,13 @@ export default class InsightFacade implements IInsightFacade {
             } else {
                 return InsightCacheManager.readFromZip(id, content, kind);
             }
-        }).then((dataset: { [key: string]: InsightCourse[] } | { [key: string]: InsightRoom[] }) => {
+        }).then((dataset: { [key: string]: Data }) => {
             let keys = Object.keys(dataset);
             if (keys.length === 1) {
                 this.ids.add(keys[0]);
                 Object.assign(this.dataset, dataset);
             }
-            if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
+            if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].data.length > 0) {
                 let jsonToWrite = JSON.stringify({[id]: this.dataset[id]});
                 fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
                     Log.error(e);
@@ -166,7 +168,11 @@ export default class InsightFacade implements IInsightFacade {
             if (warning !== "") {
                 return Promise.reject(new InsightError(warning));
             }
-            const qp: QueryPerform = new QueryPerform(this.dataset);
+            let oldInterface: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
+            for (let id of Object.keys(this.dataset)) {
+                oldInterface[id] = this.dataset[id].data;
+            }
+            const qp: QueryPerform = new QueryPerform(oldInterface);
             return qp.run(query);
         });
     }
@@ -177,9 +183,8 @@ export default class InsightFacade implements IInsightFacade {
             Object.keys(this.dataset).map((id: string) => {
                 insightDatasets.push({
                     id: id,
-                    kind: InsightValidator.isInsightCourse(this.dataset[id][0]) ?
-                        InsightDatasetKind.Courses : InsightDatasetKind.Rooms,
-                    numRows: this.dataset[id].length
+                    kind: this.dataset[id].type,
+                    numRows: this.dataset[id].data.length
                 });
             });
             return Promise.resolve(insightDatasets);

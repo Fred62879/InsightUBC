@@ -1,4 +1,5 @@
-import {InsightCourse, InsightCourseDataFromZip, InsightDatasetKind, InsightError, InsightRoom} from "./IInsightFacade";
+import {Data, InsightCourse, InsightCourseDataFromZip, InsightDatasetKind, InsightError,
+    InsightRoom} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import Log from "../Util";
@@ -9,7 +10,6 @@ import InsightParse5Selector from "./InsightParse5Selector";
 import * as http from "http";
 
 export default class InsightCacheManager {
-
     private static getResultArray(json: { [key: string]: any }): object[] {
         if (json.result instanceof Array && json.result.length > 0) {
             return json.result;
@@ -55,8 +55,10 @@ export default class InsightCacheManager {
         return result;
     }
 
-    private static readCourseJSZip(jszipRootDir: JSZip, id: string): Promise<{ [key: string]: InsightCourse[] }> {
-        let dataset: { [key: string]: InsightCourse[] } = {};
+    private static readCourseJSZip(jszipRootDir: JSZip, id: string, kind: InsightDatasetKind):
+        Promise<{ [key: string]: Data }> {
+        let dataset: { [key: string]: Data } = {};
+        let courseData: InsightCourse[] = [];
         let hasAddedDataset: boolean = false;
         let jszipFolder = jszipRootDir.folder(InsightDatasetKind.Courses);
         return Promise.all(Object.values(jszipFolder.files).map((file: JSZipObject) => {
@@ -87,18 +89,19 @@ export default class InsightCacheManager {
                 }
                 if (!dataset.hasOwnProperty(id)) {
                     if (!dataset[id] && courses.length > 0) {
-                        dataset[id] = [];
+                        dataset[id] = {type: kind, data: []};
                         hasAddedDataset = true;
                     }
                 }
                 if (!hasAddedDataset) {
                     return Promise.resolve();
                 } else {
-                    dataset[id] = dataset[id].concat(courses);
+                    courseData = courseData.concat(courses);
                     return Promise.resolve();
                 }
             }));
         }).then(() => {
+            dataset[id].data = courseData;
             return dataset;
         });
     }
@@ -124,24 +127,13 @@ export default class InsightCacheManager {
                 return InsightCacheManager.getInsightRoomDetailPage(tr, Object.assign({}, insightRoom));
             });
         } else {
-            return [insightRoom];
+            return [];
         }
     }
 
     private static getInsightRoomIndexPage(tr: Element, jszipRootDir: JSZip): Promise<InsightRoom[]> {
-        let insightRoom: InsightRoom = {
-            address: "",
-            fullname: "",
-            furniture: "",
-            href: "",
-            lat: 0,
-            lon: 0,
-            name: "",
-            number: "",
-            seats: 0,
-            shortname: "",
-            type: ""
-        };
+        let insightRoom: InsightRoom = {address: "", fullname: "", furniture: "", href: "", lat: 0, lon: 0,
+            name: "", number: "", seats: 0, shortname: "", type: ""};
         if ("childNodes" in tr) {
             for (let td of tr.childNodes) {
                 if (InsightParse5Selector.hasClassName(td, "views-field-field-building-image")) {
@@ -242,8 +234,10 @@ export default class InsightCacheManager {
         }));
     }
 
-    private static readRoomJSZip(jszipRootDir: JSZip, id: string): Promise<{ [key: string]: InsightRoom[] }> {
-        let dataset: { [key: string]: InsightRoom[] } = {};
+    private static readRoomJSZip(jszipRootDir: JSZip, id: string, kind: InsightDatasetKind):
+        Promise<{ [key: string]: Data }> {
+        let dataset: { [key: string]: Data } = {};
+        let roomsDataset: InsightRoom[] = [];
         let indexHTML: JSZipObject = jszipRootDir.file("rooms/index.htm");
         if (indexHTML) {
             return indexHTML.async("text").then((htmlString: string) => {
@@ -259,16 +253,18 @@ export default class InsightCacheManager {
                 for (let rooms of roomsArray) {
                     if (rooms.length > 0) {
                         if (!dataset[id]) {
-                            dataset[id] = rooms.filter((room: InsightRoom) => {
+                            dataset[id] = {type: kind, data: []};
+                            roomsDataset = rooms.filter((room: InsightRoom) => {
                                 return InsightValidator.isValidInsightRoom(room);
                             });
                         } else {
-                            dataset[id] = dataset[id].concat(rooms.filter((room: InsightRoom) => {
+                            roomsDataset = roomsDataset.concat(rooms.filter((room: InsightRoom) => {
                                 return InsightValidator.isValidInsightRoom(room);
                             }));
                         }
                     }
                 }
+                dataset[id].data = roomsDataset;
                 return dataset;
             });
         } else {
@@ -278,19 +274,18 @@ export default class InsightCacheManager {
 
     // REQUIRE: kind === courses or kind === room
     public static readFromZip(id: string, content: string, kind: InsightDatasetKind):
-        Promise<{ [key: string]: InsightCourse[] } | { [key: string]: InsightRoom[] }> {
+        Promise<{ [key: string]: Data }> {
         return new JSZip().loadAsync(content, {base64: true}).then((jszipRootDir: JSZip) => {
             return InsightCacheManager.readRoomOrCourseDataset(jszipRootDir, id, kind);
         });
     }
 
-
     private static readRoomOrCourseDataset(jszipRootDir: JSZip, id: string, kind: InsightDatasetKind):
-        Promise<{ [key: string]: InsightCourse[] } | { [key: string]: InsightRoom[] }> {
+        Promise<{ [key: string]: Data }> {
         if (kind === InsightDatasetKind.Courses) {
-            return InsightCacheManager.readCourseJSZip(jszipRootDir, id);
+            return InsightCacheManager.readCourseJSZip(jszipRootDir, id, kind);
         } else if (kind === InsightDatasetKind.Rooms) {
-            return InsightCacheManager.readRoomJSZip(jszipRootDir, id);
+            return InsightCacheManager.readRoomJSZip(jszipRootDir, id, kind);
         } else {// unrreachble
             Promise.reject("Unreachable");
         }
