@@ -6,7 +6,7 @@ import {
     InsightCourseDataFromZip,
     InsightDataset,
     InsightDatasetKind,
-    InsightError,
+    InsightError, InsightRoom,
     NotFoundError
 } from "./IInsightFacade";
 import * as JSZip from "jszip";
@@ -15,9 +15,16 @@ import * as fs from "fs-extra";
 import Queryvalid from "./QueryValidateKit/QueryValid";
 import QueryPerform from "./QueryPerformKit/QueryPerform";
 import InsightValidator from "./InsightValidator";
+import InsightCacheManager from "./InsightCacheManager";
 
+/**
+ * This is the main programmatic entry point for the project.
+ * Method documentation is in IInsightFacade
+ *
+ */
 export default class InsightFacade implements IInsightFacade {
-    private dataset: { [key: string]: InsightCourse[] } = {};
+    private dataset: { [key: string]: InsightCourse[]| InsightRoom[] } = {};
+    // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
 
@@ -136,7 +143,7 @@ export default class InsightFacade implements IInsightFacade {
                 if (!hasAddedDataset) {
                     return Promise.resolve();
                 } else {
-                    this.dataset[id] = this.dataset[id].concat(courses);
+                    // this.dataset[id] = this.dataset[id].concat(courses);
                     return Promise.resolve();
                 }
             }));
@@ -185,15 +192,22 @@ export default class InsightFacade implements IInsightFacade {
             // Log.trace(1);
             return Promise.reject(new InsightError("duplicate id"));
         }
-        if (kind !== "courses") {
+
+        if (!InsightValidator.isValidDatasetKind(kind)) {
+            Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
-
         return this.storeCacheIdsToIdset().then(() => {
             if (this.hasID(id)) {
                 return Promise.reject(new InsightError("addDataset found in memory or cache"));
             } else {
-                return this.readFromZip(id, content, kind);
+                return InsightCacheManager.readFromZip(id, content, kind);
+            }
+        }).then((dataset: { [key: string]: InsightCourse[] } | {[key: string]: InsightRoom[]}) => {
+            let keys = Object.keys(dataset);
+            if (keys.length === 1) {
+                this.ids.add(keys[0]);
+                Object.assign(this.dataset, dataset);
             }
         }).then(() => {
             if (Object.keys(this.dataset).length > 0 && Object.values(this.dataset)[0].length > 0) {
@@ -245,7 +259,7 @@ export default class InsightFacade implements IInsightFacade {
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {
-            const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
+            const qv: Queryvalid = new Queryvalid(this.dataset);
             const warning = qv.queryValid(query);
             if (warning !== "") {
                 return Promise.reject(new InsightError(warning));
