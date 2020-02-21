@@ -53,7 +53,7 @@ export default class InsightValidator {
             insightRoom.lon, insightRoom.seats);
     }
 
-    public static isInsightCourse(insightCourse: InsightCourse) {
+    public static isInsightCourse(insightCourse: InsightRoom| InsightCourse) {
         let insightCourseInterface: InsightCourse = {
             audit: 0,
             avg: 0,
@@ -71,7 +71,7 @@ export default class InsightValidator {
         }, true);
     }
 
-    public static isInsightRoom(insightRoom: InsightRoom) {
+    public static isInsightRoom(insightRoom: InsightRoom| InsightCourse) {
         let insightRoomInterface: InsightRoom = {
             address: "",
             fullname: "",
