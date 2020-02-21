@@ -121,7 +121,7 @@ export default class InsightCacheManager {
             let tBodyRows: Element[] = InsightParse5Selector.parse5selector(tBody[0],
                 InsightParse5Selector.isTableBodyRow);
             return tBodyRows.map((tr: Element) => {
-                return InsightCacheManager.getInsightRoomDetailPage(tr, insightRoom);
+                return InsightCacheManager.getInsightRoomDetailPage(tr, Object.assign({}, insightRoom));
             });
         } else {
             return [insightRoom];
