@@ -62,6 +62,20 @@ export interface InsightCourse {
     year: number;
 }
 
+export interface InsightRoom {
+    fullname: string;
+    shortname: string;
+    number: string;
+    name: string;
+    address: string;
+    lat: number;
+    lon: number;
+    seats: number;
+    type: string;
+    furniture: string;
+    href: string;
+}
+
 export enum InsightDatasetKind {
     Courses = "courses",
     Rooms = "rooms",

@@ -1,10 +1,16 @@
-import {InsightCourseDataFromZip, InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {InsightCourseDataFromZip, InsightDatasetKind, InsightError, InsightRoom, InsightCourse} from "./IInsightFacade";
 import {JSZipObject} from "jszip";
 
 export default class InsightValidator {
     public static arePositiveNumbers(...nums: any): boolean {
         return nums.reduce((accumulator: boolean, num: any) => {
             return (typeof num === "number") && num >= 0 && accumulator;
+        }, true);
+    }
+
+    public static areNumbers(...nums: any): boolean {
+        return nums.reduce((accumulator: boolean, num: any) => {
+            return (typeof num === "number") && accumulator;
         }, true);
     }
 
@@ -38,5 +44,49 @@ export default class InsightValidator {
 
     public static isValidDatasetKind(kind: InsightDatasetKind) {
         return Object.values(InsightDatasetKind).includes(kind);
+    }
+
+    public static isValidInsightRoom(insightRoom: InsightRoom): boolean {
+        return insightRoom != null && InsightValidator.isInsightRoom(insightRoom) && InsightValidator.areStrings(
+            insightRoom.address, insightRoom.fullname, insightRoom.shortname, insightRoom.number, insightRoom.name,
+            insightRoom.type, insightRoom.furniture, insightRoom.href) && InsightValidator.areNumbers(insightRoom.lat,
+            insightRoom.lon, insightRoom.seats);
+    }
+
+    public static isInsightCourse(insightCourse: InsightCourse) {
+        let insightCourseInterface: InsightCourse = {
+            audit: 0,
+            avg: 0,
+            dept: "",
+            fail: 0,
+            id: "",
+            instructor: "",
+            pass: 0,
+            title: "",
+            uuid: "",
+            year: 0
+        };
+        return Object.keys(insightCourseInterface).reduce((accumulator: boolean, key) => {
+            return accumulator && key in insightCourse;
+        }, true);
+    }
+
+    public static isInsightRoom(insightRoom: InsightRoom) {
+        let insightRoomInterface: InsightRoom = {
+            address: "",
+            fullname: "",
+            furniture: "",
+            href: "",
+            lat: 0,
+            lon: 0,
+            name: "",
+            number: "",
+            seats: 0,
+            shortname: "",
+            type: ""
+        };
+        return Object.keys(insightRoomInterface).reduce((accumulator: boolean, key) => {
+            return accumulator && key in insightRoom;
+        }, true);
     }
 }
