@@ -3,14 +3,12 @@ import {
     FoundCacheError,
     IInsightFacade,
     InsightCourse,
-    InsightCourseDataFromZip,
     InsightDataset,
     InsightDatasetKind,
-    InsightError, InsightRoom,
+    InsightError,
+    InsightRoom,
     NotFoundError
 } from "./IInsightFacade";
-import * as JSZip from "jszip";
-import {JSZipObject} from "jszip";
 import * as fs from "fs-extra";
 import Queryvalid from "./QueryValidateKit/QueryValid";
 import QueryPerform from "./QueryPerformKit/QueryPerform";
@@ -23,7 +21,7 @@ import InsightCacheManager from "./InsightCacheManager";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-    private dataset: { [key: string]: InsightCourse[]| InsightRoom[] } = {};
+    private dataset: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
     // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
@@ -108,7 +106,7 @@ export default class InsightFacade implements IInsightFacade {
             } else {
                 return InsightCacheManager.readFromZip(id, content, kind);
             }
-        }).then((dataset: { [key: string]: InsightCourse[] } | {[key: string]: InsightRoom[]}) => {
+        }).then((dataset: { [key: string]: InsightCourse[] } | { [key: string]: InsightRoom[] }) => {
             let keys = Object.keys(dataset);
             if (keys.length === 1) {
                 this.ids.add(keys[0]);
@@ -179,7 +177,8 @@ export default class InsightFacade implements IInsightFacade {
             Object.keys(this.dataset).map((id: string) => {
                 insightDatasets.push({
                     id: id,
-                    kind: InsightDatasetKind.Courses,
+                    kind: InsightValidator.isInsightCourse(this.dataset[id][0]) ?
+                        InsightDatasetKind.Courses : InsightDatasetKind.Rooms,
                     numRows: this.dataset[id].length
                 });
             });
