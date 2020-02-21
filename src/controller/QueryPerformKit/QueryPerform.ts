@@ -40,17 +40,32 @@ export default class QueryPerform {
         }
     }
 
-    private order(query: any): void {
-        let ordKey = query["OPTIONS"]["ORDER"];
-        if (ordKey === undefined) {
-            return;
+    // sort by given key, order: 1-ascending, 0-descending
+    private sort(key: string, order: number): void {
+        this.res.sort((e1, e2) => {
+            return order * (e1[key] < e2[key] ? -1 : 1);
+        });
+    }
+
+    private sortAll(ord: any): void {
+        let dir = ord["dir"];
+        let keys = ord["keys"];
+        let order = dir === "DOWN" ? -1 : 1;
+        for (let key of keys) {
+            this.sort(key, order);
         }
-        this.res.sort((e1, e2) => e1[ordKey] - e2[ordKey]);
+    }
+
+    private order(query: any): void {
+        let opt = query["OPTIONS"];
+        if (opt.hasOwnProperty("ORDER")) {
+            let ord = opt["ORDER"];
+            typeof (ord) === "string" ? this.sort(ord, 1) : this.sortAll(ord);
+        }
     }
 
     private filter(query: any): void {
         let body = query["WHERE"];
-        // TODO: pass by ref? possible errors
         if (!Object.keys(body).length) {
             this.validDataset = this.dataset[this.id];
         }
