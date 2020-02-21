@@ -5,7 +5,6 @@ import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
 import {consoleTestResultHandler} from "tslint/lib/test";
-import QueryValid from "../src/controller/QueryValidateKit/QueryValid";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -32,7 +31,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Not_Valid: "./test/data/Not_Valid.zip",
         ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
         validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
-        room: "./test/data/room.zip",
+        room: "./test/data/rooms.zip",
         coursesdirIncourseDir: "./test/data/coursesdirIncourseDir.zip",
         nestedcourse: "./test/data/nestedcourse.zip",
         empryField: "./test/data/empryField.zip",
@@ -203,12 +202,13 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
-    it("addDataset should reject dataset room type", () => {
+    it("addDataset should accept dataset room type", () => {
         const id: string = "room";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset type room");
+            expect(result).to.deep.equal([id]);
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            Log.trace(err);
+            expect.fail(err, [id], "Should resolve");
         });
     });
 
@@ -1038,6 +1038,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
         courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
+        rooms: {path: "./test/data/rooms.zip", kind: InsightDatasetKind.Rooms}
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
