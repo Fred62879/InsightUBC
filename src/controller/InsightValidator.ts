@@ -1,4 +1,4 @@
-import {InsightCourseDataFromZip, InsightDatasetKind, InsightError, InsightRoom, InsightCourse} from "./IInsightFacade";
+/import {InsightCourseDataFromZip, InsightDatasetKind, InsightError, InsightRoom, InsightCourse} from "./IInsightFacade";
 import {JSZipObject} from "jszip";
 
 export default class InsightValidator {
