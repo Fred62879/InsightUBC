@@ -158,7 +158,7 @@ export default class InsightCacheManager {
                         (insightRoomWithGeo: InsightRoom) => {
                             return jszipRootDir.file(link).async("text").then((htmlString: string) => {
                                 return InsightCacheManager.getInsightRoomNumberDetailPage(htmlString,
-                                    insightRoomWithGeo);
+                                    Object.assign({}, insightRoomWithGeo));
                             });
                         });
                 }
