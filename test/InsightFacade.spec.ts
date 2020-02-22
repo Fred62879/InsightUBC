@@ -1077,7 +1077,11 @@ describe("InsightFacade PerformQuery", () => {
         for (const id of Object.keys(datasetsToQuery)) {
             const ds = datasetsToQuery[id];
             const data = fs.readFileSync(ds.path).toString("base64");
-            // loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
+            loadDatasetPromises.push(insightFacade.readAllCacheToMemory().then(() => {
+                if (!insightFacade.hasID(id)) {
+                    return insightFacade.addDataset(id, data, ds.kind);
+                }
+            }));
             // loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
         }
         return Promise.all(loadDatasetPromises);
