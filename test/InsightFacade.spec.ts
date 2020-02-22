@@ -4,8 +4,6 @@ import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from ".
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
-import {consoleTestResultHandler} from "tslint/lib/test";
-import QueryValid from "../src/controller/QueryValidateKit/QueryValid";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -32,7 +30,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Not_Valid: "./test/data/Not_Valid.zip",
         ValidAndInvalidFile: "./test/data/ValidAndInvalidFile.zip",
         validAndInvalidFolders: "./test/data/validAndInvalidFolders.zip",
-        room: "./test/data/room.zip",
+        room: "./test/data/rooms.zip",
         coursesdirIncourseDir: "./test/data/coursesdirIncourseDir.zip",
         nestedcourse: "./test/data/nestedcourse.zip",
         empryField: "./test/data/empryField.zip",
@@ -203,12 +201,29 @@ describe("InsightFacade Add/Remove Dataset", function () {
         });
     });
 
-    it("addDataset should reject dataset room type", () => {
+    it("addDataset should accept dataset room type", () => {
         const id: string = "room";
+        const id1: string = "courses";
         return insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms).then((result: string[]) => {
-            expect.fail(result, "err", "Should reject dataset type room");
+            expect(result).to.deep.equal([id]);
+            return insightFacade.listDatasets();
+        }).then((insightDatasets: InsightDataset[]) => {
+            expect(insightDatasets[0].id).to.deep.equal(id);
+            expect(insightDatasets[0].kind).to.deep.equal(InsightDatasetKind.Rooms);
+            expect(insightDatasets[0].numRows).to.deep.equal(364);
+            return insightFacade.addDataset(id1, datasets[id1], InsightDatasetKind.Courses);
+        }).then((ids) => {
+            return insightFacade.listDatasets();
+        }).then((insightDatasets: InsightDataset[]) => {
+            expect(insightDatasets[0].id).to.deep.equal(id);
+            expect(insightDatasets[0].kind).to.deep.equal(InsightDatasetKind.Rooms);
+            expect(insightDatasets[0].numRows).to.deep.equal(364);
+            expect(insightDatasets[1].id).to.deep.equal(id1);
+            expect(insightDatasets[1].kind).to.deep.equal("courses");
+            expect(insightDatasets[1].numRows).to.deep.equal(64612);
         }).catch((err: any) => {
-            expect(err).to.exist.and.be.an.instanceOf(InsightError);
+            Log.trace(err);
+            expect.fail(err, [id], "Should resolve");
         });
     });
 
@@ -1038,6 +1053,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
         courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
+        rooms: {path: "./test/data/rooms.zip", kind: InsightDatasetKind.Rooms}
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -1062,7 +1078,7 @@ describe("InsightFacade PerformQuery", () => {
             const ds = datasetsToQuery[id];
             const data = fs.readFileSync(ds.path).toString("base64");
             loadDatasetPromises.push(deleteCacheFile(id).then(() => insightFacade.addDataset(id, data, ds.kind)));
-            loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
+            // loadDatasetPromises.push(insightFacade.addDataset(id, data, ds.kind));
         }
         return Promise.all(loadDatasetPromises);
     });
