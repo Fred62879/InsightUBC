@@ -1,0 +1,273 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "GT": {
+                                "courses_avg": 90
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept": "*d*"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "OR": [
+                        {
+                            "LT": {
+                                "courses_avg": 8
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept": "*a*"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "OR": [
+                        {
+                            "GT": {
+                                "courses_avg": 88
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept": "*e*"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "seatAvg",
+                "seatSum",
+                "numberOfRoom",
+                "maxLat"
+            ],
+            "ORDER": "seatAvg"
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_dept"
+            ],
+            "APPLY": [
+                {
+                    "seatAvg": {
+                        "AVG": "courses_pass"
+                    }
+                },
+                {
+                    "seatSum": {
+                        "SUM": "courses_fail"
+                    }
+                },
+                {
+                    "numberOfRoom": {
+                        "COUNT": "courses_year"
+                    }
+                },
+                {
+                    "maxLat": {
+                        "MAX": "courses_audit"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_dept": "arth",
+            "seatAvg": 2.43,
+            "seatSum": 0,
+            "numberOfRoom": 5,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "ital",
+            "seatAvg": 4,
+            "seatSum": 0,
+            "numberOfRoom": 2,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "astr",
+            "seatAvg": 4.5,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "anat",
+            "seatAvg": 5,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "atsc",
+            "seatAvg": 5,
+            "seatSum": 0,
+            "numberOfRoom": 2,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "span",
+            "seatAvg": 7,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "bota",
+            "seatAvg": 7.33,
+            "seatSum": 0,
+            "numberOfRoom": 4,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "sans",
+            "seatAvg": 7.5,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "math",
+            "seatAvg": 7.89,
+            "seatSum": 0,
+            "numberOfRoom": 11,
+            "maxLat": 2
+        },
+        {
+            "courses_dept": "babs",
+            "seatAvg": 8,
+            "seatSum": 0,
+            "numberOfRoom": 2,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "anth",
+            "seatAvg": 8.8,
+            "seatSum": 0,
+            "numberOfRoom": 4,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "aanb",
+            "seatAvg": 9,
+            "seatSum": 0,
+            "numberOfRoom": 2,
+            "maxLat": 9
+        },
+        {
+            "courses_dept": "arst",
+            "seatAvg": 10.08,
+            "seatSum": 0,
+            "numberOfRoom": 6,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "stat",
+            "seatAvg": 11,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "path",
+            "seatAvg": 11.81,
+            "seatSum": 0,
+            "numberOfRoom": 10,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "dani",
+            "seatAvg": 12.5,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 2
+        },
+        {
+            "courses_dept": "name",
+            "seatAvg": 13,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "gsat",
+            "seatAvg": 14,
+            "seatSum": 0,
+            "numberOfRoom": 2,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "larc",
+            "seatAvg": 14.5,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "bams",
+            "seatAvg": 15,
+            "seatSum": 0,
+            "numberOfRoom": 3,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "plan",
+            "seatAvg": 16.33,
+            "seatSum": 0,
+            "numberOfRoom": 11,
+            "maxLat": 2
+        },
+        {
+            "courses_dept": "audi",
+            "seatAvg": 17.27,
+            "seatSum": 0,
+            "numberOfRoom": 11,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "apsc",
+            "seatAvg": 19,
+            "seatSum": 0,
+            "numberOfRoom": 7,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "apbi",
+            "seatAvg": 21,
+            "seatSum": 1,
+            "numberOfRoom": 1,
+            "maxLat": 0
+        },
+        {
+            "courses_dept": "adhe",
+            "seatAvg": 35.53,
+            "seatSum": 122,
+            "numberOfRoom": 11,
+            "maxLat": 1
+        },
+        {
+            "courses_dept": "phar",
+            "seatAvg": 58.61,
+            "seatSum": 0,
+            "numberOfRoom": 10,
+            "maxLat": 1
+        }
+    ]
+}

@@ -1,0 +1,225 @@
+{
+    "title": "4applyKeys",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 60
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_lon",
+                "seatAvg",
+                "seatSum",
+                "numberOfRoom"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "seatAvg"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_lon"
+            ],
+            "APPLY": [
+                {
+                    "seatAvg": {
+                        "AVG": "rooms_seats"
+                    }
+                },
+                {
+                    "seatSum": {
+                        "SUM": "rooms_seats"
+                    }
+                },
+                {
+                    "numberOfRoom": {
+                        "COUNT": "rooms_shortname"
+                    }
+                },
+                {
+                    "maxLat": {
+                        "MAX": "rooms_lat"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_lon": -123.24467,
+            "seatAvg": 442,
+            "seatSum": 442,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25165,
+            "seatAvg": 375,
+            "seatSum": 375,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24494,
+            "seatAvg": 275,
+            "seatSum": 825,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24894,
+            "seatAvg": 211.8,
+            "seatSum": 1059,
+            "numberOfRoom": 2
+        },
+        {
+            "rooms_lon": -123.25431,
+            "seatAvg": 188.75,
+            "seatSum": 755,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24608,
+            "seatAvg": 160,
+            "seatSum": 160,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24342,
+            "seatAvg": 158.33,
+            "seatSum": 475,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25533,
+            "seatAvg": 154.33,
+            "seatSum": 463,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24718,
+            "seatAvg": 147,
+            "seatSum": 294,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.2521,
+            "seatAvg": 133,
+            "seatSum": 266,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24807,
+            "seatAvg": 120,
+            "seatSum": 360,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24935,
+            "seatAvg": 114.33,
+            "seatSum": 343,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24673,
+            "seatAvg": 112,
+            "seatSum": 448,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25042,
+            "seatAvg": 100,
+            "seatSum": 100,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25364,
+            "seatAvg": 97.71,
+            "seatSum": 684,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25318,
+            "seatAvg": 94,
+            "seatSum": 94,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25623,
+            "seatAvg": 86,
+            "seatSum": 172,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25224,
+            "seatAvg": 80,
+            "seatSum": 80,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25583,
+            "seatAvg": 80,
+            "seatSum": 80,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25468,
+            "seatAvg": 78.8,
+            "seatSum": 788,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25249,
+            "seatAvg": 76,
+            "seatSum": 76,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25027,
+            "seatAvg": 72,
+            "seatSum": 72,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24944,
+            "seatAvg": 72,
+            "seatSum": 72,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25237,
+            "seatAvg": 70,
+            "seatSum": 70,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24842,
+            "seatAvg": 66,
+            "seatSum": 66,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.24886,
+            "seatAvg": 65,
+            "seatSum": 130,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_lon": -123.25179,
+            "seatAvg": 63,
+            "seatSum": 63,
+            "numberOfRoom": 1
+        }
+    ]
+}
