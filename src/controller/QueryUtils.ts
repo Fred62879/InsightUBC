@@ -36,7 +36,7 @@ export class QueryUtils {
         }
 
         let roomMFieldArray = ["lat", "lon", "seats"];
-        for (let f of roomFieldArray) {
+        for (let f of roomMFieldArray) {
             this.roomMFields.add(f);
         }
         let roomSFieldArray = ["fullname", "shortname", "number", "name", "address", "type", "furniture", "href"];
@@ -217,7 +217,7 @@ export class QueryUtils {
 
     // atk: "AVG"; atkk: "courses_avg"
     public applyTokenKeyValid(atk: string, atkk: string): string {
-        let fields = this.type ? this.roomFields : this.courseFields;
+        let mfields = this.type ? this.roomMFields : this.courseMFields;
         let atkkErr = this.keyValid(atkk, "APPLY", this.fieldsOfType);
         if (atkkErr !== "") {
             return atkkErr;
@@ -225,7 +225,7 @@ export class QueryUtils {
 
         if (atk === "MAX" || atk === "MIN" || atk === "AVG" || atk === "SUM") {
             let keyWithoutTypeName = atkk.split("_")[1];
-            if (!fields.has(keyWithoutTypeName)) {
+            if (!mfields.has(keyWithoutTypeName)) {
                 return "Invalid key type in " + atk;
             }
         }

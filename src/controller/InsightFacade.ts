@@ -32,7 +32,7 @@ export default class InsightFacade implements IInsightFacade {
         Log.trace("InsightFacadeImpl::init()");
     }
 
-    private hasID(id: string): boolean {
+    public hasID(id: string): boolean {
         if (this.ids.has(id) || this.dataset[id]) {
             return true;
         }
@@ -72,11 +72,11 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private readAllCacheToMemory(): Promise<void[] | boolean> {
+    public readAllCacheToMemory(): Promise<void[] | boolean> {
         return this.storeCacheIdsToIdset().then((ids: string[]) => {
             return Promise.all(ids.map((id: string) => {
                 return new Promise((resolve, reject) => {
-                    if (this.hasID(id)) {
+                    if (this.dataset[id]) {
                         return resolve(true);
                     }
                     return resolve(this.readCache(id, InsightDatasetKind.Courses));
