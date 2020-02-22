@@ -76,7 +76,7 @@ export default class InsightFacade implements IInsightFacade {
         return this.storeCacheIdsToIdset().then((ids: string[]) => {
             return Promise.all(ids.map((id: string) => {
                 return new Promise((resolve, reject) => {
-                    if (this.hasID(id)) {
+                    if (this.dataset[id]) {
                         return resolve(true);
                     }
                     return resolve(this.readCache(id, InsightDatasetKind.Courses));
