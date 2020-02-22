@@ -68,12 +68,14 @@ export default class QueryPerform {
         let body = query["WHERE"];
         if (!Object.keys(body).length) {
             this.validDataset = this.dataset[this.id];
+            return;
         }
         for (let section of this.dataset[this.id]) {
             if (this.fu.perform(body, section)) {
                 this.validDataset.push(section);
             }
         }
+        return;
     }
 
 

@@ -1,8 +1,7 @@
 {
     "title": "allTheBuildingsWithBiggestRoomGeoLocationTest",
     "query": {
-        "WHERE": {
-        },
+        "WHERE": {},
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_shortname",
@@ -59,15 +58,15 @@
             "maxSeats": 375
         },
         {
-            "rooms_shortname": "ESB",
-            "rooms_lat": 49.26274,
-            "rooms_lon": -123.25224,
-            "maxSeats": 350
-        },
-        {
             "rooms_shortname": "LSC",
             "rooms_lat": 49.26236,
             "rooms_lon": -123.24494,
+            "maxSeats": 350
+        },
+        {
+            "rooms_shortname": "ESB",
+            "rooms_lat": 49.26274,
+            "rooms_lon": -123.25224,
             "maxSeats": 350
         },
         {
@@ -149,15 +148,15 @@
             "maxSeats": 205
         },
         {
-            "rooms_shortname": "CHBE",
-            "rooms_lat": 49.26228,
-            "rooms_lon": -123.24718,
-            "maxSeats": 200
-        },
-        {
             "rooms_shortname": "MCML",
             "rooms_lat": 49.26114,
             "rooms_lon": -123.25027,
+            "maxSeats": 200
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "rooms_lat": 49.26228,
+            "rooms_lon": -123.24718,
             "maxSeats": 200
         },
         {
@@ -167,15 +166,15 @@
             "maxSeats": 190
         },
         {
-            "rooms_shortname": "FRDM",
-            "rooms_lat": 49.26541,
-            "rooms_lon": -123.24608,
-            "maxSeats": 160
-        },
-        {
             "rooms_shortname": "DMP",
             "rooms_lat": 49.26125,
             "rooms_lon": -123.24807,
+            "maxSeats": 160
+        },
+        {
+            "rooms_shortname": "FRDM",
+            "rooms_lat": 49.26541,
+            "rooms_lon": -123.24608,
             "maxSeats": 160
         },
         {
@@ -203,15 +202,15 @@
             "maxSeats": 106
         },
         {
-            "rooms_shortname": "CEME",
-            "rooms_lat": 49.26273,
-            "rooms_lon": -123.24894,
-            "maxSeats": 100
-        },
-        {
             "rooms_shortname": "IONA",
             "rooms_lat": 49.27106,
             "rooms_lon": -123.25042,
+            "maxSeats": 100
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_lat": 49.26273,
+            "rooms_lon": -123.24894,
             "maxSeats": 100
         },
         {
@@ -221,15 +220,15 @@
             "maxSeats": 99
         },
         {
-            "rooms_shortname": "ALRD",
-            "rooms_lat": 49.2699,
-            "rooms_lon": -123.25318,
-            "maxSeats": 94
-        },
-        {
             "rooms_shortname": "LASR",
             "rooms_lat": 49.26767,
             "rooms_lon": -123.25583,
+            "maxSeats": 94
+        },
+        {
+            "rooms_shortname": "ALRD",
+            "rooms_lat": 49.2699,
+            "rooms_lon": -123.25318,
             "maxSeats": 94
         },
         {
@@ -281,15 +280,15 @@
             "maxSeats": 50
         },
         {
-            "rooms_shortname": "PCOH",
-            "rooms_lat": 49.264,
-            "rooms_lon": -123.2559,
-            "maxSeats": 40
-        },
-        {
             "rooms_shortname": "MGYM",
             "rooms_lat": 49.2663,
             "rooms_lon": -123.2466,
+            "maxSeats": 40
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "rooms_lat": 49.264,
+            "rooms_lon": -123.2559,
             "maxSeats": 40
         },
         {

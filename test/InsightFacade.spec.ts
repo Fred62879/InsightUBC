@@ -1106,6 +1106,9 @@ describe("InsightFacade PerformQuery", () => {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
                     const resultChecker = TestUtil.getQueryChecker(test, done);
+                    // insightFacade.performQuery(test.query).then((result) => {
+                    //     reformatTest(Object.assign({}, test), [].concat(result));
+                    // });
                     insightFacade.performQuery(test.query)
                         .then(resultChecker)
                         .catch(resultChecker);
@@ -1115,16 +1118,17 @@ describe("InsightFacade PerformQuery", () => {
     });
 });
 // This function generate query json test files. Result is populated using our perform query result.
-// const reformatTest = (test: any, result: any) => {
-//     let filename = test.filename;
-//     delete test.filename;
-//     test.result = result;
-//     let jsonString = JSON.stringify(test);
-//     let path = "./test/" + filename;
-//     fs.writeFile("./test/" + filename, jsonString).catch((err) => {
-//         Log.trace(err);
-//     });
-// };
+const reformatTest = (test: any, result: any) => {
+    let filename = test.filename;
+    delete test.filename;
+    test.result = result;
+    let jsonString = JSON.stringify(test);
+    let path = "./test/" + filename;
+    fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+        Log.trace(err);
+    });
+};
+
 function deleteCacheFile(id: string): Promise<boolean> {
     return fs.unlink("./data/" + id + ".json").then(() => {
         return Promise.resolve(true);
