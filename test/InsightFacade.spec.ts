@@ -1118,21 +1118,21 @@ describe("InsightFacade PerformQuery", () => {
     });
 });
 // This function generate query json test files. Result is populated using our perform query result.
-const reformatTest = (test: any, result: any) => {
-    let filename = test.filename;
-    delete test.filename;
-    test.result = result;
-    let jsonString = JSON.stringify(test);
-    let path = "./test/" + filename;
-    fs.writeFile("./test/" + filename, jsonString).catch((err) => {
-        Log.trace(err);
-    });
-};
-
-function deleteCacheFile(id: string): Promise<boolean> {
-    return fs.unlink("./data/" + id + ".json").then(() => {
-        return Promise.resolve(true);
-    }).catch((err) => {
-        return Promise.resolve(err);
-    });
-}
+// const reformatTest = (test: any, result: any) => {
+//     let filename = test.filename;
+//     delete test.filename;
+//     test.result = result;
+//     let jsonString = JSON.stringify(test);
+//     let path = "./test/" + filename;
+//     fs.writeFile("./test/" + filename, jsonString).catch((err) => {
+//         Log.trace(err);
+//     });
+// };
+//
+// function deleteCacheFile(id: string): Promise<boolean> {
+//     return fs.unlink("./data/" + id + ".json").then(() => {
+//         return Promise.resolve(true);
+//     }).catch((err) => {
+//         return Promise.resolve(err);
+//     });
+// }
