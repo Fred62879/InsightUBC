@@ -20,19 +20,11 @@ export default class QueryPerform {
     // datasets
     private res: SelectedFields[] = [];
     private validDataset: SelectedFields[] = [];
-<<<<<<< HEAD
-    private dataset: { [key: string]: InsightCourse[] | InsightRoom[] };
-
-
-    constructor(dataset: { [key: string]: InsightCourse[] | InsightRoom[] }) {
-=======
     private dataset: { [key: string]: InsightCourse[]| InsightRoom[] };
 
 
     constructor(dataset: { [key: string]: InsightCourse[]| InsightRoom[] }) {
->>>>>>> refs/remotes/origin/init
         this.dataset = dataset;
-
     }
 
     private extract(query: any): void {
@@ -83,7 +75,6 @@ export default class QueryPerform {
             }
         }
     }
-
 
     // ** Running query operator
     public run(query: any): Promise<any[]> {

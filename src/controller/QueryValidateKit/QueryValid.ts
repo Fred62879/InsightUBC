@@ -1,10 +1,8 @@
-import Log from "../../Util";
-import * as assert from "assert";
 import {QueryUtils} from "../QueryUtils";
 import {QueryOptionsValid} from "./QueryOptionsValid";
 import {QueryBodyValid} from "./QueryBodyValid";
 import {QueryTransformValid} from "./QueryTransformValid";
-import {InsightCourse, InsightRoom} from "../IInsightFacade";
+import {Data, InsightCourse, InsightRoom} from "../IInsightFacade";
 
 export default class QueryValid {
 
@@ -18,7 +16,8 @@ export default class QueryValid {
 
     private hasTrans: boolean;
 
-    constructor(dataset: { [key: string]: InsightCourse[]| InsightRoom[] }) {
+    // constructor(dataset: { [key: string]: InsightCourse[]| InsightRoom[] }) {
+    constructor(dataset: { [key: string]: Data }) {
         this.qu.setIDs(new Set(Object.keys(dataset)));
         this.keys.add("WHERE");
         this.keys.add("OPTIONS");
