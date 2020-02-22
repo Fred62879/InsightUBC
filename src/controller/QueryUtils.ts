@@ -71,6 +71,9 @@ export class QueryUtils {
     // Determine whether rooms or courses being queried and
     // setup current id analyzing GROUP or COLUMNS
     public setup(query: any): string {
+        if (!query) {
+            return "Query Invalid Null";
+        }
         if (query.hasOwnProperty("TRANSFORMATIONS")) {
             this.hasTrans = true;
         }
