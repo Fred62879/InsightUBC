@@ -16,7 +16,8 @@
 		"dir": "UP",
 		"keys": [
 		    "courses_dept",
-		    "courses_audit"
+		    "courses_audit",
+		    "max"
 		]
 	    }
 	},

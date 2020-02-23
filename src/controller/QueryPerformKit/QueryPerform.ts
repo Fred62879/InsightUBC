@@ -40,10 +40,10 @@ export default class QueryPerform {
         }
     }
 
-    // sort by given key, order: 1-ascending, -1-descending
-    private sort(key: string, order: number): void {
+    // sort by given key, order: 1-ascending, 0-descending
+    private sort(key: string): void {
         this.res.sort((e1, e2) => {
-            return order * (e1[key] < e2[key] ? -1 : 1);
+            return e1[key] <= e2[key] ? -1 : 1;
         });
     }
 
@@ -51,17 +51,20 @@ export default class QueryPerform {
         let dir = ord["dir"];
         let keys = ord["keys"];
         let order = dir === "DOWN" ? -1 : 1;
-        for (let i = keys.length - 1; i >= 0; i--) {
-            Log.trace(keys[i]);
-            this.sort(keys[i], order);
-        }
+        this.res.sort((e1, e2) => {
+            for (let key of keys) {
+                if (e1[key] !== e2[key]) {
+                    return order * (e1[key] <= e2[key] ? -1 : 1);
+                }
+            }
+        });
     }
 
     private order(query: any): void {
         let opt = query["OPTIONS"];
         if (opt.hasOwnProperty("ORDER")) {
             let ord = opt["ORDER"];
-            typeof (ord) === "string" ? this.sort(ord, 1) : this.sortAll(ord);
+            typeof (ord) === "string" ? this.sort(ord) : this.sortAll(ord);
         }
     }
 
