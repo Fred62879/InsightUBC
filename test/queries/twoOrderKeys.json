@@ -1,0 +1,63 @@
+{
+    "title": "4applyKeys",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 30
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "seatAvg",
+                "seatSum",
+                "numberOfRoom"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "seatSum",
+                    "rooms_shortname"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "seatAvg": {
+                        "AVG": "rooms_lon"
+                    }
+                },
+                {
+                    "seatSum": {
+                        "SUM": "rooms_seats"
+                    }
+                },
+                {
+                    "numberOfRoom": {
+                        "COUNT": "rooms_shortname"
+                    }
+                },
+                {
+                    "maxLat": {
+                        "MAX": "rooms_lat"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+"result":[{"rooms_shortname":"ANGU","seatAvg":-123.25,"seatSum":1478,"numberOfRoom":1},{"rooms_shortname":"SWNG","seatAvg":-123.25,"seatSum":1178,"numberOfRoom":1},{"rooms_shortname":"BUCH","seatAvg":-123.25,"seatSum":1037,"numberOfRoom":1},{"rooms_shortname":"SRC","seatAvg":-123.25,"seatSum":897,"numberOfRoom":1},{"rooms_shortname":"LSC","seatAvg":-123.24,"seatSum":825,"numberOfRoom":1},{"rooms_shortname":"SCRF","seatAvg":-123.25,"seatSum":572,"numberOfRoom":1},{"rooms_shortname":"HEBB","seatAvg":-123.25,"seatSum":537,"numberOfRoom":1},{"rooms_shortname":"LSK","seatAvg":-123.26,"seatSum":505,"numberOfRoom":1},{"rooms_shortname":"MCLD","seatAvg":-123.25,"seatSum":503,"numberOfRoom":1},{"rooms_shortname":"OSBO","seatAvg":-123.24,"seatSum":482,"numberOfRoom":1},{"rooms_shortname":"PHRM","seatAvg":-123.24,"seatSum":475,"numberOfRoom":1},{"rooms_shortname":"WOOD","seatAvg":-123.25,"seatSum":448,"numberOfRoom":1},{"rooms_shortname":"DMP","seatAvg":-123.25,"seatSum":440,"numberOfRoom":1},{"rooms_shortname":"GEOG","seatAvg":-123.26,"seatSum":373,"numberOfRoom":1},{"rooms_shortname":"IBLC","seatAvg":-123.25,"seatSum":356,"numberOfRoom":1},{"rooms_shortname":"CHBE","seatAvg":-123.25,"seatSum":354,"numberOfRoom":1},{"rooms_shortname":"CEME","seatAvg":-123.25,"seatSum":241,"numberOfRoom":1},{"rooms_shortname":"ALRD","seatAvg":-123.25,"seatSum":188,"numberOfRoom":1},{"rooms_shortname":"MCML","seatAvg":-123.25,"seatSum":183,"numberOfRoom":1},{"rooms_shortname":"FSC","seatAvg":-123.25,"seatSum":166,"numberOfRoom":1},{"rooms_shortname":"FRDM","seatAvg":-123.25,"seatSum":160,"numberOfRoom":1},{"rooms_shortname":"MATH","seatAvg":-123.26,"seatSum":156,"numberOfRoom":1},{"rooms_shortname":"IONA","seatAvg":-123.25,"seatSum":150,"numberOfRoom":1},{"rooms_shortname":"FORW","seatAvg":-123.25,"seatSum":142,"numberOfRoom":1},{"rooms_shortname":"PCOH","seatAvg":-123.26,"seatSum":120,"numberOfRoom":1},{"rooms_shortname":"UCLL","seatAvg":-123.26,"seatSum":103,"numberOfRoom":1},{"rooms_shortname":"ESB","seatAvg":-123.25,"seatSum":80,"numberOfRoom":1},{"rooms_shortname":"LASR","seatAvg":-123.26,"seatSum":80,"numberOfRoom":1},{"rooms_shortname":"BIOL","seatAvg":-123.25,"seatSum":76,"numberOfRoom":1},{"rooms_shortname":"ORCH","seatAvg":-123.25,"seatSum":72,"numberOfRoom":1},{"rooms_shortname":"ANSO","seatAvg":-123.26,"seatSum":70,"numberOfRoom":1},{"rooms_shortname":"BRKX","seatAvg":-123.25,"seatSum":70,"numberOfRoom":1},{"rooms_shortname":"SPPH","seatAvg":-123.25,"seatSum":66,"numberOfRoom":1},{"rooms_shortname":"EOSM","seatAvg":-123.25,"seatSum":50,"numberOfRoom":1},{"rooms_shortname":"HENN","seatAvg":-123.25,"seatSum":36,"numberOfRoom":1}]
+}
