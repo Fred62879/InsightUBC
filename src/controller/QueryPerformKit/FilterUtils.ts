@@ -80,7 +80,8 @@ export class FilterUtils {
             return this.mCompFilter(operator, body, section);
         } else if (this.scomp.has(operator)) {
             return this.sCompFilter(operator, body, section);
-        } else if (operator === "NOT") {
+        } else {
+            // assert(operator === "NOT");
             return this.nFilter(operator, body, section);
         }
         return true; // empty where
