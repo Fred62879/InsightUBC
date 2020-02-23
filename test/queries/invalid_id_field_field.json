@@ -1,1 +1,0 @@
-{"title":"SELECT dept, avg WHERE avg > 97","query":{"WHERE":{"AND":[{"LT":{"courses_avg_avg":50}},{"GT":{"courses_avg_avg":97}}]},"OPTIONS":{"COLUMNS":["courses_dept_dept"],"ORDER":"courses_avg_avg"}},"isQueryValid":false,"result":[]}

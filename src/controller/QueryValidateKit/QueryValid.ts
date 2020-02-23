@@ -3,6 +3,7 @@ import {QueryOptionsValid} from "./QueryOptionsValid";
 import {QueryBodyValid} from "./QueryBodyValid";
 import {QueryTransformValid} from "./QueryTransformValid";
 import {Data, InsightCourse, InsightRoom} from "../IInsightFacade";
+import Log from "../../Util";
 
 export default class QueryValid {
 
@@ -30,9 +31,6 @@ export default class QueryValid {
 
     private checkKeys(query: any): string {
         // check whether keys other than specified are present
-        if (!query) {
-            return "Null query";
-        }
         for (let k in query) {
             if (k === "TRANSFORMATIONS") {
                 this.hasTrans = true;
@@ -74,11 +72,13 @@ export default class QueryValid {
     }
 
     public queryValid(query: any): string {
+        if (query === null) {
+            return "Query is null";
+        }
         let error = this.qu.setup(query); // initialize queryUtils
         if (error !== "") {
             return error;
         }
-
         let keyInvalid = this.checkKeys(query);
         if (keyInvalid !== "") {
             return keyInvalid;

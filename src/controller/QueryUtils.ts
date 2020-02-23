@@ -1,7 +1,3 @@
-import Log from "../Util";
-import {InsightCourse, InsightRoom} from "./IInsightFacade";
-import InsightValidator from "./InsightValidator";
-import * as assert from "assert";
 
 export class QueryUtils {
     private curid = "";       // id of current query

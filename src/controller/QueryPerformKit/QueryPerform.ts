@@ -40,7 +40,7 @@ export default class QueryPerform {
         }
     }
 
-    // sort by given key, order: 1-ascending, 0-descending
+    // sort by given key, order: 1-ascending, -1-descending
     private sort(key: string, order: number): void {
         this.res.sort((e1, e2) => {
             return order * (e1[key] < e2[key] ? -1 : 1);
@@ -51,8 +51,9 @@ export default class QueryPerform {
         let dir = ord["dir"];
         let keys = ord["keys"];
         let order = dir === "DOWN" ? -1 : 1;
-        for (let key of keys) {
-            this.sort(key, order);
+        for (let i = keys.length - 1; i >= 0; i--) {
+            Log.trace(keys[i]);
+            this.sort(keys[i], order);
         }
     }
 
@@ -72,6 +73,9 @@ export default class QueryPerform {
         for (let section of this.dataset[this.id]) {
             if (this.fu.perform(body, section)) {
                 this.validDataset.push(section);
+                if (this.validDataset.length > 5000) {
+                    return;
+                }
             }
         }
     }
