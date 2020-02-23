@@ -1,4 +1,3 @@
-import Log from "../Util";
 
 export class QueryUtils {
     private curid = "";       // id of current query
@@ -70,6 +69,7 @@ export class QueryUtils {
     // ** Setup methods **
     // Determine whether rooms or courses being queried and
     // setup current id analyzing GROUP or COLUMNS
+    // public setup(query: any, dataset: { [key: string]: InsightCourse[]| InsightRoom[] }): string {
     public setup(query: any): string {
         if (!query) {
             return "Query Invalid Null";
@@ -100,6 +100,7 @@ export class QueryUtils {
         let field = sample.substr(bd + 1);
         if (this.roomFields.has(field)) {
             this.type = 1;
+            // assert(InsightValidator.isInsightCourse(dataset[this.curid]));
         } else if (this.courseFields.has(field)) {
             this.type = 0;
         } else {

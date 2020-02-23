@@ -57,7 +57,6 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-
     private storeCacheIdsToIdset(): Promise<string[]> {
         return fs.readdir(this.dataPath).then((files: string[]) => {
             let ids: string[] = files.map((file) => {
@@ -163,7 +162,7 @@ export default class InsightFacade implements IInsightFacade {
 
     public performQuery(query: any): Promise<any[]> {
         return this.readAllCacheToMemory().then(() => {
-            const qv: Queryvalid = new Queryvalid(new Set(Object.keys(this.dataset)));
+            const qv: Queryvalid = new Queryvalid(this.dataset);
             const warning = qv.queryValid(query);
             if (warning !== "") {
                 return Promise.reject(new InsightError(warning));

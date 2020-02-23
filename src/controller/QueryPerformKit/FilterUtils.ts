@@ -84,5 +84,6 @@ export class FilterUtils {
             // assert(operator === "NOT");
             return this.nFilter(operator, body, section);
         }
+        return true; // empty where
     }
 }

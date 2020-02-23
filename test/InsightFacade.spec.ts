@@ -15,6 +15,7 @@ export interface ITestQuery {
     filename: string;  // This is injected when reading the file
 }
 
+/*
 describe("InsightFacade Add/Remove Dataset", function () {
     // Reference any datasets you've added to test/data here and they will
     // automatically be loaded in the 'before' hook.
@@ -1044,12 +1045,14 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // });
 
 });
+ */
 
 /*
  * This test suite dynamically generates tests from the JSON files in test/queries.
  * You should not need to modify it; instead, add additional files to the queries directory.
  * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
  */
+
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: { path: string, kind: InsightDatasetKind } } = {
         courses: {path: "./test/data/courses.zip", kind: InsightDatasetKind.Courses},
@@ -1117,6 +1120,7 @@ describe("InsightFacade PerformQuery", () => {
         });
     });
 });
+
 // This function generate query json test files. Result is populated using our perform query result.
 const reformatTest = (test: any, result: any) => {
     let filename = test.filename;
