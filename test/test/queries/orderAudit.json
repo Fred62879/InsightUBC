@@ -1,0 +1,1 @@
+{"title":"order audit","query":{"WHERE":{"AND":[{"GT":{"courses_avg":99}},{"IS":{"courses_dept":"math"}}]},"OPTIONS":{"COLUMNS":["courses_dept","courses_audit"],"ORDER":"courses_audit"}},"isQueryValid":true,"result":[{"courses_dept":"math","courses_audit":0},{"courses_dept":"math","courses_audit":0}]}

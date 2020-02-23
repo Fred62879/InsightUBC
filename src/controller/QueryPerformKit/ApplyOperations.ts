@@ -50,15 +50,12 @@ export class ApplyOperations {
     }
 
     private avgOperation(sets: SelectedFields[], key: string): number {
-        // let total = new Decimal(0);
-        let total = 0;
+        let total = new Decimal(0);
         for (let set of sets) {
-            // let cur = new Decimal(set[key]);
-            // total.add(cur);
-            total += set[key];
+            let cur = new Decimal(set[key]);
+            total = total.add(cur);
         }
-        // let avg = (total.toNumber() / sets.length);
-        let avg = total / sets.length;
+        let avg = (total.toNumber() / sets.length);
         return  Number(avg.toFixed(2));
     }
 

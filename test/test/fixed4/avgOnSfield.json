@@ -1,0 +1,45 @@
+{
+    "title": "avgOnSfield",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 60
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_seats",
+                "numberOfRoomsWithSameNumberOfSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "rooms_seats"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_seats"
+            ],
+            "APPLY": [
+                {
+                    "numberOfRoomsWithSameNumberOfSeats": {
+                        "AVG": "rooms_shortname"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": []
+}

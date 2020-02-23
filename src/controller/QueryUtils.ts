@@ -1,4 +1,3 @@
-import Log from "../Util";
 
 export class QueryUtils {
     private curid = "";       // id of current query
@@ -36,7 +35,7 @@ export class QueryUtils {
         }
 
         let roomMFieldArray = ["lat", "lon", "seats"];
-        for (let f of roomFieldArray) {
+        for (let f of roomMFieldArray) {
             this.roomMFields.add(f);
         }
         let roomSFieldArray = ["fullname", "shortname", "number", "name", "address", "type", "furniture", "href"];
@@ -70,7 +69,11 @@ export class QueryUtils {
     // ** Setup methods **
     // Determine whether rooms or courses being queried and
     // setup current id analyzing GROUP or COLUMNS
+    // public setup(query: any, dataset: { [key: string]: InsightCourse[]| InsightRoom[] }): string {
     public setup(query: any): string {
+        if (!query) {
+            return "Query Invalid Null";
+        }
         if (query.hasOwnProperty("TRANSFORMATIONS")) {
             this.hasTrans = true;
         }
@@ -97,6 +100,7 @@ export class QueryUtils {
         let field = sample.substr(bd + 1);
         if (this.roomFields.has(field)) {
             this.type = 1;
+            // assert(InsightValidator.isInsightCourse(dataset[this.curid]));
         } else if (this.courseFields.has(field)) {
             this.type = 0;
         } else {
@@ -214,7 +218,7 @@ export class QueryUtils {
 
     // atk: "AVG"; atkk: "courses_avg"
     public applyTokenKeyValid(atk: string, atkk: string): string {
-        let fields = this.type ? this.roomFields : this.courseFields;
+        let mfields = this.type ? this.roomMFields : this.courseMFields;
         let atkkErr = this.keyValid(atkk, "APPLY", this.fieldsOfType);
         if (atkkErr !== "") {
             return atkkErr;
@@ -222,7 +226,7 @@ export class QueryUtils {
 
         if (atk === "MAX" || atk === "MIN" || atk === "AVG" || atk === "SUM") {
             let keyWithoutTypeName = atkk.split("_")[1];
-            if (!fields.has(keyWithoutTypeName)) {
+            if (!mfields.has(keyWithoutTypeName)) {
                 return "Invalid key type in " + atk;
             }
         }

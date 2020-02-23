@@ -41,9 +41,9 @@ export default class QueryPerform {
     }
 
     // sort by given key, order: 1-ascending, 0-descending
-    private sort(key: string, order: number): void {
+    private sort(key: string): void {
         this.res.sort((e1, e2) => {
-            return order * (e1[key] < e2[key] ? -1 : 1);
+            return e1[key] <= e2[key] ? -1 : 1;
         });
     }
 
@@ -51,16 +51,20 @@ export default class QueryPerform {
         let dir = ord["dir"];
         let keys = ord["keys"];
         let order = dir === "DOWN" ? -1 : 1;
-        for (let key of keys) {
-            this.sort(key, order);
-        }
+        this.res.sort((e1, e2) => {
+            for (let key of keys) {
+                if (e1[key] !== e2[key]) {
+                    return order * (e1[key] <= e2[key] ? -1 : 1);
+                }
+            }
+        });
     }
 
     private order(query: any): void {
         let opt = query["OPTIONS"];
         if (opt.hasOwnProperty("ORDER")) {
             let ord = opt["ORDER"];
-            typeof (ord) === "string" ? this.sort(ord, 1) : this.sortAll(ord);
+            typeof (ord) === "string" ? this.sort(ord) : this.sortAll(ord);
         }
     }
 
@@ -68,14 +72,18 @@ export default class QueryPerform {
         let body = query["WHERE"];
         if (!Object.keys(body).length) {
             this.validDataset = this.dataset[this.id];
+            return;
         }
         for (let section of this.dataset[this.id]) {
             if (this.fu.perform(body, section)) {
                 this.validDataset.push(section);
+                if (this.validDataset.length > 5000) {
+                    return;
+                }
             }
         }
+        return;
     }
-
 
     // ** Running query operator
     public run(query: any): Promise<any[]> {

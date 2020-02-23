@@ -43,6 +43,11 @@ export interface InsightCourseDataFromZip {
     "Subject": string;
 }
 
+export interface Data {
+    type: InsightDatasetKind;
+    data: InsightCourse[] | InsightRoom[];
+}
+
 export interface SelectorOptions {
     className?: string;
     tagName?: string;
