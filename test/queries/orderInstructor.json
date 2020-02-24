@@ -1,1 +1,0 @@
-{"title":"order instructor","query":{"WHERE":{"AND":[{"GT":{"courses_avg":99}},{"IS":{"courses_dept":"math"}}]},"OPTIONS":{"COLUMNS":["courses_dept","courses_instructor"],"ORDER":"courses_instructor"}},"isQueryValid":true,"result":[{"courses_dept":"math","courses_instructor":""},{"courses_dept":"math","courses_instructor":"gomez, jose"}]}

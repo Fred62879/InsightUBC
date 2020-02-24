@@ -77,9 +77,6 @@ export default class QueryPerform {
         for (let section of this.dataset[this.id]) {
             if (this.fu.perform(body, section)) {
                 this.validDataset.push(section);
-                if (this.validDataset.length > 5000) {
-                    return;
-                }
             }
         }
         return;

@@ -1,1 +1,0 @@
-{"title":"order title","query":{"WHERE":{"AND":[{"GT":{"courses_avg":99}},{"IS":{"courses_dept":"math"}}]},"OPTIONS":{"COLUMNS":["courses_dept","courses_title"],"ORDER":"courses_title"}},"isQueryValid":true,"result":[{"courses_dept":"math","courses_title":"algb topology i"},{"courses_dept":"math","courses_title":"algb topology i"}]}

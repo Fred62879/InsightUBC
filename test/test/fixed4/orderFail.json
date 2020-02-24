@@ -1,1 +1,37 @@
-{"title":"order fail","query":{"WHERE":{"AND":[{"GT":{"courses_avg":99}},{"IS":{"courses_dept":"math"}}]},"OPTIONS":{"COLUMNS":["courses_fail","courses_avg"],"ORDER":"courses_fail"}},"isQueryValid":true,"result":[{"courses_fail":0,"courses_avg":99.78},{"courses_fail":0,"courses_avg":99.78}]}
+{
+    "title": "order fail",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "GT": {
+                        "courses_avg": 99
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "math"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_fail",
+                "courses_avg"
+            ],
+            "ORDER": "courses_fail"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_fail": 0,
+            "courses_avg": 99.78
+        },
+        {
+            "courses_fail": 0,
+            "courses_avg": 99.78
+        }
+    ]
+}
