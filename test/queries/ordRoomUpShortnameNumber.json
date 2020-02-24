@@ -1,0 +1,1290 @@
+{
+    "title": "4applyKeys",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 30
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "rooms_number",
+                "seatAvg",
+                "seatSum",
+                "minLon",
+                "numberOfRoom"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "rooms_shortname",
+                    "rooms_number",
+                    "seatSum",
+                    "minLon"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname",
+                "rooms_number"
+            ],
+            "APPLY": [
+                {
+                    "seatAvg": {
+                        "AVG": "rooms_lon"
+                    }
+                },
+                {
+                    "seatSum": {
+                        "SUM": "rooms_seats"
+                    }
+                },
+                {
+                    "numberOfRoom": {
+                        "COUNT": "rooms_shortname"
+                    }
+                },
+                {
+                    "maxLat": {
+                        "MAX": "rooms_lat"
+                    }
+                },
+                {
+                    "minLon": {
+                        "MIN": "rooms_lon"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_shortname": "WOOD",
+            "rooms_number": "5",
+            "seatAvg": -123.25,
+            "seatSum": 120,
+            "minLon": -123.24673,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "rooms_number": "4",
+            "seatAvg": -123.25,
+            "seatSum": 120,
+            "minLon": -123.24673,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "rooms_number": "3",
+            "seatAvg": -123.25,
+            "seatSum": 88,
+            "minLon": -123.24673,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "rooms_number": "1",
+            "seatAvg": -123.25,
+            "seatSum": 120,
+            "minLon": -123.24673,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "UCLL",
+            "rooms_number": "107",
+            "seatAvg": -123.26,
+            "seatSum": 48,
+            "minLon": -123.25692,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "UCLL",
+            "rooms_number": "103",
+            "seatAvg": -123.26,
+            "seatSum": 55,
+            "minLon": -123.25692,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "409",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "407",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "405",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "309",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "307",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "305",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "222",
+            "seatAvg": -123.25,
+            "seatSum": 190,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "221",
+            "seatAvg": -123.25,
+            "seatSum": 190,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "122",
+            "seatAvg": -123.25,
+            "seatSum": 188,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "121",
+            "seatAvg": -123.25,
+            "seatSum": 187,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "109",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "107",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_number": "105",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25431,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SRC",
+            "rooms_number": "220C",
+            "seatAvg": -123.25,
+            "seatSum": 299,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SRC",
+            "rooms_number": "220B",
+            "seatAvg": -123.25,
+            "seatSum": 299,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SRC",
+            "rooms_number": "220A",
+            "seatAvg": -123.25,
+            "seatSum": 299,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SPPH",
+            "rooms_number": "B151",
+            "seatAvg": -123.25,
+            "seatSum": 66,
+            "minLon": -123.24842,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "209",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "208",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "207",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "206",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "205",
+            "seatAvg": -123.25,
+            "seatSum": 34,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "204",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "203",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "202",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "201",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "200",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "1328",
+            "seatAvg": -123.25,
+            "seatSum": 38,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "1005",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "1004",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_number": "1003",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2531,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "rooms_number": "3208",
+            "seatAvg": -123.24,
+            "seatSum": 72,
+            "minLon": -123.24342,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "rooms_number": "1201",
+            "seatAvg": -123.24,
+            "seatSum": 167,
+            "minLon": -123.24342,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "rooms_number": "1101",
+            "seatAvg": -123.24,
+            "seatSum": 236,
+            "minLon": -123.24342,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "rooms_number": "1003",
+            "seatAvg": -123.26,
+            "seatSum": 40,
+            "minLon": -123.2559,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "rooms_number": "1002",
+            "seatAvg": -123.26,
+            "seatSum": 40,
+            "minLon": -123.2559,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "rooms_number": "1001",
+            "seatAvg": -123.26,
+            "seatSum": 40,
+            "minLon": -123.2559,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "OSBO",
+            "rooms_number": "A",
+            "seatAvg": -123.24,
+            "seatSum": 442,
+            "minLon": -123.24467,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "OSBO",
+            "rooms_number": "203A",
+            "seatAvg": -123.24,
+            "seatSum": 40,
+            "minLon": -123.24467,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ORCH",
+            "rooms_number": "3074",
+            "seatAvg": -123.25,
+            "seatSum": 72,
+            "minLon": -123.24944,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCML",
+            "rooms_number": "260",
+            "seatAvg": -123.25,
+            "seatSum": 32,
+            "minLon": -123.25027,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCML",
+            "rooms_number": "256",
+            "seatAvg": -123.25,
+            "seatSum": 32,
+            "minLon": -123.25027,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCML",
+            "rooms_number": "160",
+            "seatAvg": -123.25,
+            "seatSum": 72,
+            "minLon": -123.25027,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCML",
+            "rooms_number": "154",
+            "seatAvg": -123.25,
+            "seatSum": 47,
+            "minLon": -123.25027,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "254",
+            "seatAvg": -123.25,
+            "seatSum": 84,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "242",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "228",
+            "seatAvg": -123.25,
+            "seatSum": 136,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "220",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "214",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_number": "202",
+            "seatAvg": -123.25,
+            "seatSum": 123,
+            "minLon": -123.24935,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MATH",
+            "rooms_number": "203",
+            "seatAvg": -123.26,
+            "seatSum": 48,
+            "minLon": -123.255534,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MATH",
+            "rooms_number": "104",
+            "seatAvg": -123.26,
+            "seatSum": 48,
+            "minLon": -123.255534,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "MATH",
+            "rooms_number": "102",
+            "seatAvg": -123.26,
+            "seatSum": 60,
+            "minLon": -123.255534,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSK",
+            "rooms_number": "462",
+            "seatAvg": -123.26,
+            "seatSum": 42,
+            "minLon": -123.25533,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSK",
+            "rooms_number": "460",
+            "seatAvg": -123.26,
+            "seatSum": 75,
+            "minLon": -123.25533,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSK",
+            "rooms_number": "201",
+            "seatAvg": -123.26,
+            "seatSum": 183,
+            "minLon": -123.25533,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSK",
+            "rooms_number": "200",
+            "seatAvg": -123.26,
+            "seatSum": 205,
+            "minLon": -123.25533,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSC",
+            "rooms_number": "1003",
+            "seatAvg": -123.24,
+            "seatSum": 125,
+            "minLon": -123.24494,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSC",
+            "rooms_number": "1002",
+            "seatAvg": -123.24,
+            "seatSum": 350,
+            "minLon": -123.24494,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LSC",
+            "rooms_number": "1001",
+            "seatAvg": -123.24,
+            "seatSum": 350,
+            "minLon": -123.24494,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "LASR",
+            "rooms_number": "102",
+            "seatAvg": -123.26,
+            "seatSum": 80,
+            "minLon": -123.25583,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IONA",
+            "rooms_number": "633",
+            "seatAvg": -123.25,
+            "seatSum": 50,
+            "minLon": -123.25042,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IONA",
+            "rooms_number": "301",
+            "seatAvg": -123.25,
+            "seatSum": 100,
+            "minLon": -123.25042,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "rooms_number": "261",
+            "seatAvg": -123.25,
+            "seatSum": 112,
+            "minLon": -123.2521,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "rooms_number": "185",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.2521,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "rooms_number": "182",
+            "seatAvg": -123.25,
+            "seatSum": 154,
+            "minLon": -123.2521,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "rooms_number": "155",
+            "seatAvg": -123.25,
+            "seatSum": 50,
+            "minLon": -123.2521,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "HENN",
+            "rooms_number": "304",
+            "seatAvg": -123.25,
+            "seatSum": 36,
+            "minLon": -123.25374,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "rooms_number": "13",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25165,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "rooms_number": "12",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25165,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "rooms_number": "100",
+            "seatAvg": -123.25,
+            "seatSum": 375,
+            "minLon": -123.25165,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "rooms_number": "10",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25165,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "214",
+            "seatAvg": -123.26,
+            "seatSum": 39,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "212",
+            "seatAvg": -123.26,
+            "seatSum": 72,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "201",
+            "seatAvg": -123.26,
+            "seatSum": 42,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "200",
+            "seatAvg": -123.26,
+            "seatSum": 100,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "147",
+            "seatAvg": -123.26,
+            "seatSum": 60,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_number": "101",
+            "seatAvg": -123.26,
+            "seatSum": 60,
+            "minLon": -123.25623,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FSC",
+            "rooms_number": "1613",
+            "seatAvg": -123.25,
+            "seatSum": 36,
+            "minLon": -123.24886,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FSC",
+            "rooms_number": "1003",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.24886,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FSC",
+            "rooms_number": "1001",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.24886,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FRDM",
+            "rooms_number": "153",
+            "seatAvg": -123.25,
+            "seatSum": 160,
+            "minLon": -123.24608,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FORW",
+            "rooms_number": "519",
+            "seatAvg": -123.25,
+            "seatSum": 35,
+            "minLon": -123.25179,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FORW",
+            "rooms_number": "317",
+            "seatAvg": -123.25,
+            "seatSum": 44,
+            "minLon": -123.25179,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "FORW",
+            "rooms_number": "303",
+            "seatAvg": -123.25,
+            "seatSum": 63,
+            "minLon": -123.25179,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ESB",
+            "rooms_number": "2012",
+            "seatAvg": -123.25,
+            "seatSum": 80,
+            "minLon": -123.25224,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "EOSM",
+            "rooms_number": "135",
+            "seatAvg": -123.25,
+            "seatSum": 50,
+            "minLon": -123.25198,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_number": "310",
+            "seatAvg": -123.25,
+            "seatSum": 160,
+            "minLon": -123.24807,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_number": "301",
+            "seatAvg": -123.25,
+            "seatSum": 80,
+            "minLon": -123.24807,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_number": "201",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.24807,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_number": "110",
+            "seatAvg": -123.25,
+            "seatSum": 120,
+            "minLon": -123.24807,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_number": "101",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.24807,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "rooms_number": "103",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.24718,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "rooms_number": "102",
+            "seatAvg": -123.25,
+            "seatSum": 94,
+            "minLon": -123.24718,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "rooms_number": "101",
+            "seatAvg": -123.25,
+            "seatSum": 200,
+            "minLon": -123.24718,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_number": "1215",
+            "seatAvg": -123.25,
+            "seatSum": 45,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_number": "1212",
+            "seatAvg": -123.25,
+            "seatSum": 34,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_number": "1204",
+            "seatAvg": -123.25,
+            "seatSum": 62,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_number": "1202",
+            "seatAvg": -123.25,
+            "seatSum": 100,
+            "minLon": -123.24894,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D323",
+            "seatAvg": -123.25,
+            "seatSum": 31,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D222",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D219",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D218",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D217",
+            "seatAvg": -123.25,
+            "seatSum": 65,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D204",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "D201",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B318",
+            "seatAvg": -123.25,
+            "seatSum": 40,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B315",
+            "seatAvg": -123.25,
+            "seatSum": 78,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B313",
+            "seatAvg": -123.25,
+            "seatSum": 78,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B215",
+            "seatAvg": -123.25,
+            "seatSum": 78,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B213",
+            "seatAvg": -123.25,
+            "seatSum": 78,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B208",
+            "seatAvg": -123.25,
+            "seatSum": 56,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "B141",
+            "seatAvg": -123.25,
+            "seatSum": 42,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "A203",
+            "seatAvg": -123.25,
+            "seatSum": 108,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_number": "A202",
+            "seatAvg": -123.25,
+            "seatSum": 108,
+            "minLon": -123.25468,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BRKX",
+            "rooms_number": "2365",
+            "seatAvg": -123.25,
+            "seatSum": 70,
+            "minLon": -123.25237,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "BIOL",
+            "rooms_number": "2200",
+            "seatAvg": -123.25,
+            "seatSum": 76,
+            "minLon": -123.25249,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANSO",
+            "rooms_number": "205",
+            "seatAvg": -123.26,
+            "seatSum": 37,
+            "minLon": -123.25741,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANSO",
+            "rooms_number": "203",
+            "seatAvg": -123.26,
+            "seatSum": 33,
+            "minLon": -123.25741,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "437",
+            "seatAvg": -123.25,
+            "seatSum": 32,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "435",
+            "seatAvg": -123.25,
+            "seatSum": 53,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "434",
+            "seatAvg": -123.25,
+            "seatSum": 44,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "354",
+            "seatAvg": -123.25,
+            "seatSum": 44,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "350",
+            "seatAvg": -123.25,
+            "seatSum": 58,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "347",
+            "seatAvg": -123.25,
+            "seatSum": 70,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "345",
+            "seatAvg": -123.25,
+            "seatSum": 68,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "343",
+            "seatAvg": -123.25,
+            "seatSum": 68,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "335",
+            "seatAvg": -123.25,
+            "seatSum": 41,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "334",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "296",
+            "seatAvg": -123.25,
+            "seatSum": 37,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "295",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "293",
+            "seatAvg": -123.25,
+            "seatSum": 32,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "292",
+            "seatAvg": -123.25,
+            "seatSum": 35,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "291",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "254",
+            "seatAvg": -123.25,
+            "seatSum": 80,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "243",
+            "seatAvg": -123.25,
+            "seatSum": 68,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "241",
+            "seatAvg": -123.25,
+            "seatSum": 70,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "237",
+            "seatAvg": -123.25,
+            "seatSum": 41,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "235",
+            "seatAvg": -123.25,
+            "seatSum": 41,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "234",
+            "seatAvg": -123.25,
+            "seatSum": 60,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "098",
+            "seatAvg": -123.25,
+            "seatSum": 260,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "039",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_number": "037",
+            "seatAvg": -123.25,
+            "seatSum": 54,
+            "minLon": -123.25364,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ALRD",
+            "rooms_number": "B101",
+            "seatAvg": -123.25,
+            "seatSum": 44,
+            "minLon": -123.25318,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ALRD",
+            "rooms_number": "121",
+            "seatAvg": -123.25,
+            "seatSum": 50,
+            "minLon": -123.25318,
+            "numberOfRoom": 1
+        },
+        {
+            "rooms_shortname": "ALRD",
+            "rooms_number": "105",
+            "seatAvg": -123.25,
+            "seatSum": 94,
+            "minLon": -123.25318,
+            "numberOfRoom": 1
+        }
+    ]
+}

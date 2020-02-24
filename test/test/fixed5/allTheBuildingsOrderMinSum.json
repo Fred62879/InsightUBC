@@ -38,5 +38,314 @@
         }
     },
     "isQueryValid": true,
-"result":[{"rooms_shortname":"IONA","rooms_lat":49.27106,"rooms_lon":-123.25042,"minSeats":49.27106,"sumLom":-246.5},{"rooms_shortname":"ALRD","rooms_lat":49.2699,"rooms_lon":-123.25318,"minSeats":49.2699,"sumLom":-616.27},{"rooms_shortname":"ANSO","rooms_lat":49.26958,"rooms_lon":-123.25741,"minSeats":49.26958,"sumLom":-493.03},{"rooms_shortname":"UCLL","rooms_lat":49.26867,"rooms_lon":-123.25692,"minSeats":49.26867,"sumLom":-493.03},{"rooms_shortname":"BRKX","rooms_lat":49.26862,"rooms_lon":-123.25237,"minSeats":49.26862,"sumLom":-246.5},{"rooms_shortname":"SRC","rooms_lat":49.2683,"rooms_lon":-123.24894,"minSeats":49.2683,"sumLom":-369.75},{"rooms_shortname":"BUCH","rooms_lat":49.26826,"rooms_lon":-123.25468,"minSeats":49.26826,"sumLom":-7518.54},{"rooms_shortname":"LASR","rooms_lat":49.26767,"rooms_lon":-123.25583,"minSeats":49.26767,"sumLom":-739.53},{"rooms_shortname":"IBLC","rooms_lat":49.26766,"rooms_lon":-123.2521,"minSeats":49.26766,"sumLom":-2218.54},{"rooms_shortname":"AUDX","rooms_lat":49.2666,"rooms_lon":-123.25655,"minSeats":49.2666,"sumLom":-246.51},{"rooms_shortname":"MATH","rooms_lat":49.266463,"rooms_lon":-123.255534,"minSeats":49.266463,"sumLom":-986.04},{"rooms_shortname":"MGYM","rooms_lat":49.2663,"rooms_lon":-123.2466,"minSeats":49.2663,"sumLom":-246.49},{"rooms_shortname":"HENN","rooms_lat":49.26627,"rooms_lon":-123.25374,"minSeats":49.26627,"sumLom":-739.52},{"rooms_shortname":"HEBB","rooms_lat":49.2661,"rooms_lon":-123.25165,"minSeats":49.2661,"sumLom":-493.01},{"rooms_shortname":"MATX","rooms_lat":49.266089,"rooms_lon":-123.254816,"minSeats":49.266089,"sumLom":-123.25},{"rooms_shortname":"GEOG","rooms_lat":49.26605,"rooms_lon":-123.25623,"minSeats":49.26605,"sumLom":-986.05},{"rooms_shortname":"CHEM","rooms_lat":49.2659,"rooms_lon":-123.25308,"minSeats":49.2659,"sumLom":-739.52},{"rooms_shortname":"LSK","rooms_lat":49.26545,"rooms_lon":-123.25533,"minSeats":49.26545,"sumLom":-493.02},{"rooms_shortname":"FRDM","rooms_lat":49.26541,"rooms_lon":-123.24608,"minSeats":49.26541,"sumLom":-123.25},{"rooms_shortname":"WESB","rooms_lat":49.26517,"rooms_lon":-123.24937,"minSeats":49.26517,"sumLom":-246.5},{"rooms_shortname":"ANGU","rooms_lat":49.26486,"rooms_lon":-123.25364,"minSeats":49.26486,"sumLom":-3451.1},{"rooms_shortname":"BIOL","rooms_lat":49.26479,"rooms_lon":-123.25249,"minSeats":49.26479,"sumLom":-493.01},{"rooms_shortname":"WOOD","rooms_lat":49.26478,"rooms_lon":-123.24673,"minSeats":49.26478,"sumLom":-1971.95},{"rooms_shortname":"SOWK","rooms_lat":49.2643,"rooms_lon":-123.25505,"minSeats":49.2643,"sumLom":-862.79},{"rooms_shortname":"SPPH","rooms_lat":49.2642,"rooms_lon":-123.24842,"minSeats":49.2642,"sumLom":-739.49},{"rooms_shortname":"FNH","rooms_lat":49.26414,"rooms_lon":-123.24959,"minSeats":49.26414,"sumLom":-739.5},{"rooms_shortname":"PCOH","rooms_lat":49.264,"rooms_lon":-123.2559,"minSeats":49.264,"sumLom":-986.05},{"rooms_shortname":"SCRF","rooms_lat":49.26398,"rooms_lon":-123.2531,"minSeats":49.26398,"sumLom":-2711.57},{"rooms_shortname":"AERL","rooms_lat":49.26372,"rooms_lon":-123.25099,"minSeats":49.26372,"sumLom":-123.25},{"rooms_shortname":"SWNG","rooms_lat":49.26293,"rooms_lon":-123.25431,"minSeats":49.26293,"sumLom":-2711.59},{"rooms_shortname":"ESB","rooms_lat":49.26274,"rooms_lon":-123.25224,"minSeats":49.26274,"sumLom":-369.76},{"rooms_shortname":"CEME","rooms_lat":49.26273,"rooms_lon":-123.24894,"minSeats":49.26273,"sumLom":-739.49},{"rooms_shortname":"LSC","rooms_lat":49.26236,"rooms_lon":-123.24494,"minSeats":49.26236,"sumLom":-369.73},{"rooms_shortname":"PHRM","rooms_lat":49.26229,"rooms_lon":-123.24342,"minSeats":49.26229,"sumLom":-1355.68},{"rooms_shortname":"CHBE","rooms_lat":49.26228,"rooms_lon":-123.24718,"minSeats":49.26228,"sumLom":-369.74},{"rooms_shortname":"EOSM","rooms_lat":49.26228,"rooms_lon":-123.25198,"minSeats":49.26228,"sumLom":-123.25},{"rooms_shortname":"CIRS","rooms_lat":49.26207,"rooms_lon":-123.25314,"minSeats":49.26207,"sumLom":-123.25},{"rooms_shortname":"FORW","rooms_lat":49.26176,"rooms_lon":-123.25179,"minSeats":49.26176,"sumLom":-369.76},{"rooms_shortname":"MCLD","rooms_lat":49.26176,"rooms_lon":-123.24935,"minSeats":49.26176,"sumLom":-739.5},{"rooms_shortname":"DMP","rooms_lat":49.26125,"rooms_lon":-123.24807,"minSeats":49.26125,"sumLom":-616.24},{"rooms_shortname":"MCML","rooms_lat":49.26114,"rooms_lon":-123.25027,"minSeats":49.26114,"sumLom":-2341.76},{"rooms_shortname":"ORCH","rooms_lat":49.26048,"rooms_lon":-123.24944,"minSeats":49.26048,"sumLom":-2588.24},{"rooms_shortname":"OSBO","rooms_lat":49.26047,"rooms_lon":-123.24467,"minSeats":49.26047,"sumLom":-369.73},{"rooms_shortname":"FSC","rooms_lat":49.26044,"rooms_lon":-123.24886,"minSeats":49.26044,"sumLom":-1232.49}]
+    "result": [
+        {
+            "rooms_shortname": "IONA",
+            "rooms_lat": 49.27106,
+            "rooms_lon": -123.25042,
+            "minSeats": 49.27106,
+            "sumLom": -246.5
+        },
+        {
+            "rooms_shortname": "ALRD",
+            "rooms_lat": 49.2699,
+            "rooms_lon": -123.25318,
+            "minSeats": 49.2699,
+            "sumLom": -616.27
+        },
+        {
+            "rooms_shortname": "ANSO",
+            "rooms_lat": 49.26958,
+            "rooms_lon": -123.25741,
+            "minSeats": 49.26958,
+            "sumLom": -493.03
+        },
+        {
+            "rooms_shortname": "UCLL",
+            "rooms_lat": 49.26867,
+            "rooms_lon": -123.25692,
+            "minSeats": 49.26867,
+            "sumLom": -493.03
+        },
+        {
+            "rooms_shortname": "BRKX",
+            "rooms_lat": 49.26862,
+            "rooms_lon": -123.25237,
+            "minSeats": 49.26862,
+            "sumLom": -246.5
+        },
+        {
+            "rooms_shortname": "SRC",
+            "rooms_lat": 49.2683,
+            "rooms_lon": -123.24894,
+            "minSeats": 49.2683,
+            "sumLom": -369.75
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "rooms_lat": 49.26826,
+            "rooms_lon": -123.25468,
+            "minSeats": 49.26826,
+            "sumLom": -7518.54
+        },
+        {
+            "rooms_shortname": "LASR",
+            "rooms_lat": 49.26767,
+            "rooms_lon": -123.25583,
+            "minSeats": 49.26767,
+            "sumLom": -739.53
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "rooms_lat": 49.26766,
+            "rooms_lon": -123.2521,
+            "minSeats": 49.26766,
+            "sumLom": -2218.54
+        },
+        {
+            "rooms_shortname": "AUDX",
+            "rooms_lat": 49.2666,
+            "rooms_lon": -123.25655,
+            "minSeats": 49.2666,
+            "sumLom": -246.51
+        },
+        {
+            "rooms_shortname": "MATH",
+            "rooms_lat": 49.266463,
+            "rooms_lon": -123.255534,
+            "minSeats": 49.266463,
+            "sumLom": -986.04
+        },
+        {
+            "rooms_shortname": "MGYM",
+            "rooms_lat": 49.2663,
+            "rooms_lon": -123.2466,
+            "minSeats": 49.2663,
+            "sumLom": -246.49
+        },
+        {
+            "rooms_shortname": "HENN",
+            "rooms_lat": 49.26627,
+            "rooms_lon": -123.25374,
+            "minSeats": 49.26627,
+            "sumLom": -739.52
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "rooms_lat": 49.2661,
+            "rooms_lon": -123.25165,
+            "minSeats": 49.2661,
+            "sumLom": -493.01
+        },
+        {
+            "rooms_shortname": "MATX",
+            "rooms_lat": 49.266089,
+            "rooms_lon": -123.254816,
+            "minSeats": 49.266089,
+            "sumLom": -123.25
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "rooms_lat": 49.26605,
+            "rooms_lon": -123.25623,
+            "minSeats": 49.26605,
+            "sumLom": -986.05
+        },
+        {
+            "rooms_shortname": "CHEM",
+            "rooms_lat": 49.2659,
+            "rooms_lon": -123.25308,
+            "minSeats": 49.2659,
+            "sumLom": -739.52
+        },
+        {
+            "rooms_shortname": "LSK",
+            "rooms_lat": 49.26545,
+            "rooms_lon": -123.25533,
+            "minSeats": 49.26545,
+            "sumLom": -493.02
+        },
+        {
+            "rooms_shortname": "FRDM",
+            "rooms_lat": 49.26541,
+            "rooms_lon": -123.24608,
+            "minSeats": 49.26541,
+            "sumLom": -123.25
+        },
+        {
+            "rooms_shortname": "WESB",
+            "rooms_lat": 49.26517,
+            "rooms_lon": -123.24937,
+            "minSeats": 49.26517,
+            "sumLom": -246.5
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "rooms_lat": 49.26486,
+            "rooms_lon": -123.25364,
+            "minSeats": 49.26486,
+            "sumLom": -3451.1
+        },
+        {
+            "rooms_shortname": "BIOL",
+            "rooms_lat": 49.26479,
+            "rooms_lon": -123.25249,
+            "minSeats": 49.26479,
+            "sumLom": -493.01
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "rooms_lat": 49.26478,
+            "rooms_lon": -123.24673,
+            "minSeats": 49.26478,
+            "sumLom": -1971.95
+        },
+        {
+            "rooms_shortname": "SOWK",
+            "rooms_lat": 49.2643,
+            "rooms_lon": -123.25505,
+            "minSeats": 49.2643,
+            "sumLom": -862.79
+        },
+        {
+            "rooms_shortname": "SPPH",
+            "rooms_lat": 49.2642,
+            "rooms_lon": -123.24842,
+            "minSeats": 49.2642,
+            "sumLom": -739.49
+        },
+        {
+            "rooms_shortname": "FNH",
+            "rooms_lat": 49.26414,
+            "rooms_lon": -123.24959,
+            "minSeats": 49.26414,
+            "sumLom": -739.5
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "rooms_lat": 49.264,
+            "rooms_lon": -123.2559,
+            "minSeats": 49.264,
+            "sumLom": -986.05
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "rooms_lat": 49.26398,
+            "rooms_lon": -123.2531,
+            "minSeats": 49.26398,
+            "sumLom": -2711.57
+        },
+        {
+            "rooms_shortname": "AERL",
+            "rooms_lat": 49.26372,
+            "rooms_lon": -123.25099,
+            "minSeats": 49.26372,
+            "sumLom": -123.25
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "rooms_lat": 49.26293,
+            "rooms_lon": -123.25431,
+            "minSeats": 49.26293,
+            "sumLom": -2711.59
+        },
+        {
+            "rooms_shortname": "ESB",
+            "rooms_lat": 49.26274,
+            "rooms_lon": -123.25224,
+            "minSeats": 49.26274,
+            "sumLom": -369.76
+        },
+        {
+            "rooms_shortname": "CEME",
+            "rooms_lat": 49.26273,
+            "rooms_lon": -123.24894,
+            "minSeats": 49.26273,
+            "sumLom": -739.49
+        },
+        {
+            "rooms_shortname": "LSC",
+            "rooms_lat": 49.26236,
+            "rooms_lon": -123.24494,
+            "minSeats": 49.26236,
+            "sumLom": -369.73
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "rooms_lat": 49.26229,
+            "rooms_lon": -123.24342,
+            "minSeats": 49.26229,
+            "sumLom": -1355.68
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "rooms_lat": 49.26228,
+            "rooms_lon": -123.24718,
+            "minSeats": 49.26228,
+            "sumLom": -369.74
+        },
+        {
+            "rooms_shortname": "EOSM",
+            "rooms_lat": 49.26228,
+            "rooms_lon": -123.25198,
+            "minSeats": 49.26228,
+            "sumLom": -123.25
+        },
+        {
+            "rooms_shortname": "CIRS",
+            "rooms_lat": 49.26207,
+            "rooms_lon": -123.25314,
+            "minSeats": 49.26207,
+            "sumLom": -123.25
+        },
+        {
+            "rooms_shortname": "FORW",
+            "rooms_lat": 49.26176,
+            "rooms_lon": -123.25179,
+            "minSeats": 49.26176,
+            "sumLom": -369.76
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "rooms_lat": 49.26176,
+            "rooms_lon": -123.24935,
+            "minSeats": 49.26176,
+            "sumLom": -739.5
+        },
+        {
+            "rooms_shortname": "DMP",
+            "rooms_lat": 49.26125,
+            "rooms_lon": -123.24807,
+            "minSeats": 49.26125,
+            "sumLom": -616.24
+        },
+        {
+            "rooms_shortname": "MCML",
+            "rooms_lat": 49.26114,
+            "rooms_lon": -123.25027,
+            "minSeats": 49.26114,
+            "sumLom": -2341.76
+        },
+        {
+            "rooms_shortname": "ORCH",
+            "rooms_lat": 49.26048,
+            "rooms_lon": -123.24944,
+            "minSeats": 49.26048,
+            "sumLom": -2588.24
+        },
+        {
+            "rooms_shortname": "OSBO",
+            "rooms_lat": 49.26047,
+            "rooms_lon": -123.24467,
+            "minSeats": 49.26047,
+            "sumLom": -369.73
+        },
+        {
+            "rooms_shortname": "FSC",
+            "rooms_lat": 49.26044,
+            "rooms_lon": -123.24886,
+            "minSeats": 49.26044,
+            "sumLom": -1232.49
+        }
+    ]
 }
