@@ -72,9 +72,9 @@ export default class QueryValid {
     }
 
     public queryValid(query: any): string {
-        if (query === null) {
-            return "Query is null";
-        }
+        // if (query === null) {
+        //     return "Query is null";
+        // }
         let error = this.qu.setup(query); // initialize queryUtils
         if (error !== "") {
             return error;
