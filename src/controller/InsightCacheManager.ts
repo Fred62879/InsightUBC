@@ -1,5 +1,7 @@
-import {Data, InsightCourse, InsightCourseDataFromZip, InsightDatasetKind, InsightError,
-    InsightRoom} from "./IInsightFacade";
+import {
+    Data, InsightCourse, InsightCourseDataFromZip, InsightDatasetKind, InsightError,
+    InsightRoom
+} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import Log from "../Util";
@@ -132,8 +134,10 @@ export default class InsightCacheManager {
     }
 
     private static getInsightRoomIndexPage(tr: Element, jszipRootDir: JSZip): Promise<InsightRoom[]> {
-        let insightRoom: InsightRoom = {address: "", fullname: "", furniture: "", href: "", lat: 0, lon: 0,
-            name: "", number: "", seats: 0, shortname: "", type: ""};
+        let insightRoom: InsightRoom = {
+            address: "", fullname: "", furniture: "", href: "", lat: 0, lon: 0,
+            name: "", number: "", seats: 0, shortname: "", type: ""
+        };
         if ("childNodes" in tr) {
             for (let td of tr.childNodes) {
                 if (InsightParse5Selector.hasClassName(td, "views-field-field-building-image")) {
@@ -152,6 +156,8 @@ export default class InsightCacheManager {
                         "rooms"
                     );
                     insightRoom.href = link.replace(/^rooms/, "http://students.ubc.ca");
+                    insightRoom.href = insightRoom.href.replace(/buildings-and-classrooms/,
+                        "buildings-and-classrooms/room");
                     let url: string =
                         `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team87/${insightRoom.address}`;
                     return InsightCacheManager.getGeoLocationAndRoomInfo(url, Object.assign({}, insightRoom)).then(
@@ -173,7 +179,6 @@ export default class InsightCacheManager {
             return http.get(url, (res) => {
                 const {statusCode} = res;
                 const contentType = res.headers["content-type"];
-
                 let error;
                 if (statusCode !== 200) {
                     error = new Error("Request Failed.\n" +
@@ -215,6 +220,7 @@ export default class InsightCacheManager {
                 if (InsightParse5Selector.hasClassName(td, "views-field-field-room-number")) {
                     insightRoom.number = InsightParse5Selector.getTextFromFirstATag(td);
                     insightRoom.name = `${insightRoom.shortname}_${insightRoom.number}`;
+                    insightRoom.href += `-${insightRoom.number}`;
                 } else if (InsightParse5Selector.hasClassName(td, "views-field-field-room-type")) {
                     insightRoom.type = InsightParse5Selector.getTextFromFirstChildTextNode(td);
                 } else if (InsightParse5Selector.hasClassName(td, "views-field-field-room-capacity")) {
