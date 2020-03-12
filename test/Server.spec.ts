@@ -5,42 +5,47 @@ import chai = require("chai");
 import chaiHttp = require("chai-http");
 import Response = ChaiHttp.Response;
 import {expect} from "chai";
+import Log from "../src/Util";
 
 describe("Facade D3", function () {
 
     let facade: InsightFacade = null;
     let server: Server = null;
-
     chai.use(chaiHttp);
 
     before(function () {
+        Log.test("Before all!");
         facade = new InsightFacade();
         server = new Server(4321);
-        // TODO: start server here once and handle errors properly
+        try {
+            server.start();
+        } catch (err) {
+            Log.error(err);
+        }
     });
 
     after(function () {
-        // TODO: stop server here once!
+        Log.test(`After: ${this.test.parent.title}`);
+        server.stop();
     });
 
     beforeEach(function () {
-        // might want to add some process logging here to keep track of what"s going on
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
     });
 
     afterEach(function () {
-        // might want to add some process logging here to keep track of what"s going on
+        Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
     // Sample on how to format PUT requests
-    /*
     it("PUT test for courses dataset", function () {
         try {
-            return chai.request(SERVER_URL)
-                .put(ENDPOINT_URL)
-                .send(ZIP_FILE_DATA)
+            return chai.request("localhost:4321")
+                .put("/dataset/course/courses")
+                .send( "data/courses.zip" )
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
-                    // some logging here please!
+                    Log.test("");
                     expect(res.status).to.be.equal(204);
                 })
                 .catch(function (err) {
@@ -51,7 +56,5 @@ describe("Facade D3", function () {
             // and some more logging here!
         }
     });
-    */
-
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });

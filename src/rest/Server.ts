@@ -5,18 +5,20 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import InsightFacade from "../controller/InsightFacade";
+import { InsightError, NotFoundError } from "../controller/IInsightFacade";
+import * as buffer from "buffer";
 
-/**
- * This configures the REST endpoints for the server.
- */
 export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    private static insight: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
+        Server.insight = new InsightFacade();
     }
 
     /**
@@ -59,31 +61,115 @@ export default class Server {
                         return next();
                     });
 
-                // This is an example endpoint that you can invoke by accessing this URL in your browser:
-                // http://localhost:4321/echo/hello
                 that.rest.get("/echo/:msg", Server.echo);
-
-                // NOTE: your endpoints should go here
-
-                // This must be the last endpoint!
+                that.rest.put("/dataset/:id/:kind", Server.submit);
+                that.rest.del("/dataset/:id", Server.delete);
+                that.rest.post("/query", Server.post);
                 that.rest.get("/.*", Server.getStatic);
 
                 that.rest.listen(that.port, function () {
                     Log.info("Server::start() - restify listening: " + that.rest.url);
                     fulfill(true);
                 });
-
                 that.rest.on("error", function (err: string) {
                     // catches errors in restify start; unusual syntax due to internal
                     // node not using normal exceptions here
                     Log.info("Server::start() - restify ERROR: " + err);
                     reject(err);
                 });
-
             } catch (err) {
                 Log.error("Server::start() - ERROR: " + err);
                 reject(err);
             }
+        });
+    }
+
+    // PUT route
+    private static submit(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::submit - params: " + JSON.stringify(req.params));
+        try {
+            const id = req.params.id;
+            const kind = req.params.kind;
+            // let dataBuffer = req.body;
+            // const dataset = dataBuffer.toString("base64");
+
+            let body: any[] = [];
+            let dataset;
+            req.on("data", (chunk) => {
+                body.push(chunk);
+            }).on("end", () => {
+                dataset = Buffer.concat(body).toString("base64");
+                // at this point, `body` has the entire request body stored in it as a string
+            });
+
+            Server.insight.addDataset(id, dataset, kind).then((result) => {
+                Log.info("Server::submit(" + id + " " + kind + ") - responding 200");
+                Log.trace(result);
+                res.json(200, { response: result });
+            }).catch((err: any) => {
+                Log.error(err.message);
+            });
+        } catch (err) {
+            Log.error("Server::submit(..) - responding 400");
+            res.json(400, { error: err.message });
+        }
+        return next();
+    }
+
+    // DELETE route
+    private static delete(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::delete - params: " + JSON.stringify(req.params));
+        try {
+            const id = req.params.id;
+
+            let str = Server.insight.removeDataset(id);
+            Log.info("Server::delete(id) - responding 200");
+            res.json(200, { response: str });
+        } catch (err) {
+            if (err instanceof InsightError) {
+                Log.error("Server::submit(..) - responding 400");
+                res.json(400, { error: err.message });
+            } else if (err instanceof NotFoundError) {
+                Log.error("Server::submit(..) - responding 404");
+                res.json(404, { error: err.message });
+            }
+        }
+        return next();
+    }
+
+    // POST route
+    private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::post - params: " + JSON.stringify(req.params));
+        try {
+            const query = req.params.query;
+            Log.trace("***" + query);
+            let arr = Server.insight.performQuery(query);
+            Log.info("Server::post(" + query + ") - responding 200");
+            res.json(200, { response: arr });
+        } catch (err) {
+            Log.error("Server::submit(..) - responding 400");
+            res.json(400, { error: err.message });
+        }
+        return next();
+    }
+
+    // GET route, redirect index page
+    private static getStatic(req: restify.Request, res: restify.Response, next: restify.Next) {
+        const publicDir = "frontend/public/";
+        Log.trace("RoutHandler::getStatic::" + req.url);
+        let path = publicDir + "index.html";
+        if (req.url !== "/") {
+            path = publicDir + req.url.split("/").pop();
+        }
+        fs.readFile(path, function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
+                Log.error(JSON.stringify(err));
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
         });
     }
 
@@ -110,24 +196,4 @@ export default class Server {
             return "Message not provided";
         }
     }
-
-    private static getStatic(req: restify.Request, res: restify.Response, next: restify.Next) {
-        const publicDir = "frontend/public/";
-        Log.trace("RoutHandler::getStatic::" + req.url);
-        let path = publicDir + "index.html";
-        if (req.url !== "/") {
-            path = publicDir + req.url.split("/").pop();
-        }
-        fs.readFile(path, function (err: Error, file: Buffer) {
-            if (err) {
-                res.send(500);
-                Log.error(JSON.stringify(err));
-                return next();
-            }
-            res.write(file);
-            res.end();
-            return next();
-        });
-    }
-
 }

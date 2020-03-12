@@ -61,5 +61,8 @@
         "fix": "eslint . --ext .ts --fix",
         "test:frontend": "karma start",
         "start": "node src/App.js"
+    },
+    "dependencies": {
+        "node": "^13.10.1"
     }
 }
