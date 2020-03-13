@@ -1,11 +1,13 @@
 import Server from "../src/rest/Server";
 import * as fs from "fs-extra";
 import InsightFacade from "../src/controller/InsightFacade";
+import {expect} from "chai";
+import Log from "../src/Util";
+import {InsightDataset, InsightDatasetKind} from "../src/controller/IInsightFacade";
 import chai = require("chai");
 import chaiHttp = require("chai-http");
 import Response = ChaiHttp.Response;
-import {expect} from "chai";
-import Log from "../src/Util";
+import TestUtil from "./TestUtil";
 
 describe("Facade D3", function () {
 
@@ -48,7 +50,7 @@ describe("Facade D3", function () {
                 .then(function (res: Response) {
                     // dleteCacheFile("course"); // remove cache file
                     expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ response: ["course"] });
+                    expect(res.body).to.deep.equal({ result: ["course"] });
                 })
                 .catch(function (err) {
                     expect.fail();
@@ -89,7 +91,7 @@ describe("Facade D3", function () {
                     deleteCacheFile("cpsc1100"); // remove cache file
                     deleteCacheFile("course"); // remove cache file
                     expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ response: ["course", "cpsc1100"] });
+                    expect(res.body).to.deep.equal({ result: ["course", "cpsc1100"] });
                 })
                 .catch(function (err) {
                     expect.fail();
@@ -124,10 +126,10 @@ describe("Facade D3", function () {
     it("DEL: remove a valid dataset", function () {
         try {
             return chai.request("localhost:4321")
-                .del("/dataset/course")
+                .del("/dataset/cpsc1100")
                 .then(function (res: Response) {
                     expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ response: "course" });
+                    expect(res.body).to.deep.equal({ result: "cpsc1100" });
                 })
                 .catch(function (err) {
                     expect.fail();
@@ -141,7 +143,7 @@ describe("Facade D3", function () {
     it("DEL: remove prev dataset again", function () {
         try {
             return chai.request("localhost:4321")
-                .del("/dataset/course")
+                .del("/dataset/cpsc1100")
                 .then(function (res: Response) {
                     expect.fail();
                 })
@@ -187,7 +189,73 @@ describe("Facade D3", function () {
     });
 
     // POST tests
+    it("POST: post valid query", function () {
+        let query = {};
+        try {
+            return chai.request("localhost:4321")
+                .post("/query")
+                .send(query)
+                .then(function (res: Response) {
+                    expect.fail();
+                })
+                .catch(function (err) {
+                    expect(err.status).to.be.equal(400);
+                });
+        } catch (err) {
+            Log.error(err.message); // dataset not read properly
+            expect.fail(); // not failure of server
+        }
+    });
 
+    /*
+    it("POST: post all query tests", function () {
+        describe("Dynamic InsightFacade PerformQuery tests", function () {
+            for (const test of testQueries) {
+                it(`[${test.filename}] ${test.title}`, function (done) {
+                    const resultChecker = TestUtil.getQueryChecker(test, done);
+                    try {
+                        return chai.request("localhost:4321")
+                            .post("/query")
+                            .send(test.query)
+                            .then(function (res: Response) {
+
+                            })
+                            .catch(function (err) {
+                                expect(err.status).to.be.equal(400);
+                            });
+                    } catch (err) {
+                        Log.error(err.message); // dataset not read properly
+                        expect.fail(); // not failure of server
+                    }
+                });
+            }
+        });
+    });
+     */
+
+    // GET tests
+    it("GET: get all datasets", function () {
+        let exp: InsightDataset[] = [{
+            id: "course",
+            kind: InsightDatasetKind.Courses,
+            numRows: 64612
+        }];
+        try {
+            return chai.request("localhost:4321")
+                .get("/datasets")
+                .then(function (res: Response) {
+                    expect(res.status).to.be.equal(200);
+                    expect(res.body).to.deep.equal({ result: exp });
+                })
+                .catch(function (err) {
+                    Log.error(err.message);
+                    expect.fail();
+                });
+        } catch (err) {
+            Log.error(err.message); // dataset not read properly
+            expect.fail(); // not failure of server
+        }
+    });
 });
 
 function deleteCacheFile(id: string): Promise<boolean> {

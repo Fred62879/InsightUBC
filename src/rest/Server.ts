@@ -95,10 +95,10 @@ export default class Server {
             const dataset = dataBuffer.toString("base64");
             Server.insight.addDataset(id, dataset, kind).then((result) => {
                 Log.info("Server::submit(" + id + " " + kind + ") - responding 200");
-                res.json(200, { response: result });
+                res.json(200, { result: result });
             }).catch((err: any) => {
                 Log.error("Server::submit (" + err.message + ") - responding 400");
-                res.json(400, { response: err.message });
+                res.json(400, { error: err.message });
             });
         } catch (err) {
             Log.error("Server::submit(" + err.message + ") - responding 400");
@@ -114,13 +114,13 @@ export default class Server {
             const id = req.params.id;
             Server.insight.removeDataset(id).then((str) => {
                 Log.info("Server::delete(id) - responding 200");
-                res.json(200, { response: str });
+                res.json(200, { result: str });
             }).catch((err) => {
                 if (err instanceof InsightError) {
-                    Log.error("Server::submit(..) - responding 400");
+                    Log.error("Server::delete(..) - responding 400");
                     res.json(400, { error: err.message });
                 } else if (err instanceof NotFoundError) {
-                    Log.error("Server::submit(..) - responding 404");
+                    Log.error("Server::delete(..) - responding 404");
                     res.json(404, { error: err.message });
                 }
             });
@@ -138,10 +138,10 @@ export default class Server {
             Log.trace(query);
             Server.insight.performQuery(query).then((arr) => {
                 Log.info("Server::post(" + query + ") - responding 200");
-                res.json(200, { response: arr });
+                res.json(200, { result: arr });
             }).catch((err) => {
                 Log.error("Server::post(" + query + ") - responding 400");
-                res.json(400, { response: err.message});
+                res.json(400, { error: err.message});
             });
         } catch (err) {
             Log.error("Server::post(request mistakes) - responding 400");
@@ -154,10 +154,12 @@ export default class Server {
         try {
             Server.insight.listDatasets().then((ds: InsightDataset[]) => {
                 Log.info("Server::post(..) - responding 200");
-                res.json(200, { response: ds });
+                res.json(200, { result: ds });
             }).catch();
         } catch (err) {
             Log.error(err.message);
+            Log.info("Server::post(..) - responding 400");
+            res.json(400, { result: err.message });
         }
         return next();
     }
