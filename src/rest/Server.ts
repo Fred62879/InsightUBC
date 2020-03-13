@@ -6,7 +6,7 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import InsightFacade from "../controller/InsightFacade";
-import { InsightError, NotFoundError } from "../controller/IInsightFacade";
+import {InsightDataset, InsightError, NotFoundError} from "../controller/IInsightFacade";
 import * as buffer from "buffer";
 
 export default class Server {
@@ -65,6 +65,7 @@ export default class Server {
                 that.rest.put("/dataset/:id/:kind", Server.submit);
                 that.rest.del("/dataset/:id", Server.delete);
                 that.rest.post("/query", Server.post);
+                that.rest.get("/datasets", Server.getAllDS);
                 that.rest.get("/.*", Server.getStatic);
 
                 that.rest.listen(that.port, function () {
@@ -90,28 +91,18 @@ export default class Server {
         try {
             const id = req.params.id;
             const kind = req.params.kind;
-            // let dataBuffer = req.body;
-            // const dataset = dataBuffer.toString("base64");
-
-            let body: any[] = [];
-            let dataset;
-            req.on("data", (chunk) => {
-                body.push(chunk);
-            }).on("end", () => {
-                dataset = Buffer.concat(body).toString("base64");
-                // at this point, `body` has the entire request body stored in it as a string
-            });
-
+            let dataBuffer = req.body;
+            const dataset = dataBuffer.toString("base64");
             Server.insight.addDataset(id, dataset, kind).then((result) => {
                 Log.info("Server::submit(" + id + " " + kind + ") - responding 200");
-                Log.trace(result);
                 res.json(200, { response: result });
             }).catch((err: any) => {
-                Log.error(err.message);
+                Log.error("Server::submit (" + err.message + ") - responding 400");
+                res.json(400, { response: err.message });
             });
         } catch (err) {
-            Log.error("Server::submit(..) - responding 400");
-            res.json(400, { error: err.message });
+            Log.error("Server::submit(" + err.message + ") - responding 400");
+            res.json(400, {error: err.message});
         }
         return next();
     }
@@ -121,18 +112,20 @@ export default class Server {
         Log.trace("Server::delete - params: " + JSON.stringify(req.params));
         try {
             const id = req.params.id;
-
-            let str = Server.insight.removeDataset(id);
-            Log.info("Server::delete(id) - responding 200");
-            res.json(200, { response: str });
+            Server.insight.removeDataset(id).then((str) => {
+                Log.info("Server::delete(id) - responding 200");
+                res.json(200, { response: str });
+            }).catch((err) => {
+                if (err instanceof InsightError) {
+                    Log.error("Server::submit(..) - responding 400");
+                    res.json(400, { error: err.message });
+                } else if (err instanceof NotFoundError) {
+                    Log.error("Server::submit(..) - responding 404");
+                    res.json(404, { error: err.message });
+                }
+            });
         } catch (err) {
-            if (err instanceof InsightError) {
-                Log.error("Server::submit(..) - responding 400");
-                res.json(400, { error: err.message });
-            } else if (err instanceof NotFoundError) {
-                Log.error("Server::submit(..) - responding 404");
-                res.json(404, { error: err.message });
-            }
+            Log.error(err.message);
         }
         return next();
     }
@@ -141,14 +134,30 @@ export default class Server {
     private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("Server::post - params: " + JSON.stringify(req.params));
         try {
-            const query = req.params.query;
-            Log.trace("***" + query);
-            let arr = Server.insight.performQuery(query);
-            Log.info("Server::post(" + query + ") - responding 200");
-            res.json(200, { response: arr });
+            const query = req.body;
+            Log.trace(query);
+            Server.insight.performQuery(query).then((arr) => {
+                Log.info("Server::post(" + query + ") - responding 200");
+                res.json(200, { response: arr });
+            }).catch((err) => {
+                Log.error("Server::post(" + query + ") - responding 400");
+                res.json(400, { response: err.message});
+            });
         } catch (err) {
-            Log.error("Server::submit(..) - responding 400");
-            res.json(400, { error: err.message });
+            Log.error("Server::post(request mistakes) - responding 400");
+        }
+        return next();
+    }
+
+    // GET route
+    private static getAllDS(req: restify.Request, res: restify.Response, next: restify.Next) {
+        try {
+            Server.insight.listDatasets().then((ds: InsightDataset[]) => {
+                Log.info("Server::post(..) - responding 200");
+                res.json(200, { response: ds });
+            }).catch();
+        } catch (err) {
+            Log.error(err.message);
         }
         return next();
     }

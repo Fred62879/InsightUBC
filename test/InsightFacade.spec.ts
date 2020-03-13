@@ -1077,21 +1077,21 @@ describe("InsightFacade PerformQuery", () => {
 
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
-    it("Should run test queries", function () {
-        describe("Dynamic InsightFacade PerformQuery tests", function () {
-            for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, function (done) {
-                    const resultChecker = TestUtil.getQueryChecker(test, done);
-                    // insightFacade.performQuery(test.query).then((result) => {
-                    //     reformatTest(Object.assign({}, test), [].concat(result));
-                    // });
-                    insightFacade.performQuery(test.query)
-                        .then(resultChecker)
-                        .catch(resultChecker);
-                });
-            }
-        });
-    });
+    // it("Should run test queries", function () {
+    //     describe("Dynamic InsightFacade PerformQuery tests", function () {
+    //         for (const test of testQueries) {
+    //             it(`[${test.filename}] ${test.title}`, function (done) {
+    //                 const resultChecker = TestUtil.getQueryChecker(test, done);
+    //                 // insightFacade.performQuery(test.query).then((result) => {
+    //                 //     reformatTest(Object.assign({}, test), [].concat(result));
+    //                 // });
+    //                 insightFacade.performQuery(test.query)
+    //                     .then(resultChecker)
+    //                     .catch(resultChecker);
+    //             });
+    //         }
+    //     });
+    // });
 });
 
 // This function generate query json test files. Result is populated using our perform query result.
