@@ -207,31 +207,30 @@ describe("Facade D3", function () {
         }
     });
 
-    /*
-    it("POST: post all query tests", function () {
-        describe("Dynamic InsightFacade PerformQuery tests", function () {
-            for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, function (done) {
-                    const resultChecker = TestUtil.getQueryChecker(test, done);
-                    try {
-                        return chai.request("localhost:4321")
-                            .post("/query")
-                            .send(test.query)
-                            .then(function (res: Response) {
 
-                            })
-                            .catch(function (err) {
-                                expect(err.status).to.be.equal(400);
-                            });
-                    } catch (err) {
-                        Log.error(err.message); // dataset not read properly
-                        expect.fail(); // not failure of server
-                    }
-                });
-            }
-        });
-    });
-     */
+    // it("POST: post all query tests", function () {
+    //     describe("Dynamic InsightFacade PerformQuery tests", function () {
+    //         for (const test of testQueries) {
+    //             it(`[${test.filename}] ${test.title}`, function (done) {
+    //                 const resultChecker = TestUtil.getQueryChecker(test, done);
+    //                 try {
+    //                     return chai.request("localhost:4321")
+    //                         .post("/query")
+    //                         .send(test.query)
+    //                         .then(function (res: Response) {
+    //
+    //                         })
+    //                         .catch(function (err) {
+    //                             expect(err.status).to.be.equal(400);
+    //                         });
+    //                 } catch (err) {
+    //                     Log.error(err.message); // dataset not read properly
+    //                     expect.fail(); // not failure of server
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
 
     // GET tests
     it("GET: get all datasets", function () {

@@ -107,7 +107,7 @@ export default class Server {
         return next();
     }
 
-    // DELETE route
+    // DELETE route_
     private static delete(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("Server::delete - params: " + JSON.stringify(req.params));
         try {
