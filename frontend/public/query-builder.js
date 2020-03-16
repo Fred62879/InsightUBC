@@ -9,8 +9,8 @@
 let query = {};
 let id = '';
 
-// CampusExplorer.buildQuery = function () {
-function all() {
+CampusExplorer.buildQuery = function () {
+// function all() {
     id = getID();
     let form = document.getElementsByClassName('tab-panel active');
     query.WHERE = getFilters();
