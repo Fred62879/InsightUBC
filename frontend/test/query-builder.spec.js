@@ -1,3 +1,5 @@
+import TTT from "../bundle";
+
 describe("buildQuery test suite", function () {
 
     let queryFixtures = TTT.getQueryFixtures();
