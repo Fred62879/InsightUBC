@@ -8,11 +8,14 @@
 
 let query = {};
 let id = '';
+let form;
 
-CampusExplorer.buildQuery = function () {
-// function all() {
+// CampusExplorer.buildQuery = function () {
+function all() {
+    query = {};
     id = getID();
-    let form = document.getElementsByClassName('tab-panel active');
+    form = document.getElementsByClassName('tab-panel active')[0];
+
     query.WHERE = getFilters();
     query.OPTIONS = getOptions();
 
@@ -21,7 +24,7 @@ CampusExplorer.buildQuery = function () {
         query.TRANSFORMATIONS = trans;
     }
     return query;
-};
+}
 
 function getID() {
     let activeNav = document.getElementsByClassName('tab-panel active')[0];
@@ -81,8 +84,8 @@ function getFilter(curCond) {
 
 function getFilters() {
     let logic = '';
-    for (let id of [ 'courses-conditiontype-all', 'courses-conditiontype-any', 'courses-conditiontype-none' ]) {
-        let cur = document.getElementById(id);
+    let logicP = form.getElementsByClassName('control-group condition-type')[0];
+    for (let cur of logicP.querySelectorAll('input')) {
         if (cur.hasAttribute('checked')) {
             logic = cur.getAttribute('value');
             break;
@@ -95,9 +98,9 @@ function getFilters() {
     logic = logic === 'all' ? 'AND' : 'OR';
 
     let filters = [];
-    let allConds = document.getElementsByClassName('conditions-container')[0];
+    let allConds = form.getElementsByClassName('conditions-container')[0];
     for (let curCond of allConds.querySelectorAll('div')) {
-        if (curCond.getAttribute('class') === 'control-group condition') {
+        if (curCond.getAttribute('class') === 'control-group condition')    {
             filters.push(getFilter(curCond));
         }
     }
@@ -128,7 +131,7 @@ function getOrdKeys(keyP) {
 }
 
 function getOrder() {
-    let ordP = document.getElementsByClassName('form-group order')[0];
+    let ordP = form.getElementsByClassName('form-group order')[0];
     let keys = getOrdKeys(ordP.querySelectorAll('option'));
     // (i) no keys
     if (keys.length === 0) {
@@ -149,7 +152,7 @@ function getOrder() {
 
 function getColumns() {
     let cols = [];
-    let colsP = document.getElementsByClassName('form-group columns')[0];
+    let colsP = form.getElementsByClassName('form-group columns')[0];
     // let allCols = colsP.getElementsByClassName('control-field')[0];
     for (let key of colsP.querySelectorAll('input')) {
         if (key.hasAttribute('checked')) {
@@ -205,7 +208,7 @@ function getApplyRule(ruleP) {
 
 function getApply() {
     let res = [];
-    let transPs = document.getElementsByClassName('control-group transformation');
+    let transPs = form.getElementsByClassName('control-group transformation');
     for (let ruleP of transPs) {
         res.push(getApplyRule(ruleP));
     }
@@ -214,7 +217,7 @@ function getApply() {
 
 function getGroup() {
     let res = [];
-    let colsP = document.getElementsByClassName('form-group groups')[0];
+    let colsP = form.getElementsByClassName('form-group groups')[0];
     // let allCols = colsP.getElementsByClassName('control-field')[0];
     for (let key of colsP.querySelectorAll('input')) {
         if (key.hasAttribute('checked')) {
