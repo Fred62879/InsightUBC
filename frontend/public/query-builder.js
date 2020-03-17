@@ -163,13 +163,9 @@ function getColumns() {
 function getOptions() {
     let res = {};
     res.COLUMNS = getColumns();
-    let sort = getOrder();
-    if (sort !== null) {
-        res.SORT = sort;
-    }
     let ord = getOrder();
     if (ord !== null) {
-        res.SORT = ord;
+        res.ORDER = ord;
     }
     return res;
 }
@@ -194,7 +190,7 @@ function getTransField(ruleP) {
     let fieldP = ruleP.getElementsByClassName('control fields')[0];
     for (let rule of fieldP.querySelectorAll('option')) {
         if (rule.hasAttribute('selected')) {
-            return rule.getAttribute('value');
+            return id + "_" + rule.getAttribute('value');
         }
     }
 }
@@ -213,7 +209,7 @@ function getApply() {
     for (let ruleP of transPs) {
         res.push(getApplyRule(ruleP));
     }
-    return res;
+    return res.length === 0 ? null : res;
 }
 
 function getGroup() {
