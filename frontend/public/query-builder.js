@@ -10,8 +10,8 @@ let query = {};
 let id = '';
 let form;
 
-// CampusExplorer.buildQuery = function () {
-function all() {
+CampusExplorer.buildQuery = function () {
+// function all() {
     query = {};
     id = getID();
     form = document.getElementsByClassName('tab-panel active')[0];
