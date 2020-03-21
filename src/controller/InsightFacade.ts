@@ -159,6 +159,7 @@ export default class InsightFacade implements IInsightFacade {
             const qv: Queryvalid = new Queryvalid(this.dataset);
             const warning = qv.queryValid(query);
             if (warning !== "") {
+                Log.trace(warning);
                 return Promise.reject(new InsightError(warning));
             }
             let oldInterface: { [key: string]: InsightCourse[] | InsightRoom[] } = {};

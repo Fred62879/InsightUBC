@@ -14,9 +14,9 @@ function run() {
     submit.addEventListener("click", function (event) {
         let query = CampusExplorer.buildQuery();
         CampusExplorer.sendQuery(query).then((arr) => {
-            CampusExplorer.renderResult(arr);
+            CampusExplorer.renderResult(JSON.parse(arr));
         }).catch((err) => {
-            // console.log(err.message);
+            CampusExplorer.renderResult(err);
         });
     })
 };

@@ -89,7 +89,7 @@ describe("Facade D3", function () {
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
                     deleteCacheFile("cpsc1100"); // remove cache file
-                    deleteCacheFile("course"); // remove cache file
+                    // deleteCacheFile("course"); // remove cache file
                     expect(res.status).to.be.equal(200);
                     expect(res.body).to.deep.equal({ result: ["course", "cpsc1100"] });
                 })
@@ -102,6 +102,29 @@ describe("Facade D3", function () {
         }
     });
 
+    it("PUT: add room valid dataset", function () {
+        try {
+            let dataset = fs.readFileSync("./test/data/rooms.zip");
+            return chai.request("localhost:4321")
+                .put("/dataset/room/rooms")
+                .send(dataset)
+                .set("Content-Type", "application/x-zip-compressed")
+                .then(function (res: Response) {
+                    // deleteCacheFile("cpsc1100"); // remove cache file
+                    // deleteCacheFile("course"); // remove cache file
+                    expect(res.status).to.be.equal(200);
+                    expect(res.body).to.deep.equal({ result: ["course", "cpsc1100", "room"] });
+                })
+                .catch(function (err) {
+                    expect.fail();
+                });
+        } catch (err) {
+            Log.error(err.message); // dataset not read properly
+            expect.fail(); // not failure of server
+        }
+    });
+
+    /*
     it("PUT: add an invalid dataset", function () {
         try {
             let dataset = fs.readFileSync("./test/data/invalidFolder.zip");
@@ -255,6 +278,7 @@ describe("Facade D3", function () {
             expect.fail(); // not failure of server
         }
     });
+     */
 });
 
 function deleteCacheFile(id: string): Promise<boolean> {

@@ -10,8 +10,8 @@ let query = {};
 let id = '';
 let form;
 
-// CampusExplorer.buildQuery = function () {
-function all() {
+CampusExplorer.buildQuery = function () {
+// function all() {
     query = {};
     id = getID();
     form = document.getElementsByClassName('tab-panel active')[0];
@@ -28,7 +28,9 @@ function all() {
 
 function getID() {
     let activeNav = document.getElementsByClassName('tab-panel active')[0];
-    return activeNav.getAttribute('data-type');
+    let type = activeNav.getAttribute('data-type');
+    return type.substr(0, type.length - 1);
+
 }
 
 // ** Retrieve filter info

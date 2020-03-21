@@ -132,15 +132,14 @@ export default class Server {
 
     // POST route
     private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace("Server::post - params: " + JSON.stringify(req.params));
+        Log.trace("Server::post - params: " + req.body);
         try {
-            const query = req.body;
-            Log.trace(query);
+            const query = JSON.parse(req.body);
             Server.insight.performQuery(query).then((arr) => {
                 Log.info("Server::post(" + query + ") - responding 200");
                 res.json(200, { result: arr });
             }).catch((err) => {
-                Log.error("Server::post(" + query + ") - responding 400");
+                Log.error("Server::post(" + err.message + ") - responding 400");
                 res.json(400, { error: err.message});
             });
         } catch (err) {

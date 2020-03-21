@@ -70,6 +70,7 @@ export default class QueryPerform {
 
     private filter(query: any): void {
         let body = query["WHERE"];
+        // Log.trace(body);
         if (!Object.keys(body).length) {
             this.validDataset = this.dataset[this.id];
             return;

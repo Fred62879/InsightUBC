@@ -48,5 +48,20 @@
                 }
             ]
         }
+    },
+    "query3": {
+        "WHERE": {
+            "EQ": {
+                "courses_audit": 2
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_audit",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
     }
+
 }
