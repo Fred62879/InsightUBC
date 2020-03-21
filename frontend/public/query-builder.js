@@ -28,9 +28,9 @@ CampusExplorer.buildQuery = function () {
 
 function getID() {
     let activeNav = document.getElementsByClassName('tab-panel active')[0];
-    let type = activeNav.getAttribute('data-type');
-    return type.substr(0, type.length - 1);
-
+    // let type = activeNav.getAttribute('data-type');
+    // return type.substr(0, type.length - 1);
+    return activeNav.getAttribute('data-type');
 }
 
 // ** Retrieve filter info

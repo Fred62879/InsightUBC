@@ -40,32 +40,32 @@ describe("Facade D3", function () {
     });
 
     // PUT test
-    it("PUT: add one valid dataset", function () {
-        try {
-            let dataset = fs.readFileSync("./test/data/courses.zip");
-            return chai.request("localhost:4321")
-                .put("/dataset/course/courses")
-                .send(dataset)
-                .set("Content-Type", "application/x-zip-compressed")
-                .then(function (res: Response) {
-                    // dleteCacheFile("course"); // remove cache file
-                    expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ result: ["course"] });
-                })
-                .catch(function (err) {
-                    expect.fail();
-                });
-        } catch (err) {
-            Log.error(err.message); // dataset not read properly
-            expect.fail(); // not failure of server
-        }
-    });
+    // it("PUT: add one valid dataset", function () {
+    //     try {
+    //         let dataset = fs.readFileSync("./test/data/courses.zip");
+    //         return chai.request("localhost:4321")
+    //             .put("/dataset/course/courses")
+    //             .send(dataset)
+    //             .set("Content-Type", "application/x-zip-compressed")
+    //             .then(function (res: Response) {
+    //                 // dleteCacheFile("course"); // remove cache file
+    //                 expect(res.status).to.be.equal(200);
+    //                 expect(res.body).to.deep.equal({ result: ["course"] });
+    //             })
+    //             .catch(function (err) {
+    //                 expect.fail();
+    //             });
+    //     } catch (err) {
+    //         Log.error(err.message); // dataset not read properly
+    //         expect.fail(); // not failure of server
+    //     }
+    // });
 
     it("PUT: add the prev dataset again - duplication", function () {
         try {
             let dataset = fs.readFileSync("./test/data/courses.zip");
             return chai.request("localhost:4321")
-                .put("/dataset/course/courses")
+                .put("/dataset/courses/courses")
                 .send(dataset)
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
@@ -88,7 +88,7 @@ describe("Facade D3", function () {
                 .send(dataset)
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
-                    deleteCacheFile("cpsc1100"); // remove cache file
+                    // deleteCacheFile("cpsc1100"); // remove cache file
                     // deleteCacheFile("course"); // remove cache file
                     expect(res.status).to.be.equal(200);
                     expect(res.body).to.deep.equal({ result: ["course", "cpsc1100"] });
@@ -106,7 +106,7 @@ describe("Facade D3", function () {
         try {
             let dataset = fs.readFileSync("./test/data/rooms.zip");
             return chai.request("localhost:4321")
-                .put("/dataset/room/rooms")
+                .put("/dataset/rooms/rooms")
                 .send(dataset)
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {

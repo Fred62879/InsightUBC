@@ -43,7 +43,10 @@ export default class InsightFacade implements IInsightFacade {
             return JSON.parse(file.toString());
         }).then((json: any) => {
             let result: { [key: string]: InsightCourse[] } = {};
+            Log.trace("read into mem");
             if (!this.dataset.hasOwnProperty(id)) {
+                Log.trace(id);
+                Log.trace(json);
                 this.dataset[id] = json[id];
             }
             return Promise.resolve(json);
@@ -60,7 +63,9 @@ export default class InsightFacade implements IInsightFacade {
             let ids: string[] = files.map((file) => {
                 return file.replace(".json", "");
             });
+            Log.trace("Add id");
             for (let id of ids) {
+                Log.trace(id);
                 this.ids.add(id);
             }
             return Promise.resolve(ids);
