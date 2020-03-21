@@ -1,4 +1,4 @@
-import {Element} from "parse5";
+import {DefaultTreeTextNode, Element} from "parse5";
 
 export default class InsightParse5Selector {
     public static isTag(node: Element, tagName: string) {
@@ -62,12 +62,11 @@ export default class InsightParse5Selector {
                                             if ("childNodes" in trNodeElement) {
                                                 for (let thNode of trNodeElement.childNodes) {
                                                     if (InsightParse5Selector.isNode(thNode, "#text")) {
-                                                        let thNodeElement: Element = thNode as Element;
-                                                        if ("value" in thNodeElement) {
-                                                            if (String(thNodeElement["value"]).includes(header)) {
+                                                        let thNodeElement: DefaultTreeTextNode =
+                                                            thNode as DefaultTreeTextNode;
+                                                        if (String(thNodeElement.value).includes(header)) {
                                                                 return true;
                                                             }
-                                                        }
                                                     }
                                                 }
                                             }
