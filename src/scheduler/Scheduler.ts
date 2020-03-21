@@ -74,12 +74,6 @@ export default class Scheduler implements IScheduler {
         return (this.getNumberOfStudentsInASection(section)) <= this.getNumberOfSeats(room);
     }
 
-    private isRoomOccupied(room: SchedRoom, time: TimeSlot, timeTable: Array<[SchedRoom, SchedSection, TimeSlot]>):
-        boolean {
-        let occupied = false;
-        return occupied;
-    }
-
     private getTimeSlot(order: number): TimeSlot {
         return Scheduler.timeslots[order % this.numberOfTimeSlots];
     }
@@ -202,9 +196,7 @@ export default class Scheduler implements IScheduler {
         for (let i = 0; i < this.numberOfSchedSection; i++) {
             let room: SchedRoom = this.getSchedRoom(order[i]);
             if (this.getSchedRoom(order[i])) {
-                let numOfStudents = this.getNumberOfStudentsInASection(this.sections[i]);
-                let numOfSeats = this.getNumberOfSeats(room);
-                if (numOfStudents > numOfSeats) {
+                if (!this.hasEnoughSeat(room, this.sections[i])) {
                     fitness = Infinity;
                 }
             }
