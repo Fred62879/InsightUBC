@@ -1,6 +1,10 @@
 import {IScheduler, SchedRoom, SchedSection, TimeSlot} from "./IScheduler";
+import {tryReadFile} from "tslint/lib/files/reading";
+import Log from "../Util";
 
 export default class Scheduler implements IScheduler {
+    // MagicNumber
+    private static TOBEFILLED: number = -1;
     // Init user input
     private static timeslots: TimeSlot[] = ["MWF 0800-0900", "MWF 0900-1000", "MWF 1000-1100",
         "MWF 1100-1200", "MWF 1200-1300", "MWF 1300-1400",
@@ -15,25 +19,37 @@ export default class Scheduler implements IScheduler {
     private maxNumberOfSectionsCanBeScheduled: number = 0;
     private rooms: SchedRoom[] = [];
     private sections: SchedSection[];
-
     // GA
     private population: number[][] = [];
-    private fitness: number[];
+    private fitness: number[] = [];
+    private normalizedFitness: number[] = [];
     private topFitnessScore = 0;
     private bestPlan: number[] = [];
     private childrenLength = 0;
-
     // Config
-    private totalPopulationSize: number = 20;
-    private mutationRate: number = 0.01;
+    private totalPopulationSize: number = 40;
+    private mutationRate: number = 0.2;
+    private timeLimit = 10000;
+    private fitnessthreshold = 0.9;
+    // Cache
+    private distancesHashTable: { [key: string]: number } = {};
 
     public schedule(sections: SchedSection[], rooms: SchedRoom[]): Array<[SchedRoom, SchedSection, TimeSlot]> {
-        // TODO Implement this
         this.init(sections, rooms);
         this.childrenLength = this.maxNumberOfSectionsCanBeScheduled > this.numberOfSchedSection ?
             this.maxNumberOfSectionsCanBeScheduled : this.numberOfSchedSection;
         this.generateFirstGeneration();
-        return [];
+        let startTime = Date.now();
+        while (Date.now() < (startTime + this.timeLimit) && this.topFitnessScore < this.fitnessthreshold) {
+            this.calculateFitness();
+            this.normalizeFitness();
+            this.nextGeneration();
+        }
+        let result = new Array<[SchedRoom, SchedSection, TimeSlot]>();
+        for (let i = 0; i < this.numberOfSchedRoom; i++) {
+            result.push([this.getSchedRoom(this.bestPlan[i]), sections[i], this.getTimeSlot(this.bestPlan[i])]);
+        }
+        return result;
     }
 
     private init(sections: SchedSection[], rooms: SchedRoom[]): void {
@@ -86,16 +102,6 @@ export default class Scheduler implements IScheduler {
         array[index1] = temp;
     }
 
-    //
-    // private shuffle(array: number[], numOfTimes: number, numOfSection: number) {
-    //     for (let i = 0; i < numOfTimes; i++) {
-    //         let index0 = Math.floor(Math.random() * array.length);
-    //         let index1 = numOfSection < array.length ? Math.floor(Math.random() * numOfSection) :
-    //             Math.floor(Math.random() * array.length);
-    //         this.swap(array, index0, index1);
-    //     }
-    // }
-
     private shuffle(array: number[]): number[] {
         let inputArray = array.slice();
         let result = [];
@@ -111,6 +117,15 @@ export default class Scheduler implements IScheduler {
     }
 
     public getDistance(room0: SchedRoom, room1: SchedRoom) {
+        if (room0.rooms_shortname === room1.rooms_shortname) {
+            return 0;
+        }
+        let key = room0.rooms_shortname > room1.rooms_shortname ? room0.rooms_shortname + room1.rooms_shortname :
+            room1.rooms_shortname + room0.rooms_shortname;
+        let distance = this.distancesHashTable[key];
+        if (distance) {
+            return distance;
+        }
         let R = 6371e3; // metres
         let lat1: number = room0.rooms_lat;
         let lat2: number = room1.rooms_lat;
@@ -118,35 +133,34 @@ export default class Scheduler implements IScheduler {
         let lon2: number = room1.rooms_lon;
         let deltaLat = this.toRadians(lat2 - lat1);
         let deltaLon = this.toRadians(lon2 - lon1);
-
         lat1 = this.toRadians(lat1);
         lat2 = this.toRadians(lat2);
-
-        let x = Math.sin(lat1);
-
         let a = Math.sin(deltaLat / 2) ** 2 +
             Math.cos(lat1) * Math.cos(lat2) *
             Math.sin(deltaLon / 2) ** 2;
         let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
         let d = R * c;
-        return d / 1372;
+        distance = d / 1372;
+        this.distancesHashTable[key] = distance;
+        return distance;
     }
 
     private getDistanceFitness(order: number[]) {
-        let dBest: number = Infinity;
+        let dBest: number = 0;
         let buildings = this.getUsedBuilding(order);
-        if (buildings.length === 1) {
-            dBest = 0;
+        if (buildings.length === 0) {
+            dBest = Infinity;
         } else if (buildings.length > 1) {
             for (let i = 0; i < buildings.length - 1; i++) {
                 for (let j = i + 1; j < buildings.length; j++) {
                     let d = this.getDistance(buildings[i], buildings[j]);
-                    if (d < dBest) {
+                    if (d > dBest) {
                         dBest = d;
                     }
                 }
             }
+        } else if (buildings.length === 1) {
+            dBest = 0;
         }
         return dBest;
     }
@@ -154,19 +168,19 @@ export default class Scheduler implements IScheduler {
     private getEnrollmentFitness(order: number[]): number {
         let scheduledEnrollment: number = 0;
         let totalEnrollment: number = 0;
-        for (let i = 0; i < order.length; i++) {
+        for (let i = 0; i < this.numberOfSchedSection; i++) {
             if (this.getSchedRoom(order[i])) {
                 scheduledEnrollment += this.getNumberOfStudentsInASection(this.sections[i]);
             }
             totalEnrollment += this.getNumberOfStudentsInASection(this.sections[i]);
         }
-        return totalEnrollment ? scheduledEnrollment / totalEnrollment : 0;
+        return totalEnrollment ? (1 - scheduledEnrollment / totalEnrollment) : 0;
     }
 
     private getUsedBuilding(order: number[]): SchedRoom[] {
         let usedBuildings: SchedRoom[] = [];
-        for (let i of order) {
-            let room: SchedRoom = this.getSchedRoom(i);
+        for (let i = 0; i < this.numberOfSchedSection; i++) {
+            let room: SchedRoom = this.getSchedRoom(order[i]);
             if (room) {
                 let isInUsedBuildings: boolean = false;
                 for (let building of usedBuildings) {
@@ -175,7 +189,9 @@ export default class Scheduler implements IScheduler {
                         break;
                     }
                 }
-                usedBuildings.push(room);
+                if (!isInUsedBuildings) {
+                    usedBuildings.push(room);
+                }
             }
         }
         return usedBuildings;
@@ -183,7 +199,7 @@ export default class Scheduler implements IScheduler {
 
     private getCapacityFitness(order: number[]): number {
         let fitness = 0;
-        for (let i = 0; i < order.length; i++) {
+        for (let i = 0; i < this.numberOfSchedSection; i++) {
             let room: SchedRoom = this.getSchedRoom(order[i]);
             if (this.getSchedRoom(order[i])) {
                 let numOfStudents = this.getNumberOfStudentsInASection(this.sections[i]);
@@ -203,6 +219,7 @@ export default class Scheduler implements IScheduler {
                 this.getEnrollmentFitness(order));
             if (this.fitness[i] > this.topFitnessScore) {
                 this.topFitnessScore = this.fitness[i];
+
                 this.bestPlan = order;
             }
         }
@@ -213,26 +230,30 @@ export default class Scheduler implements IScheduler {
             return sum + fitness;
         }, 0);
         for (let i = 0; i < this.fitness.length; i++) {
-            this.fitness[i] /= fitnessSum;
+            this.normalizedFitness[i] = this.fitness[i] / fitnessSum;
         }
     }
 
     private nextGeneration() {
         let newPopulation: number[][] = [];
-        let x = 0;
-        for (let i = 0; i < this.population.length; i++) {
-            let order: number[] = this.population[i].slice();
+        for (let i of this.population) {
+            let order0: number[] = this.pickParentFromPopulation();
+            let order1: number[] = this.pickParentFromPopulation();
+            let order: number[] = this.crossover(order0, order1);
             this.mutate(order, this.mutationRate);
             newPopulation.push(order);
-            x = i;
         }
-
+        this.population = newPopulation;
     }
 
     private mutate(order: number[], mutationRate: number) {
-        let index0 = Math.floor(Math.random() * order.length);
-        let index1 = Math.floor(Math.random() * order.length);
-        this.swap(order, index0, index1);
+        for (let i of order) {
+            if (mutationRate >= Math.random()) {
+                let index0 = Math.floor(Math.random() * this.numberOfSchedSection);
+                let index1 = Math.floor(Math.random() * order.length);
+                this.swap(order, index0, index1);
+            }
+        }
     }
 
     private generateFirstGeneration() {
@@ -241,5 +262,34 @@ export default class Scheduler implements IScheduler {
             order = this.shuffle(order);
             this.population.push(order);
         }
+    }
+
+    private pickParentFromPopulation() {
+        let index = 0;
+        let r = Math.random();
+
+        while (r > 0) {
+            r = r - this.normalizedFitness[index];
+            index++;
+        }
+        index--;
+        return this.population[index].slice();
+    }
+
+    private crossover(order0: number[], order1: number[]) {
+        let order: number[] = new Array(order0.length).fill(Scheduler.TOBEFILLED);
+        for (let i = 0; i < this.numberOfSchedSection; i++) {
+            order[i] = Math.random() > 0.5 ? order0[i] : Scheduler.TOBEFILLED;
+        }
+        let j = 0;
+        for (let i = 0; i < order1.length; i++) {
+            if (order[i] === Scheduler.TOBEFILLED) {
+                while (order.includes(order1[j])) {
+                    j++;
+                }
+                order[i] = order1[j];
+            }
+        }
+        return order;
     }
 }

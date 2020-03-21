@@ -1,46 +1,26 @@
 import {expect} from "chai";
 import * as fs from "fs-extra";
-import {IScheduler} from "../src/scheduler/IScheduler";
 import Scheduler from "../src/scheduler/Scheduler";
-import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
 
-// This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
-// except 'filename' which is injected when the file is read.
-export interface ITestQuery {
-    title: string;
-    query: any;  // make any to allow testing structurally invalid queries
-    isQueryValid: boolean;
-    result: any;
-    filename: string;  // This is injected when reading the file
-}
-
-
-/*
- * This test suite dynamically generates tests from the JSON files in test/queries.
- * You should not need to modify it; instead, add additional files to the queries directory.
- * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
- */
-
-describe("InsightFacade PerformQuery", () => {
+describe("Scheduler", () => {
 
     // let scheduler: Scheduler;
-    // let testQueries: ITestQuery[] = [];
     // let rooms = [
     //     {
     //         "rooms_shortname": "AERL",
     //         "rooms_number": "120",
     //         "rooms_seats": 144,
-    //         "rooms_lat": 49,
-    //         "rooms_lon": -123
+    //         "rooms_lat": 49.26372,
+    //         "rooms_lon": -123.25099
     //     },
     //     {
     //         "rooms_shortname": "ALRD",
     //         "rooms_number": "105",
     //         "rooms_seats": 94,
-    //         "rooms_lat": 48,
-    //         "rooms_lon": -122
+    //         "rooms_lat": 49.2699,
+    //         "rooms_lon": -123.25318
     //     },
     //     {
     //         "rooms_shortname": "ANGU",
@@ -93,7 +73,7 @@ describe("InsightFacade PerformQuery", () => {
     // ];
     //
     //
-    // // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
+    //
     // before(function () {
     //     scheduler = new Scheduler();
     // });
@@ -114,10 +94,9 @@ describe("InsightFacade PerformQuery", () => {
     // // Creates an extra "test" called "Should run test queries" as a byproduct.
     // it("Should run test queries", function () {
     //     describe("Dynamic InsightFacade PerformQuery tests", function () {
-    //         scheduler.schedule(sections,rooms);
-    //         let distance = scheduler.getDistance(rooms[0],rooms[1]);
-    //         Log.test(distance*1372);
-    //         expect(distance*1372).to.deep.equal(1);
+    //         let result = scheduler.schedule(sections,rooms);
+    //
+    //         expect(result).to.deep.equal(1);
     //
     //     });
     // });
