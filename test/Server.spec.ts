@@ -8,16 +8,14 @@ import chai = require("chai");
 import chaiHttp = require("chai-http");
 import Response = ChaiHttp.Response;
 import TestUtil from "./TestUtil";
+import {createInterface} from "readline";
 
 describe("Facade D3", function () {
-
-    let facade: InsightFacade = null;
     let server: Server = null;
     chai.use(chaiHttp);
 
     before(function () {
         Log.test("Before all!");
-        facade = new InsightFacade();
         server = new Server(4321);
         try {
             server.start();
@@ -40,28 +38,30 @@ describe("Facade D3", function () {
     });
 
     // PUT test
-    // it("PUT: add one valid dataset", function () {
-    //     try {
-    //         let dataset = fs.readFileSync("./test/data/courses.zip");
-    //         return chai.request("localhost:4321")
-    //             .put("/dataset/course/courses")
-    //             .send(dataset)
-    //             .set("Content-Type", "application/x-zip-compressed")
-    //             .then(function (res: Response) {
-    //                 // dleteCacheFile("course"); // remove cache file
-    //                 expect(res.status).to.be.equal(200);
-    //                 expect(res.body).to.deep.equal({ result: ["course"] });
-    //             })
-    //             .catch(function (err) {
-    //                 expect.fail();
-    //             });
-    //     } catch (err) {
-    //         Log.error(err.message); // dataset not read properly
-    //         expect.fail(); // not failure of server
-    //     }
-    // });
+    it("PUT: add one valid dataset", function () {
+        try {
+            let dataset = fs.readFileSync("./test/data/courses.zip");
+            return chai.request("localhost:4321")
+                .put("/dataset/courses/courses")
+                .send(dataset)
+                .set("Content-Type", "application/x-zip-compressed")
+                .then(function (res: Response) {
+                    // deleteCacheFile("courses"); // remove cache file
+                    expect(res.status).to.be.equal(200);
+                    expect(res.body).to.deep.equal({ result: ["courses"] });
+                })
+                .catch(function (err) {
+                    deleteCacheFile("courses"); // remove cache file
+                    expect.fail();
+                });
+        } catch (err) {
+            Log.error(err.message); // dataset not read properly
+            expect.fail(); // not failure of server
+        }
+    });
 
     it("PUT: add the prev dataset again - duplication", function () {
+        // deleteCacheFile("courses"); // remove cache file
         try {
             let dataset = fs.readFileSync("./test/data/courses.zip");
             return chai.request("localhost:4321")
@@ -88,10 +88,9 @@ describe("Facade D3", function () {
                 .send(dataset)
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
-                    // deleteCacheFile("cpsc1100"); // remove cache file
-                    // deleteCacheFile("course"); // remove cache file
                     expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ result: ["course", "cpsc1100"] });
+                    // Log.trace(res.body);
+                    expect(res.body).to.deep.equal({ result: ["courses", "cpsc1100"] });
                 })
                 .catch(function (err) {
                     expect.fail();
@@ -110,10 +109,12 @@ describe("Facade D3", function () {
                 .send(dataset)
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(function (res: Response) {
-                    // deleteCacheFile("cpsc1100"); // remove cache file
-                    // deleteCacheFile("course"); // remove cache file
+                    deleteCacheFile("cpsc1100"); // remove cache file
+                    deleteCacheFile("courses"); // remove cache file
+                    deleteCacheFile("rooms"); // remove cache file
                     expect(res.status).to.be.equal(200);
-                    expect(res.body).to.deep.equal({ result: ["course", "cpsc1100", "room"] });
+                    Log.trace(res.body);
+                    expect(res.body).to.deep.equal({ result: ["courses", "cpsc1100", "rooms"] });
                 })
                 .catch(function (err) {
                     expect.fail();
@@ -124,7 +125,6 @@ describe("Facade D3", function () {
         }
     });
 
-    /*
     it("PUT: add an invalid dataset", function () {
         try {
             let dataset = fs.readFileSync("./test/data/invalidFolder.zip");
@@ -144,6 +144,7 @@ describe("Facade D3", function () {
             expect.fail(); // not failure of server
         }
     });
+
 
     // DELETE test
     it("DEL: remove a valid dataset", function () {
@@ -172,6 +173,23 @@ describe("Facade D3", function () {
                 })
                 .catch(function (err) {
                     expect(err.status).to.be.equal(404);
+                });
+        } catch (err) {
+            Log.error(err.message); // dataset not read properly
+            expect.fail(); // not failure of server
+        }
+    });
+
+    it("DEL: remove another valid dataset", function () {
+        try {
+            return chai.request("localhost:4321")
+                .del("/dataset/rooms")
+                .then(function (res: Response) {
+                    expect(res.status).to.be.equal(200);
+                    expect(res.body).to.deep.equal({ result: "rooms" });
+                })
+                .catch(function (err) {
+                    expect.fail();
                 });
         } catch (err) {
             Log.error(err.message); // dataset not read properly
@@ -211,13 +229,14 @@ describe("Facade D3", function () {
         }
     });
 
+
     // POST tests
-    it("POST: post valid query", function () {
+    it("POST: post invalid query", function () {
         let query = {};
         try {
             return chai.request("localhost:4321")
                 .post("/query")
-                .send(query)
+                .send(JSON.stringify(query))
                 .then(function (res: Response) {
                     expect.fail();
                 })
@@ -229,7 +248,6 @@ describe("Facade D3", function () {
             expect.fail(); // not failure of server
         }
     });
-
 
     // it("POST: post all query tests", function () {
     //     describe("Dynamic InsightFacade PerformQuery tests", function () {
@@ -255,10 +273,11 @@ describe("Facade D3", function () {
     //     });
     // });
 
+
     // GET tests
     it("GET: get all datasets", function () {
         let exp: InsightDataset[] = [{
-            id: "course",
+            id: "courses",
             kind: InsightDatasetKind.Courses,
             numRows: 64612
         }];
@@ -267,6 +286,7 @@ describe("Facade D3", function () {
                 .get("/datasets")
                 .then(function (res: Response) {
                     expect(res.status).to.be.equal(200);
+                    Log.trace(res.body);
                     expect(res.body).to.deep.equal({ result: exp });
                 })
                 .catch(function (err) {
@@ -278,7 +298,6 @@ describe("Facade D3", function () {
             expect.fail(); // not failure of server
         }
     });
-     */
 });
 
 function deleteCacheFile(id: string): Promise<boolean> {

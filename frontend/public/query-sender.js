@@ -14,7 +14,7 @@ CampusExplorer.sendQuery = function (query) {
             if (xhr.status === 200) {
                 fulfill(xhr.response);
             } else {
-                reject("Rejct with 400");
+                reject(xhr.response);
             }
         };
         xhr.onerror = function () {

@@ -16,7 +16,7 @@ function run() {
         CampusExplorer.sendQuery(query).then((arr) => {
             CampusExplorer.renderResult(JSON.parse(arr));
         }).catch((err) => {
-            CampusExplorer.renderResult(err);
+            CampusExplorer.renderResult(JSON.parse(err));
         });
     })
 };
