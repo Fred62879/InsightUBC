@@ -12,6 +12,11 @@ let form;
 
 CampusExplorer.buildQuery = function () {
 // function all() {
+    let query = {};
+    // TODO: implement!
+    // console.log("CampusExplorer.buildQuery not implemented yet.");
+    return query;
+    /*
     query = {};
     id = getID();
     form = document.getElementsByClassName('tab-panel active')[0];
@@ -24,6 +29,8 @@ CampusExplorer.buildQuery = function () {
         query.TRANSFORMATIONS = trans;
     }
     return query;
+
+     */
 }
 
 function getID() {
