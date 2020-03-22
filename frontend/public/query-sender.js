@@ -18,7 +18,7 @@ CampusExplorer.sendQuery = function (query) {
             }
         };
         xhr.onerror = function () {
-            reject("Error");
+            reject(xhr.response);
         };
     });
 };
