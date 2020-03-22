@@ -70,6 +70,9 @@ export default class Scheduler implements IScheduler {
     }
 
     public schedule(sections: SchedSection[], rooms: SchedRoom[]): Array<[SchedRoom, SchedSection, TimeSlot]> {
+        if (!sections || !rooms || sections.length === 0 || rooms.length === 0) {
+            return [];
+        }
         this.ga = new GA(this);
         this.init(sections, rooms);
         this.childrenLength = this.maxNumberOfSectionsCanBeScheduled > this.numberOfSchedSection ?
