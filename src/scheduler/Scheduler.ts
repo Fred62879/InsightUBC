@@ -33,6 +33,8 @@ export default class Scheduler implements IScheduler {
         if (!section) {
             return true;
         }
+        let enrollmentNum = this.getNumberOfStudentsInASection(section);
+        let seatNum = this.getNumberOfSeats(room);
         return room ? (this.getNumberOfStudentsInASection(section)) <= this.getNumberOfSeats(room) : false;
     }
 
@@ -55,10 +57,11 @@ export default class Scheduler implements IScheduler {
     }
 
 
-    protected getFitness(order: number[]) {
+    public getFitness(order: number[]) {
         let distanceFitness: number = this.ga.getDistanceFitness(order, this.helper);
         let enrollmentFitness: number = this.ga.getEnrollmentFitness(order);
         let fitness = 1 / (1 + this.getCapacityFitness(order) + distanceFitness + enrollmentFitness);
+        return fitness;
     }
 
 
@@ -80,7 +83,11 @@ export default class Scheduler implements IScheduler {
             this.ga.calculateFitness(this.helper);
             this.ga.normalizeFitness();
             this.ga.nextGeneration();
+            // this.ga.calculateFitness(this.helper);
+            // this.ga.bringInTheFittest();
+            // this.ga.addNewRandomIndividual();
         }
+        this.ga.calculateFitness(this.helper);
         let result = new Array<[SchedRoom, SchedSection, TimeSlot]>();
         // Log.test(this.bestPlan);
         for (let i = 0; i < this.numberOfSchedSection; i++) {
@@ -99,7 +106,7 @@ export default class Scheduler implements IScheduler {
             return rooma.rooms_seats - roomb.rooms_seats;
         });
         this.sections.sort((sectionA, sectionB) => {
-            return this.getNumberOfStudentsInASection(sectionA) - this.getNumberOfStudentsInASection(sectionB);
+            return -(this.getNumberOfStudentsInASection(sectionA) - this.getNumberOfStudentsInASection(sectionB));
         });
     }
 
