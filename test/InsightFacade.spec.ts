@@ -35,40 +35,16 @@ describe("InsightFacade Add/Remove Dataset", function () {
         coursesdirIncourseDir: "./test/data/coursesdirIncourseDir.zip",
         nestedcourse: "./test/data/nestedcourse.zip",
         empryField: "./test/data/empryField.zip",
-        // duplicateSection: "./test/data/duplicateSection.zip",
-        // duplicateTierEightyFiveField: "./test/data/duplicateTierEightyFiveField.zip",
-        // excessiveKey: "./test/data/excessiveKey.zip",
-        // invalidElementInResultArray: "./test/data/invalidElementInResultArray.zip",
-        // invalidSectionValue: "./test/data/invalidSectionValue.zip",
-        // invalidTierEightyfiveValue: "./test/data/invalidTierEightyfiveValue.zip",
-        // invalidYear: "./test/data/invalidYear.zip",
-        // missingTierEightyFiveField: "./test/data/missingTierEightyFiveField.zip",
-        // negativeStddev: "./test/data/negativeStddev.zip",
         noKeyResult: "./test/data/noKeyResult.zip",
         random: "./test/data/random.zip",
         resultAsObject: "./test/data/resultAsObject.zip",
-        // sameCourseDifferentTitle: "./test/data/sameCourseDifferentTitle.zip",
         emptyCoursesFolder: "./test/data/emptyCoursesFolder.zip",
         encrypted: "./test/data/encrypted.zip",
         emptyArrayInJson: "./test/data/emptyArrayInJson.zip",
         emptyObjectInJson: "./test/data/emptyObjectInJson.zip",
         emptyZip: "./test/data/emptyZip.zip",
         noValidSection: "./test/data/noValidSection.zip",
-        courses1InvalidDir: "./test/data/courses1InvalidDir.zip",
-        // Fred's tests
-        // valid datasets and id
-        coursesSmall: "./test/data/coursesSmall.zip",
-        // id invalid
-        wrong_id: "./test/data/courses.zip",
-        // " ": "./test/data/courses.zip",
-        // file invalid
-        wrongFileType: "./test/data/textFile.txt",
-        mtDs: "./test/data/mtDs.zip",
-        noCourseDir: "./test/data/noCourseDir.zip",
-        wrongDirName: "./test/data/wrongDirName.zip",
-        pdf: "./test/data/pdfInside.zip",
-        noSection: "./test/data/noSection.zip",
-        noAvg: "./test/data/noAvg.zip"
+        courses1InvalidDir: "./test/data/courses1InvalidDir.zip"
     };
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
@@ -104,8 +80,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // This is a unit test. You should create more like this!
-
     // it("Should add a valid dataset", function () {
     //     const id: string = "courses";
     //     const expected: string[] = [id];
@@ -114,7 +88,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
     //     }).catch((err: any) => {
     //         expect.fail(err, expected, "Should not have rejected");
     //     });
-    //
     // });
     //
     // it("Should add a dataset with only one valid section", function () {
@@ -1104,21 +1077,21 @@ describe("InsightFacade PerformQuery", () => {
 
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
-    it("Should run test queries", function () {
-        describe("Dynamic InsightFacade PerformQuery tests", function () {
-            for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, function (done) {
-                    const resultChecker = TestUtil.getQueryChecker(test, done);
-                    // insightFacade.performQuery(test.query).then((result) => {
-                    //     reformatTest(Object.assign({}, test), [].concat(result));
-                    // });
-                    insightFacade.performQuery(test.query)
-                        .then(resultChecker)
-                        .catch(resultChecker);
-                });
-            }
-        });
-    });
+    // it("Should run test queries", function () {
+    //     describe("Dynamic InsightFacade PerformQuery tests", function () {
+    //         for (const test of testQueries) {
+    //             it(`[${test.filename}] ${test.title}`, function (done) {
+    //                 const resultChecker = TestUtil.getQueryChecker(test, done);
+    //                 // insightFacade.performQuery(test.query).then((result) => {
+    //                 //     reformatTest(Object.assign({}, test), [].concat(result));
+    //                 // });
+    //                 insightFacade.performQuery(test.query)
+    //                     .then(resultChecker)
+    //                     .catch(resultChecker);
+    //             });
+    //         }
+    //     });
+    // });
 });
 
 // This function generate query json test files. Result is populated using our perform query result.

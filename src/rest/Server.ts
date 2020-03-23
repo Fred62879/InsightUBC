@@ -5,18 +5,20 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import InsightFacade from "../controller/InsightFacade";
+import {InsightDataset, InsightError, NotFoundError} from "../controller/IInsightFacade";
+import * as buffer from "buffer";
 
-/**
- * This configures the REST endpoints for the server.
- */
 export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    private static insight: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
+        Server.insight = new InsightFacade();
     }
 
     /**
@@ -59,31 +61,126 @@ export default class Server {
                         return next();
                     });
 
-                // This is an example endpoint that you can invoke by accessing this URL in your browser:
-                // http://localhost:4321/echo/hello
                 that.rest.get("/echo/:msg", Server.echo);
-
-                // NOTE: your endpoints should go here
-
-                // This must be the last endpoint!
+                that.rest.put("/dataset/:id/:kind", Server.submit);
+                that.rest.del("/dataset/:id", Server.delete);
+                that.rest.post("/query", Server.post);
+                that.rest.get("/datasets", Server.getAllDS);
                 that.rest.get("/.*", Server.getStatic);
 
                 that.rest.listen(that.port, function () {
                     Log.info("Server::start() - restify listening: " + that.rest.url);
                     fulfill(true);
                 });
-
                 that.rest.on("error", function (err: string) {
                     // catches errors in restify start; unusual syntax due to internal
                     // node not using normal exceptions here
                     Log.info("Server::start() - restify ERROR: " + err);
                     reject(err);
                 });
-
             } catch (err) {
                 Log.error("Server::start() - ERROR: " + err);
                 reject(err);
             }
+        });
+    }
+
+    // PUT route
+    private static submit(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::submit - params: " + JSON.stringify(req.params));
+        try {
+            const id = req.params.id;
+            const kind = req.params.kind;
+            let dataBuffer = req.body;
+            const dataset = dataBuffer.toString("base64");
+            Server.insight.addDataset(id, dataset, kind).then((result) => {
+                Log.info("Server::submit(" + id + " " + kind + ") - responding 200");
+                res.json(200, { result: result });
+            }).catch((err: any) => {
+                Log.error("Server::submit (" + err.message + ") - responding 400");
+                res.json(400, { error: err.message });
+            });
+        } catch (err) {
+            Log.error("Server::submit(" + err.message + ") - responding 400");
+            res.json(400, {error: err.message});
+        }
+        return next();
+    }
+
+    // DELETE route_
+    private static delete(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::delete - params: " + JSON.stringify(req.params));
+        try {
+            const id = req.params.id;
+            Server.insight.removeDataset(id).then((str) => {
+                Log.info("Server::delete(id) - responding 200");
+                res.json(200, { result: str });
+            }).catch((err) => {
+                if (err instanceof InsightError) {
+                    Log.error("Server::delete(..) - responding 400");
+                    res.json(400, { error: err.message });
+                } else if (err instanceof NotFoundError) {
+                    Log.error("Server::delete(..) - responding 404");
+                    res.json(404, { error: err.message });
+                }
+            });
+        } catch (err) {
+            Log.error(err.message);
+        }
+        return next();
+    }
+
+    // POST route
+    private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace("Server::post - params: " + req.body);
+        try {
+            // const query = JSON.parse(req.body);
+            const query = req.body; //
+            Server.insight.performQuery(query).then((arr) => {
+                Log.info("Server::post(" + query + ") - responding 200");
+                res.json(200, { result: arr });
+            }).catch((err) => {
+                Log.error("Server::post(" + err.message + ") - responding 400");
+                res.json(400, { error: err.message});
+            });
+        } catch (err) {
+            Log.error("Server::post(request mistakes) - responding 400");
+        }
+        return next();
+    }
+
+    // GET route
+    private static getAllDS(req: restify.Request, res: restify.Response, next: restify.Next) {
+        try {
+            Server.insight.listDatasets().then((ds: InsightDataset[]) => {
+                Log.info("Server::post(..) - responding 200");
+                res.json(200, { result: ds });
+            }).catch();
+        } catch (err) {
+            Log.error(err.message);
+            Log.info("Server::post(..) - responding 400");
+            res.json(400, { result: err.message });
+        }
+        return next();
+    }
+
+    // GET route, redirect index page
+    private static getStatic(req: restify.Request, res: restify.Response, next: restify.Next) {
+        const publicDir = "frontend/public/";
+        Log.trace("RoutHandler::getStatic::" + req.url);
+        let path = publicDir + "index.html";
+        if (req.url !== "/") {
+            path = publicDir + req.url.split("/").pop();
+        }
+        fs.readFile(path, function (err: Error, file: Buffer) {
+            if (err) {
+                res.send(500);
+                Log.error(JSON.stringify(err));
+                return next();
+            }
+            res.write(file);
+            res.end();
+            return next();
         });
     }
 
@@ -110,24 +207,4 @@ export default class Server {
             return "Message not provided";
         }
     }
-
-    private static getStatic(req: restify.Request, res: restify.Response, next: restify.Next) {
-        const publicDir = "frontend/public/";
-        Log.trace("RoutHandler::getStatic::" + req.url);
-        let path = publicDir + "index.html";
-        if (req.url !== "/") {
-            path = publicDir + req.url.split("/").pop();
-        }
-        fs.readFile(path, function (err: Error, file: Buffer) {
-            if (err) {
-                res.send(500);
-                Log.error(JSON.stringify(err));
-                return next();
-            }
-            res.write(file);
-            res.end();
-            return next();
-        });
-    }
-
 }
