@@ -11,6 +11,7 @@ let id = '';
 let form;
 
 CampusExplorer.buildQuery = function () {
+// function all() {
     query = {};
     id = getID();
     form = document.getElementsByClassName('tab-panel active')[0];
@@ -203,7 +204,10 @@ function getApplyRule(ruleP) {
     let res = {};
     let body = {};
     body[getToken(ruleP)] = getTransField(ruleP);
-    res[getTransTerm(ruleP)] = body;
+
+    let applyKey = getTransTerm(ruleP);
+    query["OPTIONS"]["COLUMNS"].push(applyKey);
+    res[applyKey] = body;
     return res;
 }
 
