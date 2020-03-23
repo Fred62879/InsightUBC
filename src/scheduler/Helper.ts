@@ -1,7 +1,9 @@
 import {SchedRoom} from "./IScheduler";
+import Scheduler from "./Scheduler";
 
 export default class Helper {
     private distancesHashTable: { [key: string]: number } = {};
+
     public static swap(array: number[], index0: number, index1: number) {
         let temp = array[index0];
         array[index0] = array[index1];
@@ -37,9 +39,9 @@ export default class Helper {
         return distance;
     }
 
-    public static range(from: number, to: number): number[] {
-        let result: number[] = [];
-        for (let i = from; i < to; i++) {
+    public static newNumberList(childrenLength: number, maxNumSectionCanBeScheduled: number): number[] {
+        let result: number[] = Array(childrenLength).fill(Scheduler.TOBEFILLED);
+        for (let i = 0; i < maxNumSectionCanBeScheduled; i++) {
             result[i] = i;
         }
         return result;

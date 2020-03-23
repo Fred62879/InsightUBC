@@ -229,30 +229,30 @@ describe("Scheduler", () => {
     //         expect.fail(e, "0", "Large courses sample");
     //     });
     // });
-    //
-    // it("More rooms1", function () {
-    //     let roomsQueryResult: any;
-    //     return insightFacade.performQuery(roomQueryAll).then((rooms) => {
-    //         roomsQueryResult = rooms;
-    //         return insightFacade.performQuery(courseQuerySmall);
-    //     }).then((courses) => {
-    //         let result = scheduler.schedule(courses, roomsQueryResult);
-    //         let grade = scheduler.getGrade();
-    //         Log.test(result);
-    //         expect(grade).to.lessThan(0);
-    //     }).catch((e) => {
-    //         Log.trace(e);
-    //         expect.fail(e, "0", "Large courses sample");
-    //     });
-    // });
-    //
-    // it("example", function () {
-    //     let roomsQueryResult: any;
-    //     let result = scheduler.schedule(sectionsExample, roomsExample);
-    //     let grade = scheduler.getGrade();
-    //     Log.test(result);
-    //     return expect(grade).to.lessThan(0);
-    // });
+
+    it("More rooms1", function () {
+        let roomsQueryResult: any;
+        return insightFacade.performQuery(roomQueryAll).then((rooms) => {
+            roomsQueryResult = rooms;
+            return insightFacade.performQuery(courseQuerySmall);
+        }).then((courses) => {
+            let result = scheduler.schedule(courses, roomsQueryResult);
+            let grade = scheduler.getGrade();
+            Log.test(result);
+            expect(grade).to.lessThan(0);
+        }).catch((e) => {
+            Log.trace(e);
+            expect.fail(e, "0", "Large courses sample");
+        });
+    });
+
+    it("example", function () {
+        let roomsQueryResult: any;
+        let result = scheduler.schedule(sectionsExample, roomsExample);
+        let grade = scheduler.getGrade();
+        Log.test(result);
+        return expect(grade).to.lessThan(0);
+    });
 
     it("example", function () {
         let roomsQueryResult: any;
