@@ -22,9 +22,7 @@ import InsightCacheManager from "./InsightCacheManager";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-    // private dataset: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
     private dataset: { [key: string]: Data } = {};
-    // private dataPath: string = "./test/cache/";
     private dataPath = "./data/";
     private ids = new Set<string>();
 
@@ -45,6 +43,7 @@ export default class InsightFacade implements IInsightFacade {
             return JSON.parse(file.toString());
         }).then((json: any) => {
             let result: { [key: string]: InsightCourse[] } = {};
+            Log.trace("read into mem");
             if (!this.dataset.hasOwnProperty(id)) {
                 this.dataset[id] = json[id];
             }
@@ -90,15 +89,12 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         if (!InsightValidator.isIDvalid(id)) {
-            Log.trace(1);
             return Promise.reject(new InsightError("addDataset Invalid ID"));
         }
         if (this.hasID(id)) {
-            // Log.trace(1);
             return Promise.reject(new InsightError("duplicate id"));
         }
         if (!InsightValidator.isValidDatasetKind(kind)) {
-            Log.trace(2);
             return Promise.reject(new InsightError("addDataset Invalid kind"));
         }
         return this.storeCacheIdsToIdset().then(() => {
@@ -117,7 +113,6 @@ export default class InsightFacade implements IInsightFacade {
                 let jsonToWrite = JSON.stringify({[id]: this.dataset[id]});
                 fs.writeFile(this.dataPath + id + ".json", jsonToWrite).catch((e) => {
                     Log.error(e);
-                    // return Promise.reject(e);
                 });
                 return Promise.resolve(Array.from(this.ids));
             } else {
@@ -165,6 +160,7 @@ export default class InsightFacade implements IInsightFacade {
             const qv: Queryvalid = new Queryvalid(this.dataset);
             const warning = qv.queryValid(query);
             if (warning !== "") {
+                Log.trace(warning);
                 return Promise.reject(new InsightError(warning));
             }
             let oldInterface: { [key: string]: InsightCourse[] | InsightRoom[] } = {};
