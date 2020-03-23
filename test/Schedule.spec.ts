@@ -198,37 +198,37 @@ describe("Scheduler", () => {
 
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
-    // it("Not enough room", function () {
-    //     let roomsQueryResult: any;
-    //     return insightFacade.performQuery(roomQuery).then((rooms) => {
-    //         roomsQueryResult = rooms;
-    //         return insightFacade.performQuery(courseQueryLarge);
-    //     }).then((courses) => {
-    //         let result = scheduler.schedule(courses, roomsQueryResult);
-    //         let grade = scheduler.getGrade();
-    //         Log.test(result);
-    //         expect(grade).to.lessThan(0);
-    //     }).catch((e) => {
-    //         Log.trace(e);
-    //         expect.fail(e, "0", "Large courses sample");
-    //     });
-    // });
-    //
-    // it("More rooms", function () {
-    //     let roomsQueryResult: any;
-    //     return insightFacade.performQuery(roomQueryAll).then((rooms) => {
-    //         roomsQueryResult = rooms;
-    //         return insightFacade.performQuery(courseQueryLarge);
-    //     }).then((courses) => {
-    //         let result = scheduler.schedule(courses, roomsQueryResult);
-    //         let grade = scheduler.getGrade();
-    //         Log.test(result);
-    //         expect(grade).to.lessThan(0);
-    //     }).catch((e) => {
-    //         Log.trace(e);
-    //         expect.fail(e, "0", "Large courses sample");
-    //     });
-    // });
+    it("Not enough room", function () {
+        let roomsQueryResult: any;
+        return insightFacade.performQuery(roomQuery).then((rooms) => {
+            roomsQueryResult = rooms;
+            return insightFacade.performQuery(courseQueryLarge);
+        }).then((courses) => {
+            let result = scheduler.schedule(courses, roomsQueryResult);
+            let grade = scheduler.getGrade();
+            Log.test(result);
+            expect(grade).to.lessThan(0);
+        }).catch((e) => {
+            Log.trace(e);
+            expect.fail(e, "0", "Large courses sample");
+        });
+    });
+
+    it("More rooms", function () {
+        let roomsQueryResult: any;
+        return insightFacade.performQuery(roomQueryAll).then((rooms) => {
+            roomsQueryResult = rooms;
+            return insightFacade.performQuery(courseQueryLarge);
+        }).then((courses) => {
+            let result = scheduler.schedule(courses, roomsQueryResult);
+            let grade = scheduler.getGrade();
+            Log.test(result);
+            expect(grade).to.lessThan(0);
+        }).catch((e) => {
+            Log.trace(e);
+            expect.fail(e, "0", "Large courses sample");
+        });
+    });
 
     it("More rooms1", function () {
         let roomsQueryResult: any;
