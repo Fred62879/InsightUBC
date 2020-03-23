@@ -11,7 +11,7 @@ export default class GA {
     public bestPlan: number[] = [];
     private totalPopulationSize: number = 20;
     private mutationRate: number = 0;
-    public timeLimit = 30000;
+    public timeLimit = 20000;
     public fitnessthreshold = 0.99;
     private enrollmentFitnessWeight = 0.7;
     private distanceFitnessWeight = 0.3;
