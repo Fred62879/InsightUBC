@@ -206,7 +206,9 @@ function getApplyRule(ruleP) {
     body[getToken(ruleP)] = getTransField(ruleP);
 
     let applyKey = getTransTerm(ruleP);
-    query["OPTIONS"]["COLUMNS"].push(applyKey);
+    if (applyKey === null) {
+        return null;
+    }
     res[applyKey] = body;
     return res;
 }
@@ -215,7 +217,10 @@ function getApply() {
     let res = [];
     let transPs = form.getElementsByClassName('control-group transformation');
     for (let ruleP of transPs) {
-        res.push(getApplyRule(ruleP));
+        let crule = getApplyRule(ruleP);
+        if (crule !== null) {
+            res.push(crule);
+        }
     }
     return res.length === 0 ? null : res;
 }
@@ -240,7 +245,11 @@ function getTrans() {
     if (group === null && apply === null) {
         return null;
     }
-    res.GROUP = group;
-    res.APPLY = apply;
+    if (group !== null) {
+        res.GROUP = group;
+    }
+    if (apply !== null) {
+        res.APPLY = apply;
+    }
     return res;
 }
