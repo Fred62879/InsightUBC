@@ -159,7 +159,11 @@ function getColumns() {
     for (let key of colsP.querySelectorAll('input')) {
         if (key.hasAttribute('checked')) {
             let val = key.getAttribute('value');
-            cols.push(id + "_" + val);
+            if (key.hasAttribute('id')) {
+                cols.push(id + "_" + val);
+            } else {
+                cols.push(val);
+            }
         }
     }
     return cols;

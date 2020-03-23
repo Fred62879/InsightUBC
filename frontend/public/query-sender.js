@@ -10,6 +10,7 @@ CampusExplorer.sendQuery = function (query) {
         xhr.open("POST", "http://localhost:4321/query", true);
         xhr.setRequestHeader("Content-Type", "string");
         xhr.send(JSON.stringify(query));
+        // xhr.send(query);
         xhr.onload = function () {
             if (xhr.status === 200) {
                 fulfill(xhr.response);
