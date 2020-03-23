@@ -20,6 +20,5 @@ CampusExplorer.sendQuery = function (query) {
         xhr.onerror = function () {
             reject(xhr.response);
         };
-        // console.log("CampusExplorer.sendQuery not implemented yet.");
     });
 };
