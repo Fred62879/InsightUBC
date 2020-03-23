@@ -10,45 +10,66 @@ export default class GA {
     public topFitnessScore = 0;
     public bestPlan: number[] = [];
     private totalPopulationSize: number = 20;
-    private mutationRate: number = 0.01;
+    private mutationRate: number = 0;
     public timeLimit = 20000;
     public fitnessthreshold = 0.99;
     private enrollmentFitnessWeight = 0.7;
     private distanceFitnessWeight = 0.3;
     private minFitness = 0.01;
-    private replaceWithBestIndividualRate = 0;
-    private replaceWithrandomIndividualRate = 0.5;
+    private replaceWithBestIndividualRate = 1;
+    private replaceWithrandomIndividualRate = 0.8;
     private numOfCrossOverPerGeneration = 1;
     public grading: number = 0;
     private scheduler: Scheduler;
+    private percentageOfGreedyFirstGeneration = 0.1;
+    private greedySkipRate = 0.1;
+    private pickRandomChance = 0.5;
+    private pickBestChance = 0.1;
 
     constructor(scheduler: Scheduler) {
         this.scheduler = scheduler;
     }
 
     public addNewRandomIndividual() {
-        //
-        if (Math.random() < this.replaceWithrandomIndividualRate) {
-            let order: number[] = Helper.range(0, this.scheduler.childrenLength);
-            order = Helper.shuffle(order);
-            let randomIndex = Math.floor(Math.random() * this.population.length);
-            this.population[randomIndex] = order;
+        for (let i of this.population) {
+            if (Math.random() < this.replaceWithrandomIndividualRate) {
+                let order: number[] = Helper.range(0, this.scheduler.childrenLength);
+                order = Helper.shuffle(order);
+                let randomIndex = Math.floor(Math.random() * this.population.length);
+                this.population[randomIndex] = order;
+            }
         }
     }
 
     public crossover(order0: number[], order1: number[], numberOfSchedSection: number) {
         let order: number[] = new Array(order0.length).fill(Scheduler.TOBEFILLED);
-        for (let i = 0; i < numberOfSchedSection * this.numOfCrossOverPerGeneration; i++) {
-            order[i] = Math.random() > 0.5 ? order0[i] : Scheduler.TOBEFILLED;
-        }
-        let j = 0;
-        for (let i = 0; i < order1.length; i++) {
+        let order2 = order1.slice();
+        for (let i = 0; i < order0.length; i++) {
+            let room = this.scheduler.getSchedRoom(order0[i]);
+            order[i] = order0[i] !== Scheduler.TOBEFILLED && Math.random() > 0.5 &&
+            room && this.scheduler.hasEnoughSeat(room,
+                this.scheduler.sections[i]) ? order0[i] : Scheduler.TOBEFILLED;
             if (order[i] === Scheduler.TOBEFILLED) {
-                while (order.includes(order1[j]) && j < order1.length) {
-                    j++;
+                for (let j = 0; j < order2.length; j++) {
+                    if (order2[j] === Scheduler.TOBEFILLED || order.includes(order2[j])) {
+                        order2.splice(j, 1);
+                        j--;
+                    } else if (Math.random() < this.greedySkipRate) {
+                        break;
+                    } else {
+                        let room1 = this.scheduler.getSchedRoom(order2[j]);
+                        if (room1 && this.scheduler.hasEnoughSeat(room1,
+                            this.scheduler.sections[i])) {
+                            order[i] = order2.splice(j, 1)[0];
+                            break;
+                        }
+                    }
                 }
-                order[i] = order1[j];
             }
+        }
+        let test = this.scheduler.getFitness(order);
+        if (test === 0) {
+            let a;
         }
         return order;
     }
@@ -113,20 +134,18 @@ export default class GA {
     }
 
     public nextGeneration() {
+        // Log.test(this.population);
+        // Log.test(this.fitness);
         let newPopulation: number[][] = [];
         for (let i of this.population) {
-            let order0: number[] = this.pickParentFromPopulation();
-            let order1: number[] = this.pickParentFromPopulation();
+            let order0: number[] = this.pickParentFromPopulation(false, true);
+            let order1: number[] = this.pickParentFromPopulation(true, false);
             let order: number[] = this.crossover(order0, order1, this.scheduler.numberOfSchedSection);
-            order = this.mutate(order, this.mutationRate);
-            order = this.greedy(order, true);
+            // order = this.mutate(order, this.mutationRate);
+            // order = this.greedy(order, true);
             newPopulation.push(order);
         }
         this.population = newPopulation;
-        this.bringInTheFittest();
-        this.addNewRandomIndividual();
-        // Log.test(this.population);
-        // Log.test(this.fitness);
     }
 
     private greedy(order: number[], ascending: boolean = true): number[] {
@@ -137,7 +156,8 @@ export default class GA {
                 let a = ascending ? 1 : -1;
                 let b = ascending ? 0 : 1;
                 let index = (this.scheduler.numberOfSchedSection - 1) * b + i * a;
-                if (this.scheduler.hasEnoughSeat(this.scheduler.getSchedRoom(result[j]),
+                let room = this.scheduler.getSchedRoom(result[j]);
+                if (room && this.scheduler.hasEnoughSeat(room,
                     this.scheduler.sections[index])) {
                     // let temp = result[j];
                     if (index <= j) {
@@ -160,13 +180,23 @@ export default class GA {
             if (mutationRate >= Math.random()) {
                 let index0 = Math.floor(Math.random() * this.scheduler.numberOfSchedSection);
                 let index1 = Math.floor(Math.random() * result.length);
+                if (result[index1] === Scheduler.TOBEFILLED) {
+                    let numList = Helper.range(0, result.length);
+                    numList = Helper.shuffle(numList);
+                    for (let num of numList) {
+                        if (!result.includes(num)) {
+                            result[index1] = num;
+                            break;
+                        }
+                    }
+                }
                 Helper.swap(result, index0, index1);
             }
         }
         return result;
     }
 
-    private bringInTheFittest() {
+    public bringInTheFittest() {
         if (Math.random() < this.replaceWithBestIndividualRate) {
             let randomIndex;
             randomIndex = Math.floor(Math.random() * this.population.length);
@@ -175,17 +205,26 @@ export default class GA {
     }
 
     public generateFirstGeneration() {
-        this.population.push(this.greedy(Helper.range(0, this.scheduler.maxNumberOfSectionsCanBeScheduled), true));
-        this.population.push(this.greedy(Helper.range(0, this.scheduler.maxNumberOfSectionsCanBeScheduled), false));
-        for (let i = 0; i < this.totalPopulationSize - 2; i++) {
+        this.population.push(this.greedy(Helper.range(0, this.scheduler.childrenLength), true));
+        for (let i = 0; i < this.totalPopulationSize - 1; i++) {
             let order: number[] = Helper.range(0, this.scheduler.childrenLength);
             order = Helper.shuffle(order);
-            order = this.greedy(order, true);
+            if (Math.random() < this.percentageOfGreedyFirstGeneration) {
+                order = this.greedy(order, true);
+            }
             this.population.push(order);
         }
     }
 
-    private pickParentFromPopulation() {
+    private pickParentFromPopulation(pickRandom: boolean = false, pickBest: boolean = false) {
+
+        if (pickRandom && Math.random() < this.pickRandomChance) {
+            let order: number[] = Helper.range(0, this.scheduler.childrenLength);
+            order = Helper.shuffle(order);
+            return order;
+        } else if (pickBest && Math.random() < this.pickBestChance) {
+            return this.bestPlan.slice();
+        }
         let index = 0;
         let r = Math.random();
 
