@@ -136,7 +136,7 @@ export default class Server {
         try {
             // const query = JSON.parse(req.body);
             const query = req.body; //
-            Server.insight.performQuery(JSON.parse(query)).then((arr) => {
+            Server.insight.performQuery(query).then((arr) => {
                 Log.info("Server::post(" + query + ") - responding 200");
                 res.json(200, { result: arr });
             }).catch((err) => {
