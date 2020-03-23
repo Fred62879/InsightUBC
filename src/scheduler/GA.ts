@@ -11,7 +11,7 @@ export default class GA {
     public bestPlan: number[] = [];
     private totalPopulationSize: number = 20;
     private mutationRate: number = 0;
-    public timeLimit = 80000;
+    public timeLimit = 20000;
     public fitnessthreshold = 0.99;
     private enrollmentFitnessWeight = 0.7;
     private distanceFitnessWeight = 0.3;
@@ -22,7 +22,7 @@ export default class GA {
     public grading: number = 0;
     private scheduler: Scheduler;
     private percentageOfGreedyFirstGeneration = 0.1;
-    private greedySkipRate = 0.5;
+    private greedySkipRate = 0.1;
     private pickRandomChance = 0.1;
     private pickBestChance = 0.9;
 
@@ -44,9 +44,9 @@ export default class GA {
 
     public crossover(order0: number[], order1: number[], numberOfSchedSection: number) {
         let order: number[] = new Array(order0.length).fill(Scheduler.TOBEFILLED);
-        let order2 = order1.slice();
+        let order2: number[] = order1.slice();
         let toBeFilled: number[] = [];
-        let skippedSessions = [];
+        let skippedSessions: number[] = [];
         for (let i = 0; i < order0.length; i++) {
             if (order0[i] === Scheduler.TOBEFILLED || Math.random() < 0.5) {
                 order[i] = Scheduler.TOBEFILLED;
@@ -58,19 +58,19 @@ export default class GA {
                 }
             }
         }
+        let test;
+
         for (let i of toBeFilled) {
-            if (order[i] === Scheduler.TOBEFILLED) {
+            // if (order[i] === Scheduler.TOBEFILLED) {
                 if (Math.random() < this.greedySkipRate) {
                     skippedSessions.push(i);
                     continue;
                 }
                 this.fillToBeFillMidifiesArguments(order, order2, i);
-            }
+            // }
         }
+        let test1;
         for (let index of skippedSessions) {
-            if (order2.length < 1) {
-                break;
-            }
             this.fillToBeFillMidifiesArguments(order, order2, index);
         }
         return order;
