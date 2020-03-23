@@ -20,7 +20,9 @@
         "OPTIONS": {
             "COLUMNS": [
                 "courses_audit",
-                "courses_instructor"
+                "courses_instructor",
+                "overallAvg",
+                "max"
             ],
             "ORDER": {
                 "dir": "DOWN",
@@ -50,18 +52,33 @@
         }
     },
     "query3": {
-        "WHERE": {
-            "EQ": {
-                "courses_audit": 2
-            }
-        },
+        "WHERE": {},
         "OPTIONS": {
             "COLUMNS": [
-                "courses_audit",
-                "courses_avg"
+                "courses_avg",
+                "overallAvg",
+                "max"
             ],
             "ORDER": "courses_avg"
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_avg",
+                "courses_year"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "AVG":"courses_avg"
+                    }
+                },
+                {
+                    "max":
+                    {
+                        "COUNT":"courses_audit"
+                    }
+                }
+            ]
         }
     }
-
 }
