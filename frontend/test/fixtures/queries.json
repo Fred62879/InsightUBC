@@ -55,9 +55,7 @@
         "WHERE": {},
         "OPTIONS": {
             "COLUMNS": [
-                "courses_avg",
-                "overallAvg",
-                "max"
+                "courses_avg"
             ],
             "ORDER": "courses_avg"
         },

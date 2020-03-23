@@ -39,6 +39,8 @@ describe("Facade D3", function () {
 
     // PUT test
     it("PUT: add one valid dataset", function () {
+        deleteCacheFile("courses"); // remove cache file
+        deleteCacheFile("rooms"); // remove cache file
         try {
             let dataset = fs.readFileSync("./test/data/courses.zip");
             return chai.request("localhost:4321")
@@ -48,6 +50,7 @@ describe("Facade D3", function () {
                 .then(function (res: Response) {
                     // deleteCacheFile("courses"); // remove cache file
                     expect(res.status).to.be.equal(200);
+                    Log.trace(res.body);
                     expect(res.body).to.deep.equal({ result: ["courses"] });
                 })
                 .catch(function (err) {
