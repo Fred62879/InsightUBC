@@ -56,11 +56,12 @@ function getTerm(curCond, operator) {
     let termP = curCond.getElementsByClassName('control term')[0];
     let val = termP.querySelector('input').getAttribute('value');
     if (operator === 'IS') {
-        return val;
+        // return val;
+        return val? val: "";
     }
-    if (val === null) {
-        return null;
-    }
+    // if (val === null) {
+    //     return null;
+    // }
     return Number(val);
 }
 
@@ -122,19 +123,26 @@ function getFilters() {
 
 
 // ** Retrieve option info
-function getOrdKeys(keyP) {
+function getOrdKeys(keyP, columns) {
     let keys = [];
     for (let key of keyP) {
         if (key.hasAttribute('selected')) {
-            keys.push(id + "_" + key.getAttribute('value'));
+            let input = key.getAttribute('value');
+            let value = id + "_" + input;
+            if(columns.includes(value)){
+                keys.push(value);
+            }
+            else{
+                keys.push(input);
+            }
         }
     }
     return keys;
 }
 
-function getOrder() {
+function getOrder(Columns) {
     let ordP = form.getElementsByClassName('form-group order')[0];
-    let keys = getOrdKeys(ordP.querySelectorAll('option'));
+    let keys = getOrdKeys(ordP.querySelectorAll('option'), Columns);
     // (i) no keys
     if (keys.length === 0) {
         return null;
@@ -172,7 +180,7 @@ function getColumns() {
 function getOptions() {
     let res = {};
     res.COLUMNS = getColumns();
-    let ord = getOrder();
+    let ord = getOrder(res.COLUMNS);
     if (ord !== null) {
         res.ORDER = ord;
     }

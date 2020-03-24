@@ -1,5 +1,18 @@
 {
-    "query1": {"WHERE": {"IS": {"courses_dept": "cpsc"} }, "OPTIONS": {"COLUMNS": ["courses_dept", "courses_id"], "ORDER": "courses_id"} },
+    "query1": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "cpsc"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
     "query2": {
         "WHERE": {},
         "OPTIONS": {
@@ -18,13 +31,93 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "AVG":"courses_avg"
+                        "AVG": "courses_avg"
                     }
                 },
                 {
-                    "max":
-                    {
-                        "COUNT":"courses_audit"
+                    "max": {
+                        "COUNT": "courses_audit"
+                    }
+                }
+            ]
+        }
+    },
+    "isEmptyString": {
+        "WHERE": {
+            "AND": [
+                {
+                    "GT": {
+                        "rooms_seats": 10
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_address": ""
+                    }
+                },
+                {
+                    "LT": {
+                        "rooms_seats": 100
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "rooms_furniture"
+            ]
+        }
+    },
+    "orderByApplyKey": {
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "rooms_furniture",
+                "a"
+            ],
+            "ORDER": "a"
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_fullname",
+                "rooms_furniture"
+            ],
+            "APPLY": [
+                {
+                    "a": {
+                        "COUNT": "rooms_address"
+                    }
+                }
+            ]
+        }
+    },
+    "orderByApplyKeyAndColumnField": {
+        "WHERE": {},
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_fullname",
+                "rooms_furniture",
+                "a"
+            ],
+            "ORDER": {
+                "dir": "UP",
+                "keys": [
+                    "rooms_fullname",
+                    "a"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_fullname",
+                "rooms_furniture"
+            ],
+            "APPLY": [
+                {
+                    "a": {
+                        "COUNT": "rooms_address"
                     }
                 }
             ]

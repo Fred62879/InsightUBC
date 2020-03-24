@@ -132,7 +132,7 @@ export default class Server {
 
     // POST route
     private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
-        Log.trace("Server::post - params: " + req.body);
+        Log.trace("Server::post - params: " + JSON.stringify(req.body));
         try {
             // const query = JSON.parse(req.body);
             const query = req.body;
