@@ -139,15 +139,15 @@ function getOrder() {
     if (keys.length === 0) {
         return null;
     }
-    // (ii) one key
-    if (keys.length === 1) {
-        return keys[0];
-    }
     // (iii) multiple keys
     let res = {};
     let descdP = ordP.getElementsByClassName('control descending')[0];
     let descdCb = descdP.querySelector('input');
     res.dir = descdCb.hasAttribute('checked') ? 'DOWN' : 'UP';
+    // (ii) one key
+    if (keys.length === 1 && res.dir === 'UP') {
+        return keys[0];
+    }
     res.keys = keys;
     return res;
 }
