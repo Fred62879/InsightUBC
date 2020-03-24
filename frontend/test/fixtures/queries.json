@@ -42,33 +42,7 @@
             ]
         }
     },
-    "isEmptyString": {
-        "WHERE": {
-            "AND": [
-                {
-                    "GT": {
-                        "rooms_seats": 10
-                    }
-                },
-                {
-                    "IS": {
-                        "rooms_address": ""
-                    }
-                },
-                {
-                    "LT": {
-                        "rooms_seats": 100
-                    }
-                }
-            ]
-        },
-        "OPTIONS": {
-            "COLUMNS": [
-                "rooms_fullname",
-                "rooms_furniture"
-            ]
-        }
-    },
+    "isEmptyString": {"WHERE":{"AND":[{"GT":{"rooms_seats":10}},{"IS":{"rooms_address":""}},{"LT":{"rooms_seats":100}},{"EQ":{"rooms_address":""}}]},"OPTIONS":{"COLUMNS":["rooms_fullname","rooms_furniture"]},"TRANSFORMATIONS":{"GROUP":[],"APPLY":[{"a":{"COUNT":"rooms_address"}},{"":{"COUNT":"rooms_address"}},{"b":{"COUNT":"rooms_address"}},{"":{"COUNT":"rooms_address"}},{"":{"COUNT":"rooms_address"}}]}},
     "orderByApplyKey": {
         "WHERE": {},
         "OPTIONS": {
@@ -117,6 +91,131 @@
             "APPLY": [
                 {
                     "a": {
+                        "COUNT": "rooms_address"
+                    }
+                }
+            ]
+        }
+    },
+    "emptyColumnAndOrder": {
+        "WHERE": {
+            "AND": [
+                {
+                    "GT": {
+                        "rooms_seats": 10
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_address": ""
+                    }
+                },
+                {
+                    "LT": {
+                        "rooms_seats": 100
+                    }
+                },
+                {
+                    "EQ": {
+                        "rooms_address": ""
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": []
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [],
+            "APPLY": [
+                {
+                    "a": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "b": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
+                        "COUNT": "rooms_address"
+                    }
+                }
+            ]
+        }
+    },
+    "OrderKeysWithemptyColumn": {
+        "WHERE": {
+            "AND": [
+                {
+                    "GT": {
+                        "rooms_seats": 10
+                    }
+                },
+                {
+                    "IS": {
+                        "rooms_address": ""
+                    }
+                },
+                {
+                    "LT": {
+                        "rooms_seats": 100
+                    }
+                },
+                {
+                    "EQ": {
+                        "rooms_address": ""
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "rooms_fullname",
+                    "rooms_furniture"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [],
+            "APPLY": [
+                {
+                    "a": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "b": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
+                        "COUNT": "rooms_address"
+                    }
+                },
+                {
+                    "": {
                         "COUNT": "rooms_address"
                     }
                 }

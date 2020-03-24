@@ -57,12 +57,12 @@ function getTerm(curCond, operator) {
     let val = termP.querySelector('input').getAttribute('value');
     if (operator === 'IS') {
         // return val;
-        return val? val: "";
+        return val ? val : "";
     }
     // if (val === null) {
     //     return null;
     // }
-    return Number(val);
+    return val ? Number(val) : "";
 }
 
 function getFilter(curCond) {
@@ -103,7 +103,7 @@ function getFilters() {
     let filters = [];
     let allConds = form.getElementsByClassName('conditions-container')[0];
     for (let curCond of allConds.querySelectorAll('div')) {
-        if (curCond.getAttribute('class') === 'control-group condition')    {
+        if (curCond.getAttribute('class') === 'control-group condition') {
             filters.push(getFilter(curCond));
         }
     }
@@ -123,16 +123,15 @@ function getFilters() {
 
 
 // ** Retrieve option info
-function getOrdKeys(keyP, columns) {
+function getOrdKeys(keyP) {
     let keys = [];
     for (let key of keyP) {
         if (key.hasAttribute('selected')) {
             let input = key.getAttribute('value');
             let value = id + "_" + input;
-            if(columns.includes(value)){
+            if (!key.classList.contains("transformation")) {
                 keys.push(value);
-            }
-            else{
+            } else {
                 keys.push(input);
             }
         }
@@ -140,9 +139,9 @@ function getOrdKeys(keyP, columns) {
     return keys;
 }
 
-function getOrder(Columns) {
+function getOrder() {
     let ordP = form.getElementsByClassName('form-group order')[0];
-    let keys = getOrdKeys(ordP.querySelectorAll('option'), Columns);
+    let keys = getOrdKeys(ordP.querySelectorAll('option'));
     // (i) no keys
     if (keys.length === 0) {
         return null;
@@ -180,7 +179,7 @@ function getColumns() {
 function getOptions() {
     let res = {};
     res.COLUMNS = getColumns();
-    let ord = getOrder(res.COLUMNS);
+    let ord = getOrder();
     if (ord !== null) {
         res.ORDER = ord;
     }
@@ -219,7 +218,8 @@ function getApplyRule(ruleP) {
 
     let applyKey = getTransTerm(ruleP);
     if (applyKey === null) {
-        return null;
+        // return null;
+        applyKey = "";
     }
     res[applyKey] = body;
     return res;
@@ -259,6 +259,8 @@ function getTrans() {
     }
     if (group !== null) {
         res.GROUP = group;
+    } else {
+        res.GROUP = [];
     }
     if (apply !== null) {
         res.APPLY = apply;
