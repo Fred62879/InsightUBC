@@ -10,7 +10,7 @@ export default class Scheduler implements IScheduler {
         "TR  0800-0930", "TR  0930-1100", "TR  1100-1230",
         "TR  1230-1400", "TR  1400-1530", "TR  1530-1700"];
 
-    private numberOfTimeSlots: number = Scheduler.timeslots.length;
+    public numberOfTimeSlots: number = Scheduler.timeslots.length;
     private numberOfSchedRoom: number = 0;
     public numberOfSchedSection: number = 0;
     private numberOfSectionsToSchedule: number = 0;
@@ -59,16 +59,8 @@ export default class Scheduler implements IScheduler {
     }
 
 
-    public getFitness(order: number[]) {
-        let distanceFitness: number = this.ga.getDistanceFitness(order, this.helper);
-        let enrollmentFitness: number = this.ga.getEnrollmentFitness(order);
-        let fitness = 1 / (1 + this.getCapacityFitness(order) + distanceFitness + enrollmentFitness);
-        return fitness;
-    }
-
-
     public getGrade() {
-        return this.ga.grading;
+        return this.ga.topFitnessScore - this.ga.minFitness;
     }
 
     public schedule(sections: SchedSection[], rooms: SchedRoom[]): Array<[SchedRoom, SchedSection, TimeSlot]> {
@@ -81,18 +73,18 @@ export default class Scheduler implements IScheduler {
             this.maxNumberOfSectionsCanBeScheduled : this.numberOfSchedSection;
         this.setWeightedCenter();
         this.sortInitArrays();
-        this.ga.generateFirstGeneration();
-        let startTime = Date.now();
-        while (
-            Date.now() < (startTime + this.ga.timeLimit) &&
-            this.ga.topFitnessScore < this.ga.fitnessthreshold) {
-            this.ga.calculateFitness(this.helper);
-            this.ga.normalizeFitness();
-            this.ga.nextGeneration();
-            // this.ga.calculateFitness(this.helper);
-            // this.ga.bringInTheFittest();
-            // this.ga.addNewRandomIndividual();
-        }
+        this.ga.generateFirstGeneration(this.helper);
+        // let startTime = Date.now();
+        // while (
+        //     Date.now() < (startTime + this.ga.timeLimit) &&
+        //     this.ga.topFitnessScore < this.ga.fitnessthreshold) {
+        //     this.ga.calculateFitness(this.helper);
+        //     this.ga.normalizeFitness();
+        //     this.ga.nextGeneration();
+        //     // this.ga.calculateFitness(this.helper);
+        //     // this.ga.bringInTheFittest();
+        //     // this.ga.addNewRandomIndividual();
+        // }
         this.ga.calculateFitness(this.helper);
         let result = new Array<[SchedRoom, SchedSection, TimeSlot]>();
         // Log.test(this.bestPlan);
@@ -103,7 +95,7 @@ export default class Scheduler implements IScheduler {
                     sections[i], this.getTimeSlot(this.ga.bestPlan[i])]);
             }
         }
-        this.getFitness(this.ga.bestPlan);
+        // this.getFitness(this.ga.bestPlan);
         return result;
     }
 

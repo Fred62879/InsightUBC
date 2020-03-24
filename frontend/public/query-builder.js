@@ -56,12 +56,13 @@ function getTerm(curCond, operator) {
     let termP = curCond.getElementsByClassName('control term')[0];
     let val = termP.querySelector('input').getAttribute('value');
     if (operator === 'IS') {
-        return val;
+        // return val;
+        return val ? val : "";
     }
-    if (val === null) {
-        return null;
-    }
-    return Number(val);
+    // if (val === null) {
+    //     return null;
+    // }
+    return val ? Number(val) : "";
 }
 
 function getFilter(curCond) {
@@ -102,7 +103,7 @@ function getFilters() {
     let filters = [];
     let allConds = form.getElementsByClassName('conditions-container')[0];
     for (let curCond of allConds.querySelectorAll('div')) {
-        if (curCond.getAttribute('class') === 'control-group condition')    {
+        if (curCond.getAttribute('class') === 'control-group condition') {
             filters.push(getFilter(curCond));
         }
     }
@@ -126,7 +127,13 @@ function getOrdKeys(keyP) {
     let keys = [];
     for (let key of keyP) {
         if (key.hasAttribute('selected')) {
-            keys.push(id + "_" + key.getAttribute('value'));
+            let input = key.getAttribute('value');
+            let value = id + "_" + input;
+            if (!key.classList.contains("transformation")) {
+                keys.push(value);
+            } else {
+                keys.push(input);
+            }
         }
     }
     return keys;
@@ -139,15 +146,15 @@ function getOrder() {
     if (keys.length === 0) {
         return null;
     }
-    // (ii) one key
-    if (keys.length === 1) {
-        return keys[0];
-    }
     // (iii) multiple keys
     let res = {};
     let descdP = ordP.getElementsByClassName('control descending')[0];
     let descdCb = descdP.querySelector('input');
     res.dir = descdCb.hasAttribute('checked') ? 'DOWN' : 'UP';
+    // (ii) one key
+    if (keys.length === 1 && res.dir === 'UP') {
+        return keys[0];
+    }
     res.keys = keys;
     return res;
 }
@@ -159,7 +166,11 @@ function getColumns() {
     for (let key of colsP.querySelectorAll('input')) {
         if (key.hasAttribute('checked')) {
             let val = key.getAttribute('value');
-            cols.push(id + "_" + val);
+            if (key.hasAttribute('id')) {
+                cols.push(id + "_" + val);
+            } else {
+                cols.push(val);
+            }
         }
     }
     return cols;
@@ -207,7 +218,8 @@ function getApplyRule(ruleP) {
 
     let applyKey = getTransTerm(ruleP);
     if (applyKey === null) {
-        return null;
+        // return null;
+        applyKey = "";
     }
     res[applyKey] = body;
     return res;
@@ -247,6 +259,8 @@ function getTrans() {
     }
     if (group !== null) {
         res.GROUP = group;
+    } else {
+        res.GROUP = [];
     }
     if (apply !== null) {
         res.APPLY = apply;
