@@ -2,6 +2,7 @@ import Helper from "./Helper";
 import Scheduler from "./Scheduler";
 import {SchedRoom} from "./IScheduler";
 import Log from "../Util";
+import TimeSlotOverlappingValidator from "./TimeSlotOverlappingValidator";
 
 export default class GA {
     private population: number[][] = [];
@@ -9,17 +10,16 @@ export default class GA {
     private normalizedFitness: number[] = [];
     public topFitnessScore = 0;
     public bestPlan: number[] = [];
-    private totalPopulationSize: number = 20;
+    private totalPopulationSize: number = 2;
     private mutationRate: number = 0;
     public timeLimit = 20000;
     public fitnessthreshold = 0.99;
     private enrollmentFitnessWeight = 0.7;
     private distanceFitnessWeight = 0.3;
-    private minFitness = 0.01;
+    public minFitness = 0.01;
     private replaceWithBestIndividualRate = 1;
     private replaceWithrandomIndividualRate = 0.8;
     private numOfCrossOverPerGeneration = 1;
-    public grading: number = 0;
     private scheduler: Scheduler;
     private percentageOfGreedyFirstGeneration = 0.1;
     private greedySkipRate = 0.1;
@@ -28,18 +28,6 @@ export default class GA {
 
     constructor(scheduler: Scheduler) {
         this.scheduler = scheduler;
-    }
-
-    public addNewRandomIndividual() {
-        for (let i of this.population) {
-            if (Math.random() < this.replaceWithrandomIndividualRate) {
-                let order: number[] = Helper.newNumberList(
-                    this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled);
-                order = Helper.shuffle(order);
-                let randomIndex = Math.floor(Math.random() * this.population.length);
-                this.population[randomIndex] = order;
-            }
-        }
     }
 
     public crossover(order0: number[], order1: number[], numberOfSchedSection: number) {
@@ -62,11 +50,11 @@ export default class GA {
 
         for (let i of toBeFilled) {
             // if (order[i] === Scheduler.TOBEFILLED) {
-                if (Math.random() < this.greedySkipRate) {
-                    skippedSessions.push(i);
-                    continue;
-                }
-                this.fillToBeFillMidifiesArguments(order, order2, i);
+            if (Math.random() < this.greedySkipRate) {
+                skippedSessions.push(i);
+                continue;
+            }
+            this.fillToBeFillMidifiesArguments(order, order2, i);
             // }
         }
         let test1;
@@ -93,20 +81,29 @@ export default class GA {
         }
     }
 
+    public getFitness(order: number[], helper: Helper) {
+        let distanceFitness: number = this.getDistanceFitness(order, helper);
+        let enrollmentFitness: number = this.getEnrollmentFitness(order);
+        let capacityFitness = this.getCapacityFitness(order);
+        let timeValidator = new TimeSlotOverlappingValidator(this.scheduler);
+        // let timeConflictFitness = timeValidator.getTimeConflictFitness(order);
+        let timeConflictFitness = 0;
+        return (this.enrollmentFitnessWeight * (1 - enrollmentFitness) +
+            this.distanceFitnessWeight * (1 - distanceFitness)) / (1 + capacityFitness + timeConflictFitness) +
+            this.minFitness;
+    }
+
     public calculateFitness(helper: Helper) {
         for (let i = 0; i < this.population.length; i++) {
             let order: number[] = this.population[i];
-            let capacityFitness = this.getCapacityFitness(order);
-            let distanceFitness: number = this.getDistanceFitness(order, helper);
-            let enrollmentFitness: number = this.getEnrollmentFitness(order);
-            let grading = this.enrollmentFitnessWeight * (1 - enrollmentFitness) +
-                this.distanceFitnessWeight * (1 - distanceFitness);
-            this.fitness[i] = grading / (1 + capacityFitness) + this.minFitness;
-            if (grading > this.grading) {
-                this.topFitnessScore = this.fitness[i];
-                this.grading = grading;
+            let fitness = this.getFitness(order, helper);
+            this.fitness[i] = fitness;
+            Log.test(fitness);
+            if (fitness > this.topFitnessScore) {
+                this.topFitnessScore = fitness;
                 // Log.test(this.topFitnessScore);
                 this.bestPlan = order;
+
             }
         }
     }
@@ -155,7 +152,8 @@ export default class GA {
 
     public nextGeneration() {
         // Log.test(this.population);
-        // Log.test(this.fitness);
+        Log.test(this.fitness);
+        // Log.test(this.topFitnessScore);
         let newPopulation: number[][] = [];
         for (let i of this.population) {
             let order0: number[] = this.pickParentFromPopulation(false, true);
@@ -170,6 +168,7 @@ export default class GA {
 
     private greedy(order: number[], ascending: boolean = true): number[] {
         let result: number[] = order.slice();
+        let timeValidator = new TimeSlotOverlappingValidator(this.scheduler);
         for (let i = 0; i < this.scheduler.numberOfSchedSection; i++) {
             let pushedToOrderAscending = false;
             for (let j = 0; j < result.length; j++) {
@@ -177,13 +176,14 @@ export default class GA {
                 let b = ascending ? 0 : 1;
                 let index = (this.scheduler.numberOfSchedSection - 1) * b + i * a;
                 let room = this.scheduler.getSchedRoom(result[j]);
-                if (room && this.scheduler.hasEnoughSeat(room,
-                    this.scheduler.sections[index])) {
-                    // let temp = result[j];
+                if (room && this.scheduler.hasEnoughSeat(room, this.scheduler.sections[index])) {
                     if (index <= j) {
-                        Helper.swap(result, index, j);
-                        pushedToOrderAscending = true;
-                        break;
+                        let timeConflict: boolean = timeValidator.hasTimeConflict(result, index, j);
+                        if (!timeConflict) {
+                            Helper.swap(result, index, j);
+                            pushedToOrderAscending = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -194,40 +194,34 @@ export default class GA {
         return result;
     }
 
-    private mutate(order: number[], mutationRate: number) {
+    private improveFitnessByCancelSessions(order: number[], helper: Helper) {
+        let fitness = this.getFitness(order, helper);
+        if (fitness > this.topFitnessScore) {
+            this.topFitnessScore = this.getFitness(order, helper);
+            this.bestPlan = order;
+        }
+        this.topFitnessScore = this.getFitness(order, helper);
+        this.bestPlan = order;
         let result = order.slice();
-        for (let i of result) {
-            if (mutationRate >= Math.random()) {
-                let index0 = Math.floor(Math.random() * this.scheduler.numberOfSchedSection);
-                let index1 = Math.floor(Math.random() * result.length);
-                if (result[index1] === Scheduler.TOBEFILLED) {
-                    let numList = Helper.newNumberList(result.length, this.scheduler.maxNumberOfSectionsCanBeScheduled);
-                    numList = Helper.shuffle(numList);
-                    for (let num of numList) {
-                        if (!result.includes(num)) {
-                            result[index1] = num;
-                            break;
-                        }
-                    }
-                }
-                Helper.swap(result, index0, index1);
+        for (let i = 0; i < result.length; i++) {
+            let temp = order.slice();
+            temp[i] = Scheduler.TOBEFILLED;
+            fitness = this.getFitness(temp, helper);
+            if (fitness > this.topFitnessScore) {
+                this.topFitnessScore = fitness;
+                this.bestPlan = temp;
+                result = temp;
             }
         }
         return result;
     }
 
-    public bringInTheFittest() {
-        if (Math.random() < this.replaceWithBestIndividualRate) {
-            let randomIndex;
-            randomIndex = Math.floor(Math.random() * this.population.length);
-            this.population[randomIndex] = this.bestPlan.slice();
-        }
-    }
-
-    public generateFirstGeneration() {
-        this.population.push(this.greedy(Helper.newNumberList(
-            this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled), true));
-        for (let i = 0; i < this.totalPopulationSize - 1; i++) {
+    public generateFirstGeneration(helper: Helper) {
+        let greedyOrder = this.greedy(Helper.newNumberList(
+            this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled), true);
+        this.population.push(greedyOrder);
+        this.population.push(this.improveFitnessByCancelSessions(greedyOrder, helper));
+        for (let i = 0; i < this.totalPopulationSize - 2; i++) {
             let order: number[] = Helper.newNumberList(
                 this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled);
             order = Helper.shuffle(order);
@@ -239,7 +233,6 @@ export default class GA {
     }
 
     private pickParentFromPopulation(pickRandom: boolean = false, pickBest: boolean = false) {
-
         if (pickRandom && Math.random() < this.pickRandomChance) {
             let order: number[] = Helper.newNumberList(
                 this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled);
