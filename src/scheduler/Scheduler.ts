@@ -10,7 +10,7 @@ export default class Scheduler implements IScheduler {
         "TR  0800-0930", "TR  0930-1100", "TR  1100-1230",
         "TR  1230-1400", "TR  1400-1530", "TR  1530-1700"];
 
-    private numberOfTimeSlots: number = Scheduler.timeslots.length;
+    public numberOfTimeSlots: number = Scheduler.timeslots.length;
     private numberOfSchedRoom: number = 0;
     public numberOfSchedSection: number = 0;
     private numberOfSectionsToSchedule: number = 0;
@@ -74,17 +74,17 @@ export default class Scheduler implements IScheduler {
         this.setWeightedCenter();
         this.sortInitArrays();
         this.ga.generateFirstGeneration(this.helper);
-        let startTime = Date.now();
-        while (
-            Date.now() < (startTime + this.ga.timeLimit) &&
-            this.ga.topFitnessScore < this.ga.fitnessthreshold) {
-            this.ga.calculateFitness(this.helper);
-            this.ga.normalizeFitness();
-            this.ga.nextGeneration();
-            // this.ga.calculateFitness(this.helper);
-            // this.ga.bringInTheFittest();
-            // this.ga.addNewRandomIndividual();
-        }
+        // let startTime = Date.now();
+        // while (
+        //     Date.now() < (startTime + this.ga.timeLimit) &&
+        //     this.ga.topFitnessScore < this.ga.fitnessthreshold) {
+        //     this.ga.calculateFitness(this.helper);
+        //     this.ga.normalizeFitness();
+        //     this.ga.nextGeneration();
+        //     // this.ga.calculateFitness(this.helper);
+        //     // this.ga.bringInTheFittest();
+        //     // this.ga.addNewRandomIndividual();
+        // }
         this.ga.calculateFitness(this.helper);
         let result = new Array<[SchedRoom, SchedSection, TimeSlot]>();
         // Log.test(this.bestPlan);
