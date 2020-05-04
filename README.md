@@ -1,12 +1,8 @@
-# CPSC 310 Project Repository
+# CPSC 310 Course Project Repository
+This repository contains code for the class project.
 
-This repository contains starter code for the class project.
-Please keep your repository private.
-
-For information about the project, autotest, and the checkpoints, see the [course webpage](https://sites.google.com/site/cpsc31019w2).
 
 ## Configuring your environment
-
 To start using this project, you need to get your computer configured so you can build and execute the code.
 To do this, follow these steps; the specifics of each step (especially the first two) will vary based on which operating system your computer has:
 
