@@ -11,6 +11,7 @@ let id = '';
 let form;
 
 CampusExplorer.buildQuery = function () {
+// function all() {
     query = {};
     id = getID();
     form = document.getElementsByClassName('tab-panel active')[0];
@@ -55,12 +56,13 @@ function getTerm(curCond, operator) {
     let termP = curCond.getElementsByClassName('control term')[0];
     let val = termP.querySelector('input').getAttribute('value');
     if (operator === 'IS') {
-        return val;
+        // return val;
+        return val ? val : "";
     }
-    if (val === null) {
-        return null;
-    }
-    return Number(val);
+    // if (val === null) {
+    //     return null;
+    // }
+    return val ? Number(val) : "";
 }
 
 function getFilter(curCond) {
@@ -101,7 +103,7 @@ function getFilters() {
     let filters = [];
     let allConds = form.getElementsByClassName('conditions-container')[0];
     for (let curCond of allConds.querySelectorAll('div')) {
-        if (curCond.getAttribute('class') === 'control-group condition')    {
+        if (curCond.getAttribute('class') === 'control-group condition') {
             filters.push(getFilter(curCond));
         }
     }
@@ -125,7 +127,13 @@ function getOrdKeys(keyP) {
     let keys = [];
     for (let key of keyP) {
         if (key.hasAttribute('selected')) {
-            keys.push(id + "_" + key.getAttribute('value'));
+            let input = key.getAttribute('value');
+            let value = id + "_" + input;
+            if (!key.classList.contains("transformation")) {
+                keys.push(value);
+            } else {
+                keys.push(input);
+            }
         }
     }
     return keys;
@@ -138,15 +146,15 @@ function getOrder() {
     if (keys.length === 0) {
         return null;
     }
-    // (ii) one key
-    if (keys.length === 1) {
-        return keys[0];
-    }
     // (iii) multiple keys
     let res = {};
     let descdP = ordP.getElementsByClassName('control descending')[0];
     let descdCb = descdP.querySelector('input');
     res.dir = descdCb.hasAttribute('checked') ? 'DOWN' : 'UP';
+    // (ii) one key
+    if (keys.length === 1 && res.dir === 'UP') {
+        return keys[0];
+    }
     res.keys = keys;
     return res;
 }
@@ -158,7 +166,11 @@ function getColumns() {
     for (let key of colsP.querySelectorAll('input')) {
         if (key.hasAttribute('checked')) {
             let val = key.getAttribute('value');
-            cols.push(id + "_" + val);
+            if (key.hasAttribute('id')) {
+                cols.push(id + "_" + val);
+            } else {
+                cols.push(val);
+            }
         }
     }
     return cols;
@@ -203,7 +215,13 @@ function getApplyRule(ruleP) {
     let res = {};
     let body = {};
     body[getToken(ruleP)] = getTransField(ruleP);
-    res[getTransTerm(ruleP)] = body;
+
+    let applyKey = getTransTerm(ruleP);
+    if (applyKey === null) {
+        // return null;
+        applyKey = "";
+    }
+    res[applyKey] = body;
     return res;
 }
 
@@ -211,7 +229,10 @@ function getApply() {
     let res = [];
     let transPs = form.getElementsByClassName('control-group transformation');
     for (let ruleP of transPs) {
-        res.push(getApplyRule(ruleP));
+        let crule = getApplyRule(ruleP);
+        if (crule !== null) {
+            res.push(crule);
+        }
     }
     return res.length === 0 ? null : res;
 }
@@ -236,7 +257,13 @@ function getTrans() {
     if (group === null && apply === null) {
         return null;
     }
-    res.GROUP = group;
-    res.APPLY = apply;
+    if (group !== null) {
+        res.GROUP = group;
+    } else {
+        res.GROUP = [];
+    }
+    if (apply !== null) {
+        res.APPLY = apply;
+    }
     return res;
 }

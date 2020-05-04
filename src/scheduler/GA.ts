@@ -2,6 +2,7 @@ import Helper from "./Helper";
 import Scheduler from "./Scheduler";
 import {SchedRoom} from "./IScheduler";
 import Log from "../Util";
+import TimeSlotOverlappingValidator from "./TimeSlotOverlappingValidator";
 
 export default class GA {
     private population: number[][] = [];
@@ -9,84 +10,100 @@ export default class GA {
     private normalizedFitness: number[] = [];
     public topFitnessScore = 0;
     public bestPlan: number[] = [];
-    private totalPopulationSize: number = 20;
+    private totalPopulationSize: number = 2;
     private mutationRate: number = 0;
     public timeLimit = 20000;
     public fitnessthreshold = 0.99;
     private enrollmentFitnessWeight = 0.7;
     private distanceFitnessWeight = 0.3;
-    private minFitness = 0.01;
+    public minFitness = 0.01;
     private replaceWithBestIndividualRate = 1;
     private replaceWithrandomIndividualRate = 0.8;
     private numOfCrossOverPerGeneration = 1;
-    public grading: number = 0;
     private scheduler: Scheduler;
     private percentageOfGreedyFirstGeneration = 0.1;
     private greedySkipRate = 0.1;
-    private pickRandomChance = 0.5;
-    private pickBestChance = 0.1;
+    private pickRandomChance = 0.1;
+    private pickBestChance = 0.9;
 
     constructor(scheduler: Scheduler) {
         this.scheduler = scheduler;
     }
 
-    public addNewRandomIndividual() {
-        for (let i of this.population) {
-            if (Math.random() < this.replaceWithrandomIndividualRate) {
-                let order: number[] = Helper.range(0, this.scheduler.childrenLength);
-                order = Helper.shuffle(order);
-                let randomIndex = Math.floor(Math.random() * this.population.length);
-                this.population[randomIndex] = order;
+    public crossover(order0: number[], order1: number[], numberOfSchedSection: number) {
+        let order: number[] = new Array(order0.length).fill(Scheduler.TOBEFILLED);
+        let order2: number[] = order1.slice();
+        let toBeFilled: number[] = [];
+        let skippedSessions: number[] = [];
+        for (let i = 0; i < order0.length; i++) {
+            if (order0[i] === Scheduler.TOBEFILLED || Math.random() < 0.5) {
+                order[i] = Scheduler.TOBEFILLED;
+                toBeFilled.push(i);
+            } else {
+                let room = this.scheduler.getSchedRoom(order0[i]);
+                if (room && this.scheduler.hasEnoughSeat(room, this.scheduler.sections[i])) {
+                    order[i] = order0[i];
+                }
+            }
+        }
+        let test;
+
+        for (let i of toBeFilled) {
+            // if (order[i] === Scheduler.TOBEFILLED) {
+            if (Math.random() < this.greedySkipRate) {
+                skippedSessions.push(i);
+                continue;
+            }
+            this.fillToBeFillMidifiesArguments(order, order2, i);
+            // }
+        }
+        let test1;
+        for (let index of skippedSessions) {
+            this.fillToBeFillMidifiesArguments(order, order2, index);
+        }
+        return order;
+    }
+
+    public fillToBeFillMidifiesArguments(order: number[], order2: number[], index: number) {
+        for (let j = 0; j < order2.length; j++) {
+            if (order2[j] === Scheduler.TOBEFILLED || order.includes(order2[j])) {
+                order2.splice(j, 1);
+                j--;
+            } else {
+                let room1 = this.scheduler.getSchedRoom(order2[j]);
+                if (room1 && this.scheduler.hasEnoughSeat(room1,
+                    this.scheduler.sections[index])) {
+                    order[index] = order2.splice(j, 1)[0];
+                    j--;
+                    break;
+                }
             }
         }
     }
 
-    public crossover(order0: number[], order1: number[], numberOfSchedSection: number) {
-        let order: number[] = new Array(order0.length).fill(Scheduler.TOBEFILLED);
-        let order2 = order1.slice();
-        for (let i = 0; i < order0.length; i++) {
-            let room = this.scheduler.getSchedRoom(order0[i]);
-            order[i] = order0[i] !== Scheduler.TOBEFILLED && Math.random() > 0.5 &&
-            room && this.scheduler.hasEnoughSeat(room,
-                this.scheduler.sections[i]) ? order0[i] : Scheduler.TOBEFILLED;
-            if (order[i] === Scheduler.TOBEFILLED) {
-                for (let j = 0; j < order2.length; j++) {
-                    if (order2[j] === Scheduler.TOBEFILLED || order.includes(order2[j])) {
-                        order2.splice(j, 1);
-                        j--;
-                    } else if (Math.random() < this.greedySkipRate) {
-                        break;
-                    } else {
-                        let room1 = this.scheduler.getSchedRoom(order2[j]);
-                        if (room1 && this.scheduler.hasEnoughSeat(room1,
-                            this.scheduler.sections[i])) {
-                            order[i] = order2.splice(j, 1)[0];
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        let test = this.scheduler.getFitness(order);
-        if (test === 0) {
-            let a;
-        }
-        return order;
+    public getFitness(order: number[], helper: Helper) {
+        let distanceFitness: number = this.getDistanceFitness(order, helper);
+        let enrollmentFitness: number = this.getEnrollmentFitness(order);
+        let capacityFitness = this.getCapacityFitness(order);
+        let timeValidator = new TimeSlotOverlappingValidator(this.scheduler);
+        // let timeConflictFitness = timeValidator.getTimeConflictFitness(order);
+        let timeConflictFitness = 0;
+        return (this.enrollmentFitnessWeight * (1 - enrollmentFitness) +
+            this.distanceFitnessWeight * (1 - distanceFitness)) / (1 + capacityFitness + timeConflictFitness) +
+            this.minFitness;
     }
 
     public calculateFitness(helper: Helper) {
         for (let i = 0; i < this.population.length; i++) {
             let order: number[] = this.population[i];
-            let capacityFitness = this.getCapacityFitness(order);
-            let distanceFitness: number = this.getDistanceFitness(order, helper);
-            let enrollmentFitness: number = this.getEnrollmentFitness(order);
-            this.fitness[i] = 1 / (1 + capacityFitness + distanceFitness * this.distanceFitnessWeight +
-                enrollmentFitness * this.enrollmentFitnessWeight) + this.minFitness;
-            if (this.fitness[i] > this.topFitnessScore) {
-                this.topFitnessScore = this.fitness[i];
-                this.grading = 0.7 * (1 - enrollmentFitness) + 0.3 * (1 - distanceFitness);
+            let fitness = this.getFitness(order, helper);
+            this.fitness[i] = fitness;
+            Log.test(fitness);
+            if (fitness > this.topFitnessScore) {
+                this.topFitnessScore = fitness;
                 // Log.test(this.topFitnessScore);
                 this.bestPlan = order;
+
             }
         }
     }
@@ -135,7 +152,8 @@ export default class GA {
 
     public nextGeneration() {
         // Log.test(this.population);
-        // Log.test(this.fitness);
+        Log.test(this.fitness);
+        // Log.test(this.topFitnessScore);
         let newPopulation: number[][] = [];
         for (let i of this.population) {
             let order0: number[] = this.pickParentFromPopulation(false, true);
@@ -150,6 +168,7 @@ export default class GA {
 
     private greedy(order: number[], ascending: boolean = true): number[] {
         let result: number[] = order.slice();
+        let timeValidator = new TimeSlotOverlappingValidator(this.scheduler);
         for (let i = 0; i < this.scheduler.numberOfSchedSection; i++) {
             let pushedToOrderAscending = false;
             for (let j = 0; j < result.length; j++) {
@@ -157,13 +176,14 @@ export default class GA {
                 let b = ascending ? 0 : 1;
                 let index = (this.scheduler.numberOfSchedSection - 1) * b + i * a;
                 let room = this.scheduler.getSchedRoom(result[j]);
-                if (room && this.scheduler.hasEnoughSeat(room,
-                    this.scheduler.sections[index])) {
-                    // let temp = result[j];
+                if (room && this.scheduler.hasEnoughSeat(room, this.scheduler.sections[index])) {
                     if (index <= j) {
-                        Helper.swap(result, index, j);
-                        pushedToOrderAscending = true;
-                        break;
+                        let timeConflict: boolean = timeValidator.hasTimeConflict(result, index, j);
+                        if (!timeConflict) {
+                            Helper.swap(result, index, j);
+                            pushedToOrderAscending = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -174,40 +194,36 @@ export default class GA {
         return result;
     }
 
-    private mutate(order: number[], mutationRate: number) {
+    private improveFitnessByCancelSessions(order: number[], helper: Helper) {
+        let fitness = this.getFitness(order, helper);
+        if (fitness > this.topFitnessScore) {
+            this.topFitnessScore = this.getFitness(order, helper);
+            this.bestPlan = order;
+        }
+        this.topFitnessScore = this.getFitness(order, helper);
+        this.bestPlan = order;
         let result = order.slice();
-        for (let i of result) {
-            if (mutationRate >= Math.random()) {
-                let index0 = Math.floor(Math.random() * this.scheduler.numberOfSchedSection);
-                let index1 = Math.floor(Math.random() * result.length);
-                if (result[index1] === Scheduler.TOBEFILLED) {
-                    let numList = Helper.range(0, result.length);
-                    numList = Helper.shuffle(numList);
-                    for (let num of numList) {
-                        if (!result.includes(num)) {
-                            result[index1] = num;
-                            break;
-                        }
-                    }
-                }
-                Helper.swap(result, index0, index1);
+        for (let i = 0; i < result.length; i++) {
+            let temp = order.slice();
+            temp[i] = Scheduler.TOBEFILLED;
+            fitness = this.getFitness(temp, helper);
+            if (fitness > this.topFitnessScore) {
+                this.topFitnessScore = fitness;
+                this.bestPlan = temp;
+                result = temp;
             }
         }
         return result;
     }
 
-    public bringInTheFittest() {
-        if (Math.random() < this.replaceWithBestIndividualRate) {
-            let randomIndex;
-            randomIndex = Math.floor(Math.random() * this.population.length);
-            this.population[randomIndex] = this.bestPlan.slice();
-        }
-    }
-
-    public generateFirstGeneration() {
-        this.population.push(this.greedy(Helper.range(0, this.scheduler.childrenLength), true));
-        for (let i = 0; i < this.totalPopulationSize - 1; i++) {
-            let order: number[] = Helper.range(0, this.scheduler.childrenLength);
+    public generateFirstGeneration(helper: Helper) {
+        let greedyOrder = this.greedy(Helper.newNumberList(
+            this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled), true);
+        this.population.push(greedyOrder);
+        this.population.push(this.improveFitnessByCancelSessions(greedyOrder, helper));
+        for (let i = 0; i < this.totalPopulationSize - 2; i++) {
+            let order: number[] = Helper.newNumberList(
+                this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled);
             order = Helper.shuffle(order);
             if (Math.random() < this.percentageOfGreedyFirstGeneration) {
                 order = this.greedy(order, true);
@@ -217,9 +233,9 @@ export default class GA {
     }
 
     private pickParentFromPopulation(pickRandom: boolean = false, pickBest: boolean = false) {
-
         if (pickRandom && Math.random() < this.pickRandomChance) {
-            let order: number[] = Helper.range(0, this.scheduler.childrenLength);
+            let order: number[] = Helper.newNumberList(
+                this.scheduler.childrenLength, this.scheduler.maxNumberOfSectionsCanBeScheduled);
             order = Helper.shuffle(order);
             return order;
         } else if (pickBest && Math.random() < this.pickBestChance) {

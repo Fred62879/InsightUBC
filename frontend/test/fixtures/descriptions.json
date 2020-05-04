@@ -1,5 +1,9 @@
 {
     "query1": "simple query IS comparison for department with two columns and old order syntax",
     "query2": "2nd query",
-    "query3": "3rd query"
+    "isEmptyString": "isEmptyString",
+    "emptyColumnAndOrder": "emptyColumnAndOrder",
+    "OrderKeysWithemptyColumn": "OrderKeysWithemptyColumn,",
+    "orderByApplyKey": "orderByApplyKey",
+    "orderByApplyKeyAndColumnField": "orderByApplyKeyAndColumnField"
 }
